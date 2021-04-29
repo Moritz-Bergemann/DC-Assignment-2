@@ -1,0 +1,23 @@
+﻿<Window x:Class="ServerView.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ServerView"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <TextBox Name="FirstNameBox" IsReadOnly="True" HorizontalAlignment="Center" Height="22" Margin="0,69,0,0" TextWrapping="Wrap" Text="First Name" VerticalAlignment="Top" Width="114"/>
+        <TextBox Name="LastNameBox" IsReadOnly="True" HorizontalAlignment="Center" Height="22" Margin="0,96,0,0" TextWrapping="Wrap" Text="Last Name" VerticalAlignment="Top" Width="114"/>
+        <TextBox Name="AccountNumBox" IsReadOnly="True" HorizontalAlignment="Center" Height="22" Margin="0,123,0,0" TextWrapping="Wrap" Text="Account Num." VerticalAlignment="Top" Width="114"/>
+        <TextBox Name="PinBox" IsReadOnly="True" HorizontalAlignment="Center" Height="22" Margin="0,150,0,0" TextWrapping="Wrap" Text="PIN" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.5,0.5"/>
+        <TextBox Name="BalanceBox" IsReadOnly="True" HorizontalAlignment="Center" Height="22" Margin="0,178,0,0" TextWrapping="Wrap" Text="Balance" VerticalAlignment="Top" Width="114"/>
+        <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,267,0,0" VerticalAlignment="Top" Width="792"/>
+        <TextBox Name="IndexEditBox" InputScope="Number" HorizontalAlignment="Left" Height="23" Margin="255,305,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" Margin="255,348,0,0" TextWrapping="Wrap" VerticalAlignment="Top">Total Entries:</TextBlock>
+        <TextBox Name="TotalEntriesBox" IsReadOnly="True" HorizontalAlignment="Left" Height="21" Margin="332,347,0,0" TextWrapping="Wrap" Text="Total" VerticalAlignment="Top" Width="68"/>
+        <Button Content="Go!" HorizontalAlignment="Left" Height="31" Margin="409,301,0,0" VerticalAlignment="Top" Width="60" Click="Button_Click"/>
+        <Image Name="ImageBox" HorizontalAlignment="Left" Height="100" Margin="209,87,0,0" VerticalAlignment="Top" Width="100"/>
+        <TextBlock HorizontalAlignment="Left" Margin="209,306,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Index:"/></TextBlock>
+    </Grid>
+</Window>

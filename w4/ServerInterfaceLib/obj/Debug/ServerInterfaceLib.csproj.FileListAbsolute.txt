@@ -1,0 +1,6 @@
+C:\Users\morit\Source\Repos\DC-Workshops\ServerInterfaceLib\bin\Debug\ServerInterfaceLib.dll
+C:\Users\morit\Source\Repos\DC-Workshops\ServerInterfaceLib\bin\Debug\ServerInterfaceLib.pdb
+C:\Users\morit\Source\Repos\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.csprojAssemblyReference.cache
+C:\Users\morit\Source\Repos\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.csproj.CoreCompileInputs.cache
+C:\Users\morit\Source\Repos\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.dll
+C:\Users\morit\Source\Repos\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.pdb
