@@ -1,21 +1,21 @@
 ﻿
 @{
-    ViewBag.Title = "User";
+    ViewBag.Title = "UserPage";
 }
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 
-<h1>User</h1>
+<h1>UserPage</h1>
 Look for users here 🙂
 
-<h2>Find A User</h2>
+<h2>Find A UserPage</h2>
 <form>
-    <input type="number" id="user-id" placeholder="User ID" />
+    <input class="form-control" type="number" id="user-id" placeholder="UserPage ID" />
 </form>
-<button id="search-user-button">Search</button>
+<button class="btn btn-primary" id="search-user-button">Search</button>
 
 <div id="user-details" hidden>
-    <h3>User Name</h3>
+    <h3>UserPage Name</h3>
     <p>More details go here</p>
 </div>
 
@@ -24,14 +24,14 @@ Look for users here 🙂
         () => {
             console.log("Doing Search!");
             $.ajax({
-                url: "api/User/" + $("#user-id").val(),
+                url: "api/UserPage/" + $("#user-id").val(),
                 type: 'get',
                 contentType: 'application/json',
                 success: (data, textStatus, jQxhr) => {
                     var obj = data;
                     $("#user-details").toggle(); //Shows the element
                     $("#user-details").find("h3").text(`${data.fName} ${data.lName}`);
-                    $("#user-details").find("p").text(`User ID: ${data.id}`);
+                    $("#user-details").find("p").text(`UserPage ID: ${data.id}`);
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
                     alert("Oh no an error occurred 😢\n" + errorThrown);

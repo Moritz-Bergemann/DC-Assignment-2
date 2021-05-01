@@ -23,9 +23,9 @@ namespace DataTier.Controllers
             {
                 AccountData data = new AccountData
                 {
-                    id = accountId,
-                    userId = DataModel.Instance.GetAccountOwner(accountId),
-                    balance = DataModel.Instance.GetAccountBalance(accountId)
+                    Id = accountId,
+                    UserId = DataModel.Instance.GetAccountOwner(accountId),
+                    Balance = DataModel.Instance.GetAccountBalance(accountId)
                 };
 
                 accountList.Add(data);
@@ -40,9 +40,9 @@ namespace DataTier.Controllers
         {
             AccountData data = new AccountData();
 
-            data.id = accountId;
-            data.userId = DataModel.Instance.GetAccountOwner(accountId);
-            data.balance = DataModel.Instance.GetAccountBalance(accountId);
+            data.Id = accountId;
+            data.UserId = DataModel.Instance.GetAccountOwner(accountId);
+            data.Balance = DataModel.Instance.GetAccountBalance(accountId);
 
             return data;
         }
@@ -51,14 +51,14 @@ namespace DataTier.Controllers
         [HttpPost]
         public uint CreateAccount(CreateAccountData createData)
         {
-            return DataModel.Instance.CreateAccount(createData.userId);
+            return DataModel.Instance.CreateAccount(createData.UserId);
         }
 
         [Route("api/Account/{accountId}/deposit")]
         [HttpPost]
         public uint Deposit(uint accountId, MoneyData moneyData)
         {
-            DataModel.Instance.DepositToAccount(accountId, moneyData.amount);
+            DataModel.Instance.DepositToAccount(accountId, moneyData.Amount);
 
             return DataModel.Instance.GetAccountBalance(accountId);
         }
@@ -67,7 +67,7 @@ namespace DataTier.Controllers
         [HttpPost]
         public uint Withdraw(uint accountId, MoneyData moneyData)
         {
-            DataModel.Instance.WithdrawFromAccount(accountId, moneyData.amount);
+            DataModel.Instance.WithdrawFromAccount(accountId, moneyData.Amount);
 
             return DataModel.Instance.GetAccountBalance(accountId);
         }

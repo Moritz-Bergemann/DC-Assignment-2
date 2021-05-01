@@ -21,12 +21,13 @@ namespace DataTier.Controllers
 
             foreach (uint transactionId in transactionIds)
             {
-                TransactionData data = new TransactionData();
-
-                data.id = transactionId;
-                data.amount = DataModel.Instance.GetTransactionAmount(transactionId);
-                data.senderAccountId = DataModel.Instance.GetTransactionSender(transactionId);
-                data.receiverAccountId = DataModel.Instance.GetTransactionReceiver(transactionId);
+                TransactionData data = new TransactionData
+                {
+                    Id = transactionId,
+                    Amount = DataModel.Instance.GetTransactionAmount(transactionId),
+                    SenderAccountId = DataModel.Instance.GetTransactionSender(transactionId),
+                    ReceiverAccountId = DataModel.Instance.GetTransactionReceiver(transactionId)
+                };
 
                 transactionsList.Add(data);    
             }
@@ -37,12 +38,14 @@ namespace DataTier.Controllers
         [Route("api/Transaction/{transactionId}")]
         public TransactionData GetTransaction(uint transactionId)
         {
-            TransactionData data = new TransactionData();
+            TransactionData data = new TransactionData
+            {
+                Id = transactionId,
+                Amount = DataModel.Instance.GetTransactionAmount(transactionId),
+                SenderAccountId = DataModel.Instance.GetTransactionSender(transactionId),
+                ReceiverAccountId = DataModel.Instance.GetTransactionReceiver(transactionId)
+            };
 
-            data.id = transactionId;
-            data.amount = DataModel.Instance.GetTransactionAmount(transactionId);
-            data.senderAccountId = DataModel.Instance.GetTransactionSender(transactionId);
-            data.receiverAccountId = DataModel.Instance.GetTransactionReceiver(transactionId);
 
             return data;
         }
@@ -52,8 +55,8 @@ namespace DataTier.Controllers
         public uint MakeTransaction(CreateTransactionData createData)
         {
             //Run the transaction (this will attempt to perform it and fail if unsuccessful)
-            return DataModel.Instance.MakeTransaction(createData.senderAccountId, createData.receiverAccountId,
-                createData.amount);
+            return DataModel.Instance.MakeTransaction(createData.SenderAccountId, createData.ReceiverAccountId,
+                createData.Amount);
         }
     }
 }

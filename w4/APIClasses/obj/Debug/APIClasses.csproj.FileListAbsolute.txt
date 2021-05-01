@@ -4,3 +4,9 @@ C:\Users\morit\Source\Repos\DC-Workshops\APIClasses\obj\Debug\APIClasses.csprojA
 C:\Users\morit\Source\Repos\DC-Workshops\APIClasses\obj\Debug\APIClasses.csproj.CoreCompileInputs.cache
 C:\Users\morit\Source\Repos\DC-Workshops\APIClasses\obj\Debug\APIClasses.dll
 C:\Users\morit\Source\Repos\DC-Workshops\APIClasses\obj\Debug\APIClasses.pdb
+C:\Users\morit\_MyCode\DC\w4\APIClasses\bin\Debug\APIClasses.dll
+C:\Users\morit\_MyCode\DC\w4\APIClasses\bin\Debug\APIClasses.pdb
+C:\Users\morit\_MyCode\DC\w4\APIClasses\obj\Debug\APIClasses.csprojAssemblyReference.cache
+C:\Users\morit\_MyCode\DC\w4\APIClasses\obj\Debug\APIClasses.csproj.CoreCompileInputs.cache
+C:\Users\morit\_MyCode\DC\w4\APIClasses\obj\Debug\APIClasses.dll
+C:\Users\morit\_MyCode\DC\w4\APIClasses\obj\Debug\APIClasses.pdb

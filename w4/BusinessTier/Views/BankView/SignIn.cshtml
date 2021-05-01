@@ -1,0 +1,55 @@
+﻿
+@{
+    ViewBag.Title = "SignIn";
+}
+
+<h2>Welcome To BankDB Banking!</h2>
+<div>
+    <h3>Sign In</h3>
+    <form id="signinForm">
+        <input name="signinId" type="number" placeholder="Enter your user ID"/>
+        <small>Here at BankDB, we don't believe in passwords.</small>
+        <button type="submit" style="display:block">Sign In</button>
+    </form>
+</div>
+
+<div>
+    <h3>Sign Up!</h3>
+    
+    <form id="signupForm">
+        <input name="signupFName" type="text" placeholder="First Name"/>
+        <input name="signupLName" type="text" placeholder="Last Name"/>
+        <button type="submit" style="display:block">Sign Up</button>
+    </form>
+    
+    <script>
+        $("#signinForm").on('submit',
+            () => {
+                var formData = $("#signinForm").serializeArray();
+
+                window.location.replace("user/" + formData[0].value);
+            });
+
+        $("#signupForm").on('submit',
+            () => {
+                var formData = $("#signupForm").serializeArray();
+
+                //Make API request
+                $.ajax({
+                    url: 'api/user',
+                    type: 'post',
+                    contentType: 'application/json',
+                    data: {
+                        FName: formData[0].value,
+                        LName: formData[1].value
+                    },
+                    success: (data, textStatus, jQxhr) => {
+                        alert("Account Created!");
+                    },
+                    error: (jqXhr, textStatus, errorThrown) => {
+
+                    }
+                });
+            });
+    </script>
+</div>

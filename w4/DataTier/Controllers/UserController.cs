@@ -18,8 +18,8 @@ namespace DataTier.Controllers
         {
             UserData data = new UserData();
 
-            data.id = userId;
-            DataModel.Instance.GetUserName(userId, out data.fName, out data.lName);
+            data.Id = userId;
+            DataModel.Instance.GetUserName(userId, out data.FName, out data.LName);
 
             return data;
         }
@@ -35,8 +35,8 @@ namespace DataTier.Controllers
             {
                 UserData data = new UserData();
 
-                data.id = userId;
-                DataModel.Instance.GetUserName(userId, out data.fName, out data.lName);
+                data.Id = userId;
+                DataModel.Instance.GetUserName(userId, out data.FName, out data.LName);
                 
                 allUsers.Add(data);
             }
@@ -48,7 +48,7 @@ namespace DataTier.Controllers
         [HttpPost]
         public uint CreateUser(CreateUserData createData)
         {
-            return DataModel.Instance.CreateUser(createData.fName, createData.lName);
+            return DataModel.Instance.CreateUser(createData.FName, createData.LName);
         }
     }
 }

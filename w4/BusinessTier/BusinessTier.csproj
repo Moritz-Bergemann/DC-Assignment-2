@@ -218,6 +218,8 @@
     <Content Include="Views\Bank\Error.cshtml" />
     <Content Include="Views\Bank\_Layout.cshtml" />
     <Content Include="Views\BankView\Users.cshtml" />
+    <Content Include="Views\BankView\SignIn.cshtml" />
+    <Content Include="Views\BankView\UserPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

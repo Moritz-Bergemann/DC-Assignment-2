@@ -13,7 +13,6 @@ namespace DataTier.Models
             get;
         } = new DataModel();
 
-        
         private readonly BankDB.BankDB _bankDb;
         private UserAccessInterface _userAccess;
         private AccountAccessInterface _accountAccess;

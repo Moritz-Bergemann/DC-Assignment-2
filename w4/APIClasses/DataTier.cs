@@ -1,53 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace APIClasses
+﻿namespace APIClasses
 {
     public class AccountData
     {
-        public uint id;
-        public uint userId;
-        public uint balance;
+        public uint Id;
+        public uint UserId;
+        public uint Balance;
     }
 
     public class CreateAccountData
     {
-        public uint userId;
+        public uint UserId;
     }
 
     public class UserData
     {
-        public uint id;
-        public string fName;
-        public string lName;
+        public uint Id;
+        public string FName;
+        public string LName;
     }
 
     public class CreateUserData
     {
-        public string fName;
-        public string lName;
+        public string FName;
+        public string LName;
     }
 
     public class TransactionData
     {
-        public uint id;
-        public uint senderAccountId;
-        public uint receiverAccountId;
-        public uint amount;
+        public uint Id;
+        public uint SenderAccountId;
+        public uint ReceiverAccountId;
+        public uint Amount;
     }
 
     public class CreateTransactionData
     {
-        public uint senderAccountId;
-        public uint receiverAccountId;
-        public uint amount;
+        public uint SenderAccountId;
+        public uint ReceiverAccountId;
+        public uint Amount;
     }
 
     public class MoneyData
     {
-        public uint amount;
+        public uint Amount;
     }
 }

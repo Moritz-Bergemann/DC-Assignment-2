@@ -39,15 +39,15 @@ namespace BusinessTier.Models
 
         public UserData CreateUser(CreateUserData createData)
         {
-            //Request User creation and get the User ID
-            RestRequest request = new RestRequest("api/User");
+            //Request UserPage creation and get the UserPage ID
+            RestRequest request = new RestRequest("api/UserPage");
             request.AddJsonBody(createData);
             IRestResponse response = _client.Post(request);
             uint userId = JsonConvert.DeserializeObject<uint>(response.Content);
 
             SaveData();
 
-            //Get the details of created User
+            //Get the details of created UserPage
             return GetUser(userId);
         }
 
@@ -61,7 +61,7 @@ namespace BusinessTier.Models
 
         public List<AccountData> GetAccountsByUser(uint userId)
         {
-            RestRequest request = new RestRequest("api/Account/User/" + userId);
+            RestRequest request = new RestRequest("api/Account/UserPage/" + userId);
             IRestResponse response = _client.Get(request);
 
             return JsonConvert.DeserializeObject<List<AccountData>>(response.Content);
@@ -69,7 +69,7 @@ namespace BusinessTier.Models
 
         public UserData GetUser(uint userId)
         {
-            RestRequest request = new RestRequest("api/User/" + userId);
+            RestRequest request = new RestRequest("api/UserPage/" + userId);
             IRestResponse response = _client.Get(request);
 
             return JsonConvert.DeserializeObject<UserData>(response.Content);
@@ -107,7 +107,7 @@ namespace BusinessTier.Models
             List<TransactionData> allTransactions = JsonConvert.DeserializeObject<List<TransactionData>>(response.Content);
 
             //Get all transactions that the user sent
-            return allTransactions.Where(transaction => transaction.senderAccountId == accountId).ToList();
+            return allTransactions.Where(transaction => transaction.SenderAccountId == accountId).ToList();
         }
 
         public TransactionData MakeTransaction(CreateTransactionData createData)
