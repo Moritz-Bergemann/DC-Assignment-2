@@ -34,7 +34,7 @@ namespace BusinessTier.Controllers
         }
 
         [Route("signin")]
-        public ActionResult SignIn(int userId)
+        public ActionResult SignIn()
         {
             return View();
         }

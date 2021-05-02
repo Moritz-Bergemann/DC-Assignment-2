@@ -40,7 +40,7 @@ namespace BusinessTier.Models
         public UserData CreateUser(CreateUserData createData)
         {
             //Request UserPage creation and get the UserPage ID
-            RestRequest request = new RestRequest("api/UserPage");
+            RestRequest request = new RestRequest("api/User");
             request.AddJsonBody(createData);
             IRestResponse response = _client.Post(request);
             uint userId = JsonConvert.DeserializeObject<uint>(response.Content);
@@ -61,7 +61,7 @@ namespace BusinessTier.Models
 
         public List<AccountData> GetAccountsByUser(uint userId)
         {
-            RestRequest request = new RestRequest("api/Account/UserPage/" + userId);
+            RestRequest request = new RestRequest("api/Account/User/" + userId);
             IRestResponse response = _client.Get(request);
 
             return JsonConvert.DeserializeObject<List<AccountData>>(response.Content);
@@ -69,7 +69,7 @@ namespace BusinessTier.Models
 
         public UserData GetUser(uint userId)
         {
-            RestRequest request = new RestRequest("api/UserPage/" + userId);
+            RestRequest request = new RestRequest("api/User/" + userId);
             IRestResponse response = _client.Get(request);
 
             return JsonConvert.DeserializeObject<UserData>(response.Content);
