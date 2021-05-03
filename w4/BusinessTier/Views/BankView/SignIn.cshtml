@@ -23,8 +23,8 @@
         <input name="LName" type="text" placeholder="Last Name" />
         <button type="submit" style="display:block">Sign Up</button>
     </form>
-    <div id="accountCreatedDiv" hidden="true">
-        <p>Account created successfully! Your account ID is <a id="accountCreatedLink" href="#">NULL</a></p>
+    <div id="userCreatedDiv" hidden="true">
+        <p>User created successfully! Your ID is <a id="userCreatedLink" href="#">NULL</a></p>
     </div>
 </div>
 
@@ -73,12 +73,12 @@
                 dataType: 'json',
                 data: JSON.stringify(postData),
                 success: (data, textStatus, jQxhr) => {
-                    console.log("Account Create Data:");
+                    console.log("User Create Data:");
                     console.log(data);
 
-                    $("#accountCreatedDiv").toggle();
-                    $("#accountCreatedLink").text(data.Id);
-                    $("#accountCreatedLink").attr("href", "user/" + data.Id);
+                    $("#userCreatedDiv").toggle();
+                    $("#userCreatedLink").text(data.Id);
+                    $("#userCreatedLink").attr("href", "/user/" + data.Id);
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
                     alert("Error! " + errorThrown);

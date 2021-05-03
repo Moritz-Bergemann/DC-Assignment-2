@@ -3,12 +3,114 @@
     ViewBag.Title = "UserPage";
 }
 
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
 <div>
     <h2>Welcome, @ViewBag.UserData.FName @ViewBag.UserData.LName</h2>
-    <small>User ID: @ViewBag.UserData.Id</small>
+    <p>User ID: @ViewBag.UserData.Id</p>
 </div>
 
 <div>
     <h2>Your Accounts</h2>
-    ACCOUNTS GO HERE
+    <div id="accountsContainer"></div>
 </div>
+
+<template style="border-style: solid; margin: 8px" id="accountTemplate" href="#">
+    <a href="#">
+        <div>
+            <p>Account ID: <text>NULL</text></p>
+            <p>Balance: $<text>NULL</text></p>
+        </div>
+    </a>
+</template>
+
+<div>
+    <h3>Create An Account</h3>
+    <form id="createAcctForm">
+        <label for="createAcctUserId">User ID:</label>
+        <input id="createAcctUserId" name="userId" type="number" placeholder="User Id" />
+        <button type="submit" style="display:block">Create</button>
+    </form>
+    <div id="accountCreatedDiv" hidden="true">
+        <p>
+            Account created successfully! ID is <a id="accountCreatedLink" href="#">NULL</a>.
+            Refresh the page to see your account displayed here.
+        </p>
+    </div>
+</div>
+
+<script>
+    $(document).ready(() => {
+        //Load all accounts
+        //Make API request
+        $.ajax({
+            url: '/api/user/' + @ViewBag.UserData.Id + '/accounts',
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            success: (data, textStatus, jQxhr) => {
+                console.log("Returned Accounts Data:");
+                console.log(data);
+                var accountsContainer = document.querySelector("#accountsContainer");
+                for (var accountElement in data) {
+                    var template = document.querySelector('#accountTemplate');
+                    var clone = template.content.cloneNode(true);
+
+                    //Get all text tags in template
+                    var elements = clone.querySelectorAll('text');
+
+                    elements[0].textContent = data[accountElement].Id;
+                    elements[1].textContent = data[accountElement].Balance;
+
+                    //Set link
+                    var link = clone.querySelector('a');
+                    link.setAttribute('href', '/account/' + data[accountElement].Id);
+
+                    //Set styling
+                    var div = clone.querySelector('div');
+                    div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;")
+
+                    accountsContainer.appendChild(clone);
+                }
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+                alert("Error! " + errorThrown);
+                console.log(errorThrown);
+            }
+        });
+
+        //Fill the 'create account' form with the UserId
+        $("#createAcctUserId").val(@ViewBag.UserData.Id);
+    });
+
+    $("#createAcctForm").on('submit',
+        (e) => {
+            e.preventDefault();
+            var formData = $("#createAcctForm").serializeArray();
+
+            var postData = {
+                UserId: formData[0].value
+            };
+
+            //Make API request
+            $.ajax({
+                url: '/api/account',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                success: (data, textStatus, jQxhr) => {
+                    console.log("Account Create Data:");
+                    console.log(data);
+
+                    $("#accountCreatedDiv").toggle();
+                    $("#accountCreatedLink").text(data.Id);
+                    $("#accountCreatedLink").attr("href", "/account/" + data.Id);
+
+                },
+                error: (jqXhr, textStatus, errorThrown) => {
+                    alert("Error! " + errorThrown);
+                    console.log(errorThrown);
+                }
+            });
+        });
+</script>

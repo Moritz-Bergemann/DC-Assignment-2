@@ -1,0 +1,84 @@
+﻿@using APIClasses
+
+@{
+    ViewBag.Title = "AccountPage";
+}
+
+<h2>Account @ViewBag.AccountData.Id</h2>
+For user <a href="/user/@ViewBag.AccountData.UserId">@ViewBag.AccountData.UserId</a>
+
+<h2>Transaction History</h2>
+<div id="transactionsContainer">
+    @foreach (TransactionData transaction in ViewBag.Transactions)
+    {
+        <a href="/transaction/@transaction.Id">
+            <div style="border-style: solid; border-color: black; padding: 4px; margin: 4px;">
+                ID: @transaction.Id
+                Sender Account: @transaction.SenderAccountId
+                Receiver Account: @transaction.ReceiverAccountId
+                Amount: $@transaction.Amount
+            </div>
+        </a>
+    }
+</div>
+
+<div>
+    <h3>Make a New Transaction</h3>
+    <form id="makeTransactionForm">
+        <label for="transactionSenderAcct">Sender Account:</label>
+        <input id="transactionSenderAcct" name="senderAcct" type="number" placeholder="Sender Account" />
+        <label for="transactionReceiverAcct">Sender Account:</label>
+        <input id="transactionReceiverAcct" name="receiverAcct" type="number" placeholder="Receiver Account" />
+        <label for="transactionAmount">Sender Account:</label>
+        <text><b>$s</b></text><input id="transactionAmount" name="amount" type="number" placeholder="Amount" />
+
+        <button type="submit" style="display:block">Send</button>
+    </form>
+    
+    <div id="transactionSuccessDiv" hidden="true">
+        <p>
+            Transaction made successfully!
+            Refresh the page to the new transaction displayed here.
+        </p>
+    </div>
+</div>
+
+<script>
+    $(document).ready(() => {
+        //Fill in sender for new transaction form
+        $("#transactionSenderAcct").val(@ViewBag.AccountData.Id);
+    });
+
+    $("#makeTransactionForm").on('submit',
+        (e) => {
+            e.preventDefault();
+            var formData = $("#makeTransactionForm").serializeArray();
+
+            var postData = {
+                SenderAccountId: formData[0].value,
+                ReceiverAccountId: formData[1].value,
+                Amount: formData[2].value
+            };
+
+            //Make API request
+            $.ajax({
+                url: '/api/transaction',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                success: (data, textStatus, jQxhr) => {
+                    console.log("Account Create Data:");
+                    console.log(data);
+
+                    $("#transactionSuccessDiv").toggle();
+                    $("#transactionSuccessLink").text(data.Id);
+                },
+                error: (jqXhr, textStatus, errorThrown) => {
+                    alert("Error! " + errorThrown);
+                    console.log(errorThrown);
+                }
+            });
+        });
+
+</script>
