@@ -64,15 +64,15 @@ namespace BusinessTier.Controllers
         [HttpPost]
         public AccountData MakeDeposit(uint accountId, MoneyData moneyData)
         {
-            BusinessModel.Instance.Deposit(accountId, moneyData.Amount);
+            BusinessModel.Instance.Deposit(accountId, moneyData);
             return BusinessModel.Instance.GetAccount(accountId);
         }
 
         [Route("api/account/{accountId}/withdraw")]
         [HttpPost]
-        public AccountData MakeWithdrawal(uint accountId, MoneyData moneyData)
+        public AccountData MakeWithdrawal(uint accountId, [FromBody] MoneyData moneyData)
         {
-            BusinessModel.Instance.Withdraw(accountId, moneyData.Amount);
+            BusinessModel.Instance.Withdraw(accountId, moneyData);
             return BusinessModel.Instance.GetAccount(accountId);
         }
     }

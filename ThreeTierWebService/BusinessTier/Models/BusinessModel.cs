@@ -75,9 +75,10 @@ namespace BusinessTier.Models
             return JsonConvert.DeserializeObject<UserData>(response.Content);
         }
 
-        public AccountData Deposit(uint accountId, uint amount)
+        public AccountData Deposit(uint accountId, MoneyData amount)
         {
             RestRequest request = new RestRequest("api/Account/" + accountId + "/deposit");
+            request.AddJsonBody(amount);
             IRestResponse response = _client.Post(request);
 
             SaveData();
@@ -85,9 +86,10 @@ namespace BusinessTier.Models
             return GetAccount(accountId);
         }
 
-        public AccountData Withdraw(uint accountId, uint amount)
+        public AccountData Withdraw(uint accountId, MoneyData amount)
         {
             RestRequest request = new RestRequest("api/Account/" + accountId + "/withdraw");
+            request.AddJsonBody(amount);
             IRestResponse response = _client.Post(request);
 
             SaveData();
