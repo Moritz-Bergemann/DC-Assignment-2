@@ -1,9 +1,35 @@
-﻿<div class="jumbotron">
-    <h1>BUSINESS TIER</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS, and JavaScript.</p>
-    <p><a href="https://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
+﻿<h1>
+    BankDB Banking Advanced WebApp
+</h1>
+
+<!--Header-->
+<div>
+    <button id="usersPageButton">Users</button>
+    <button id="accountsPageButton">Accounts</button>
+    <button id="transactionsPageButton">Transactions</button>
 </div>
-<div class="row">
-    <!--Header-->
-    <div></div>
+
+<!--Main Content-->
+<div id="mainBody">
 </div>
+
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<script>
+    //Load main pages
+    $("#usersPageButton").on('click',
+        () => {
+            $.ajax({
+                url: '/user/',
+                type: 'get',
+                processData: false,
+                success: (data, textStatus, jQxhr) => {
+                    $("#mainBody").html(data);
+                },
+                error: (j,t,e) => {
+                    alert(e);
+                }
+            });
+        });
+</script>

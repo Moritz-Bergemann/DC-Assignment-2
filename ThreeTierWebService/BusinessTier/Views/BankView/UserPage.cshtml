@@ -5,15 +5,32 @@
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 
+
+<h2>User Management</h2>
 <div>
-    <h2>Welcome, @ViewBag.UserData.FName @ViewBag.UserData.LName</h2>
-    <p>User ID: @ViewBag.UserData.Id</p>
+    <h3>Get Information For Existing Users</h3>
+    <span>
+
+    </span>
+    <label for="userId">User ID:</label>
+    <input id="infoUserId" name="userId" type="number" placeholder="UserPage Id" />
+    <button id="getDetailsButton">Get Details</button>
+    <button id="getAccountsButton">Get Accounts</button>
 </div>
+<div id="userInfoContent"></div>
 
 <div>
-    <h2>Your Accounts</h2>
-    <div id="accountsContainer"></div>
+    <h3>Creating New Users</h3>
+    <form id="signupForm">
+        <input name="DName" type="text" placeholder="First Name" />
+        <input name="LName" type="text" placeholder="Last Name" />
+        <button type="submit" style="display:block">Sign Up</button>
+    </form>
+    <div id="userCreatedDiv" hidden="true">
+        <p>UserPage created successfully! Your ID is <a id="userCreatedLink" href="#">NULL</a></p>
+    </div>
 </div>
+
 
 <template style="border-style: solid; margin: 8px" id="accountTemplate" href="#">
     <a href="#">
@@ -24,63 +41,46 @@
     </a>
 </template>
 
-<div>
-    <h3>Create An Account</h3>
-    <form id="createAcctForm">
-        <label for="createAcctUserId">User ID:</label>
-        <input id="createAcctUserId" name="userId" type="number" placeholder="User Id" />
-        <button type="submit" style="display:block">Create</button>
-    </form>
-    <div id="accountCreatedDiv" hidden="true">
-        <p>
-            Account created successfully! ID is <a id="accountCreatedLink" href="#">NULL</a>.
-            Refresh the page to see your account displayed here.
-        </p>
-    </div>
-</div>
-
 <script>
-    $(document).ready(() => {
-        //Load all accounts
-        //Make API request
-        $.ajax({
-            url: '/api/user/' + @ViewBag.UserData.Id + '/accounts',
-            type: 'GET',
-            contentType: 'application/json; charset=utf-8',
-            success: (data, textStatus, jQxhr) => {
-                console.log("Returned Accounts Data:");
-                console.log(data);
-                var accountsContainer = document.querySelector("#accountsContainer");
-                for (var accountElement in data) {
-                    var template = document.querySelector('#accountTemplate');
-                    var clone = template.content.cloneNode(true);
+    $("#getAccountsButton").on('click',
+        () => {
+            var userId = $("#infoUserId").val();
 
-                    //Get all text tags in template
-                    var elements = clone.querySelectorAll('text');
+            $.ajax({
+                url: `/api/user/${userId}/accounts`,
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                success: (data, textStatus, jQxhr) => {
+                    console.log("Returned Accounts Data:");
+                    console.log(data);
+                    var accountsContainer = document.querySelector("#userInfoContent");
+                    for (var accountElement in data) {
+                        var template = document.querySelector('#accountTemplate');
+                        var clone = template.content.cloneNode(true);
 
-                    elements[0].textContent = data[accountElement].Id;
-                    elements[1].textContent = data[accountElement].Balance;
+                        //Get all text tags in template
+                        var elements = clone.querySelectorAll('text');
 
-                    //Set link
-                    var link = clone.querySelector('a');
-                    link.setAttribute('href', '/account/' + data[accountElement].Id);
+                        elements[0].textContent = data[accountElement].Id;
+                        elements[1].textContent = data[accountElement].Balance;
 
-                    //Set styling
-                    var div = clone.querySelector('div');
-                    div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;")
+                        //Set link
+                        var link = clone.querySelector('a');
+                        link.setAttribute('href', '/account/' + data[accountElement].Id);
 
-                    accountsContainer.appendChild(clone);
+                        //Set styling
+                        var div = clone.querySelector('div');
+                        div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;")
+
+                        accountsContainer.appendChild(clone);
+                    }
+                },
+                error: (jqXhr, textStatus, errorThrown) => {
+                    alert("Error! " + errorThrown);
+                    console.log(errorThrown);
                 }
-            },
-            error: (jqXhr, textStatus, errorThrown) => {
-                alert("Error! " + errorThrown);
-                console.log(errorThrown);
-            }
+            });
         });
-
-        //Fill the 'create account' form with the UserId
-        $("#createAcctUserId").val(@ViewBag.UserData.Id);
-    });
 
     $("#createAcctForm").on('submit',
         (e) => {
@@ -104,7 +104,7 @@
 
                     $("#accountCreatedDiv").toggle();
                     $("#accountCreatedLink").text(data.Id);
-                    $("#accountCreatedLink").attr("href", "/account/" + data.Id);
+                    $("#accountCreatedLink").attr("href", `/account/${data.Id}`);
 
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
