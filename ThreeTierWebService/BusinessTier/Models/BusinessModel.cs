@@ -97,21 +97,6 @@ namespace BusinessTier.Models
             return GetAccount(accountId);
         }
 
-        /// <summary>
-        /// Return a list of transactions that the given account has sent.
-        /// </summary>
-        /// <param name="accountId"></param> ID of account that was creator of transactions to get.
-        /// <returns></returns>
-        public List<TransactionData> GetSentTransactions(uint accountId)
-        {
-            RestRequest request = new RestRequest("api/Transaction/");
-            IRestResponse response = _client.Get(request);
-            List<TransactionData> allTransactions = JsonConvert.DeserializeObject<List<TransactionData>>(response.Content);
-
-            //Get all transactions that the user sent
-            return allTransactions.Where(transaction => transaction.SenderAccountId == accountId).ToList();
-        }
-
         public TransactionData MakeTransaction(CreateTransactionData createData)
         {
             //Make the transaction

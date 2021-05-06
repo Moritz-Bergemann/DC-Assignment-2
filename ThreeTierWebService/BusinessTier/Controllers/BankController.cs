@@ -70,13 +70,6 @@ namespace BusinessTier.Controllers
             return BusinessModel.Instance.MakeTransaction(createData);
         }
 
-        [Route("api/account/{accountId}/transactions")]
-        [HttpGet]
-        public List<TransactionData> SeeSentTransactionsForAccount(uint accountId)
-        {
-            return BusinessModel.Instance.GetSentTransactions(accountId);
-        }
-
         [Route("api/user/{userId}/accounts")]
         [HttpGet]
         public List<AccountData> GetAccountsForUser(uint userId)
