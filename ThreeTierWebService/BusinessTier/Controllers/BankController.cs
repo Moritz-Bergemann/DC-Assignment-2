@@ -75,17 +75,5 @@ namespace BusinessTier.Controllers
             BusinessModel.Instance.Withdraw(accountId, moneyData.Amount);
             return BusinessModel.Instance.GetAccount(accountId);
         }
-
-
-        [Route("api/beanstest")]
-        [HttpGet]
-        public CreateUserData BeansTest()
-        {
-            CreateUserData bean = new CreateUserData();
-            bean.FName = "Beans";
-            bean.LName = "Test";
-
-            return bean;
-        }
     }
 }
