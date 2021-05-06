@@ -15,6 +15,14 @@ namespace BusinessTier.Controllers
         [HttpPost]
         public AccountData CreateAccount(CreateAccountData createData)
         {
+            if (createData == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Account creation data required"
+                });
+            }
+
             return BusinessModel.Instance.CreateAccount(createData);
         }
 
@@ -36,6 +44,14 @@ namespace BusinessTier.Controllers
         [HttpPost]
         public UserData CreateUser(CreateUserData createData)
         {
+            if (createData == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Create user data required"
+                });
+            }
+
             return BusinessModel.Instance.CreateUser(createData);
         }
 
@@ -43,6 +59,14 @@ namespace BusinessTier.Controllers
         [HttpPost]
         public TransactionData MakeTransaction(CreateTransactionData createData)
         {
+            if (createData == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Create transaction data required"
+                });
+            }
+
             return BusinessModel.Instance.MakeTransaction(createData);
         }
 
@@ -64,6 +88,14 @@ namespace BusinessTier.Controllers
         [HttpPost]
         public AccountData MakeDeposit(uint accountId, MoneyData moneyData)
         {
+            if (moneyData == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Money data required"
+                });
+            }
+
             BusinessModel.Instance.Deposit(accountId, moneyData);
             return BusinessModel.Instance.GetAccount(accountId);
         }
@@ -72,6 +104,14 @@ namespace BusinessTier.Controllers
         [HttpPost]
         public AccountData MakeWithdrawal(uint accountId, [FromBody] MoneyData moneyData)
         {
+            if (moneyData == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Money data required"
+                });
+            }
+
             BusinessModel.Instance.Withdraw(accountId, moneyData);
             return BusinessModel.Instance.GetAccount(accountId);
         }
