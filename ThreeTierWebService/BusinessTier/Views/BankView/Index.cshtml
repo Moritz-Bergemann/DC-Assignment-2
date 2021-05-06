@@ -32,4 +32,32 @@
                 }
             });
         });
+    $("#accountsPageButton").on('click',
+        () => {
+            $.ajax({
+                url: '/account/',
+                type: 'get',
+                processData: false,
+                success: (data, textStatus, jQxhr) => {
+                    $("#mainBody").html(data);
+                },
+                error: (j,t,e) => {
+                    alert(e);
+                }
+            });
+        });
+    $("#transactionsPageButton").on('click',
+        () => {
+            $.ajax({
+                url: '/transaction/',
+                type: 'get',
+                processData: false,
+                success: (data, textStatus, jQxhr) => {
+                    $("#mainBody").html(data);
+                },
+                error: (j,t,e) => {
+                    alert(e);
+                }
+            });
+        });
 </script>

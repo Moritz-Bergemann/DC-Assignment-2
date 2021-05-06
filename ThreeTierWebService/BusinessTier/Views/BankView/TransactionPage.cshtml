@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "TransactionPage";
+}
+
+<h2>Transaction Management</h2>
+
+<div>
+    <h3>Make A Transaction</h3>
+    <form id="transactionForm">
+        <label for="transactionSender">Sender Account:</label> <br />
+        <input id="transactionSender" name="sender" type="number" placeholder="Account ID..." /> 
+        <br/>
+        <label for="transactionReceiver">Receiver Account:</label> <br />
+        <input id="transactionReceiver" name="receiver" type="number" placeholder="Account ID..."/>
+        <br/>
+        <label for="transactionAmount">Amount:</label> <br/>
+        <input id="transactionAmount" name="amount" type="number" placeholder="$..." />
+        <br/><br />
+        <button type="submit">Make Transaction</button>
+    </form>
+
+    <div id="transactionSucceedDiv" hidden="true">
+        Transaction completed successfully! Account balances have been updated.
+    </div>
+    <div id="transactionFailDiv" hidden="true">
+        Error: Could not complete transaction <br/>
+        Reason: <text id="transactionFailReason">NULL</text>
+    </div>
+</div>
+
+<script>
+    $("#transactionForm").on('submit',
+        (e) => {
+            e.preventDefault();
+            var formData = $("#createUserForm").serializeArray();
+
+            var postData = {
+                SenderAccountId: formData[0].value,
+                ReceiverAccountId: formData[1].value,
+                Amount: formData[2].value
+            }
+
+            $.ajax({
+                url: `api/transaction`,
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                success: (data, textStatus, jQxhr) => {
+                    $("#transactionSucceedDiv").show();
+                    $("#transactionFailDiv").hide();
+                },
+                error: (jqXhr, textStatus, errorThrown) => {
+                    //TODO show error dialog
+                    $("#transactionSucceedDiv").hide();
+                    $("#transactionFailDiv").show();
+                    $("#transactionFailReason").text('Unknown');
+                }
+            });
+        });
+</script>

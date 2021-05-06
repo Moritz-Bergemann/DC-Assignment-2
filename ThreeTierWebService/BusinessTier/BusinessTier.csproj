@@ -220,6 +220,7 @@
     <Content Include="Views\BankView\SignIn.cshtml" />
     <Content Include="Views\BankView\UserPage.cshtml" />
     <Content Include="Views\BankView\AccountPage.cshtml" />
+    <Content Include="Views\BankView\TransactionPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

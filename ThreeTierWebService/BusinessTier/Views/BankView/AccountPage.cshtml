@@ -4,75 +4,96 @@
     ViewBag.Title = "AccountPage";
 }
 
-<h2>Account @ViewBag.AccountData.Id</h2>
-For user <a href="/user/@ViewBag.AccountData.UserId">@ViewBag.AccountData.UserId</a>
-
-<h2>Transaction History</h2>
-<div id="transactionsContainer">
-    @foreach (TransactionData transaction in ViewBag.Transactions)
-    {
-        <a href="/transaction/@transaction.Id">
-            <div style="border-style: solid; border-color: black; padding: 4px; margin: 4px;">
-                ID: @transaction.Id
-                Sender Account: @transaction.SenderAccountId
-                Receiver Account: @transaction.ReceiverAccountId
-                Amount: $@transaction.Amount
-            </div>
-        </a>
-    }
-</div>
+<h2>Account Management</h2>
 
 <div>
-    <h3>Make a New Transaction</h3>
-    <form id="makeTransactionForm">
-        <label for="transactionSenderAcct">Sender Account:</label>
-        <input id="transactionSenderAcct" name="senderAcct" type="number" placeholder="Sender Account" />
-        <label for="transactionReceiverAcct">Sender Account:</label>
-        <input id="transactionReceiverAcct" name="receiverAcct" type="number" placeholder="Receiver Account" />
-        <label for="transactionAmount">Sender Account:</label>
-        <text><b>$s</b></text><input id="transactionAmount" name="amount" type="number" placeholder="Amount" />
+    <h3>Get Information for Existing Accounts</h3>
 
-        <button type="submit" style="display:block">Send</button>
-    </form>
-    
-    <div id="transactionSuccessDiv" hidden="true">
+    <label for="infoAccountId">Account ID:</label>
+    <input id="infoAccountId" name="accountId" type="number" placeholder="Account Id" /> <br/>
+
+    <button id="getDetailsButton">Get Details</button>
+    <button id="getTransactionsButton">Get Sent Transactions</button>
+</div>
+<div id="accountInfoContent"></div>
+
+<div>
+    <h3>Withdraw and Deposit</h3>
+    <label for="withdrawDepositAccountId">Account ID:</label>
+    <input id="withdrawDepositAccountId" name="accountId" type="number" placeholder="Account Id" />
+    <br />
+    <label for="withdrawDepositAmount">Amount:</label>
+    <input id="withdrawDepositAmount" name="amount" type="number" placeholder="Amount" /> <br />
+    <br />
+    <button id="withdrawButton">Withdraw</button>
+    <button id="depositButton">Deposit</button>
+    <div id="withDrawDepositSuccessDiv" hidden="true">
         <p>
-            Transaction made successfully!
-            Refresh the page to the new transaction displayed here.
+            Transaction succeeded!
+            New balance for account '<text id="withDrawDepositSuccessAccount">NULL</text>' is $<text id="withDrawDepositSuccessNewBalance">NULL</text>
         </p>
     </div>
 </div>
 
+<div>
+    <h3>Create a New Account</h3>
+    <form id="createAccountForm">
+        <input id="createAccountUserId" name="userId" type="number" />
+        <button type="submit">Create Account</button>
+    </form>
+    <div id="accountCreatedDiv" hidden="true">
+        <p>Account created successfully! ID is <text id="accountCreatedId">NULL</text></p>
+    </div>
+</div>
+
+<!--Templates for displaying dynamic data-->
+<template style="border-style: solid; margin: 8px" id="accountTemplate" href="#">
+    <div>
+        <p>Account ID: <text>NULL</text></p>
+        <p>Owning User ID: <text>NULL</text></p>
+        <p>Balance: $<text>NULL</text></p>
+    </div>
+</template>
+
+<template style="border-style: solid; margin: 8px" id="transactionTemplate" href="#">
+    <div>
+        <p>Sender Account ID: <text>NULL</text></p>
+        <p>Receiving Account ID: <text>NULL</text></p>
+        <p>Amount: $<text>NULL</text></p>
+    </div>
+</template>
+
 <script>
-    $(document).ready(() => {
-        //Fill in sender for new transaction form
-        $("#transactionSenderAcct").val(@ViewBag.AccountData.Id);
-    });
+    //Get Account Details
+    $("#getDetailsButton").on('click',
+        () => {
+            var accountId = $("#infoAccountId").val();
 
-    $("#makeTransactionForm").on('submit',
-        (e) => {
-            e.preventDefault();
-            var formData = $("#makeTransactionForm").serializeArray();
-
-            var postData = {
-                SenderAccountId: formData[0].value,
-                ReceiverAccountId: formData[1].value,
-                Amount: formData[2].value
-            };
-
-            //Make API request
             $.ajax({
-                url: '/api/transaction',
-                type: 'POST',
+                url: `api/account/${accountId}`,
+                type: 'GET',
                 contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                data: JSON.stringify(postData),
                 success: (data, textStatus, jQxhr) => {
-                    console.log("Account Create Data:");
+                    console.log("Returned Account Data:");
                     console.log(data);
 
-                    $("#transactionSuccessDiv").toggle();
-                    $("#transactionSuccessLink").text(data.Id);
+                    //Copy templates
+                    var accountInfoContent = document.querySelector("#accountInfoContent");
+                    accountInfoContent.innerHTML = "";
+
+                    //Set template values
+                    var clone = document.querySelector('#accountTemplate').content.cloneNode(true);
+                    var elements = clone.querySelectorAll('text');
+
+                    elements[0].textContent = data.Id;
+                    elements[1].textContent = data.UserId;
+                    elements[2].textContent = data.Balance;
+
+                    //Set styling
+                    var div = clone.querySelector('div');
+                    div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;");
+
+                    accountInfoContent.appendChild(clone);
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
                     alert("Error! " + errorThrown);
@@ -81,4 +102,73 @@ For user <a href="/user/@ViewBag.AccountData.UserId">@ViewBag.AccountData.UserId
             });
         });
 
+    //Withdraw/Deposit
+    function withdrawDeposit(withdrawOrDeposit) {
+        if (withdrawOrDeposit !== 'withdraw' && withdrawOrDeposit !== 'deposit') {
+            throw 'input \'withdrawOrDeposit\' must be either \'withdraw\' or \'deposit\'!';
+        }
+
+        //Make transaction (either withdraw or deposit)
+        var accountId = $("#withdrawDepositAccountId").val();
+        var amount = parseInt($("#withdrawDepositAmount").val());
+
+        var postData = {
+            Amount: amount
+        };
+
+        console.log("Post Data:");
+        console.log(postData);
+
+        $.ajax({
+            url: `api/account/${accountId}/${withdrawOrDeposit}`, //Modify URL based on whether withdraw or deposit
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify(postData),
+            success: (data, textStatus, jQxhr) => {
+                $("#withDrawDepositSuccessDiv").show();
+                $("#withDrawDepositSuccessAccount").text(data.Id);
+                $("#withDrawDepositSuccessNewBalance").text(data.Balance);
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+                alert("Error! " + errorThrown);
+                console.log(errorThrown);
+            }
+        });
+    }
+
+    $("#withdrawButton").on('click', () => { withdrawDeposit('withdraw') });
+    $("#depositButton").on('click', () => { withdrawDeposit('deposit') });
+
+    //Account creation
+    $("#createAccountForm").on('submit',
+        (e) => {
+            e.preventDefault();
+            var formData = $("#createAccountForm").serializeArray();
+
+            var postData = {
+                UserId: formData[0].value
+            };
+
+            //Make API request
+            $.ajax({
+                url: '/api/account',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                success: (data, textStatus, jQxhr) => {
+                    console.log("Account Data:");
+                    console.log(data);
+
+                    $("#accountCreatedDiv").show();
+                    $("#accountCreatedId").text(data.Id);
+
+                },
+                error: (jqXhr, textStatus, errorThrown) => {
+                    alert("Error! " + errorThrown);
+                    console.log(errorThrown);
+                }
+            });
+        });
 </script>
