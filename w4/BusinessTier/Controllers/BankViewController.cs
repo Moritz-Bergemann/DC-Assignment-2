@@ -58,25 +58,24 @@ namespace BusinessTier.Controllers
             return View();
         }
 
-        [Route("UserPage")]
-        public ActionResult Users()
+        [Route("user")]
+        public ActionResult UserPage()
         {
             return View();
         }
 
-        [Route("signin")]
-        public ActionResult SignIn()
+        [Route("account")]
+        public ActionResult AccountPage()
         {
             return View();
         }
 
-        [Route("user/{userId}")]
-        public ActionResult UserPage(int userId)
+        [Route("transaction")]
+        public ActionResult TransactionPage()
         {
-            ViewBag.UserData = GetUserData(userId);
-
             return View();
         }
+
 
         [Route("account/{accountId}")]
         public ActionResult AccountPage(int accountId)

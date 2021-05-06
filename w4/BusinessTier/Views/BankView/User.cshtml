@@ -1,6 +1,6 @@
 ﻿
 @{
-    ViewBag.Title = "SignIn";
+    ViewBag.Title = "UserPage";
 }
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
@@ -24,7 +24,7 @@
         <button type="submit" style="display:block">Sign Up</button>
     </form>
     <div id="userCreatedDiv" hidden="true">
-        <p>User created successfully! Your ID is <a id="userCreatedLink" href="#">NULL</a></p>
+        <p>UserPage created successfully! Your ID is <a id="userCreatedLink" href="#">NULL</a></p>
     </div>
 </div>
 
@@ -73,7 +73,7 @@
                 dataType: 'json',
                 data: JSON.stringify(postData),
                 success: (data, textStatus, jQxhr) => {
-                    console.log("User Create Data:");
+                    console.log("UserPage Create Data:");
                     console.log(data);
 
                     $("#userCreatedDiv").toggle();
