@@ -18,8 +18,18 @@ namespace DataTier.Controllers
         {
             UserData data = new UserData();
 
-            data.Id = userId;
-            DataModel.Instance.GetUserName(userId, out data.FName, out data.LName);
+            try
+            {
+                data.Id = userId;
+                DataModel.Instance.GetUserName(userId, out data.FName, out data.LName);
+            }
+            catch (BankDbNotFoundException)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    ReasonPhrase = "User with ID not found"
+                });
+            }
 
             return data;
         }
@@ -48,6 +58,14 @@ namespace DataTier.Controllers
         [HttpPost]
         public uint CreateUser(CreateUserData createData)
         {
+            if (createData == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Create user data required"
+                });
+            }
+
             return DataModel.Instance.CreateUser(createData.FName, createData.LName);
         }
     }

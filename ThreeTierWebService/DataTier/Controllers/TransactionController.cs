@@ -38,22 +38,41 @@ namespace DataTier.Controllers
         [Route("api/Transaction/{transactionId}")]
         public TransactionData GetTransaction(uint transactionId)
         {
-            TransactionData data = new TransactionData
-            {
-                Id = transactionId,
-                Amount = DataModel.Instance.GetTransactionAmount(transactionId),
-                SenderAccountId = DataModel.Instance.GetTransactionSender(transactionId),
-                ReceiverAccountId = DataModel.Instance.GetTransactionReceiver(transactionId)
-            };
+            TransactionData data;
 
+            try
+            {
+                data = new TransactionData
+                {
+                    Id = transactionId,
+                    Amount = DataModel.Instance.GetTransactionAmount(transactionId),
+                    SenderAccountId = DataModel.Instance.GetTransactionSender(transactionId),
+                    ReceiverAccountId = DataModel.Instance.GetTransactionReceiver(transactionId)
+                };
+            }
+            catch (BankDbNotFoundException)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    ReasonPhrase = "Transaction with ID not found"
+                });
+            }
 
             return data;
         }
 
         [Route("api/Transaction/")]
         [HttpPost]
-        public uint MakeTransaction(CreateTransactionData createData)
+        public uint MakeTransaction(CreateTransactionData createData) //TODO see what an invalid transaction looks like in BankDB
         {
+            if (createData == null)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "Create transaction data required"
+                });
+            }
+
             //Run the transaction (this will attempt to perform it and fail if unsuccessful)
             return DataModel.Instance.MakeTransaction(createData.SenderAccountId, createData.ReceiverAccountId,
                 createData.Amount);

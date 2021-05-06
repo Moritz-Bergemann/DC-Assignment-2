@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using BankDB;
 
 namespace DataTier.Models
@@ -41,8 +42,15 @@ namespace DataTier.Models
 
         public void GetUserName(uint userId, out string fName, out string lName)
         {
-            this._userAccess.SelectUser(userId);
-            this._userAccess.GetUserName(out fName, out lName);
+            try
+            {
+                this._userAccess.SelectUser(userId);
+                this._userAccess.GetUserName(out fName, out lName);
+            }
+            catch (Exception e)
+            {
+                throw new BankDbNotFoundException("User ID not found");
+            }
         }
 
         public List<uint> GetUserIds()
@@ -58,30 +66,82 @@ namespace DataTier.Models
 
         public void DepositToAccount(uint accountId, uint amount)
         {
-            this._accountAccess.SelectAccount(accountId);
-            this._accountAccess.Deposit(amount);
+            try
+            {
+                this._accountAccess.SelectAccount(accountId);
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("Account ID not found");
+            }
+
+            try
+            {
+                this._accountAccess.Deposit(amount);
+            }
+            catch (Exception)
+            {
+                throw new BankDbInvalidException("Could not deposit to account");
+            }
         }
         public void WithdrawFromAccount(uint accountId, uint amount)
         {
-            this._accountAccess.SelectAccount(accountId);
-            this._accountAccess.Withdraw(amount);
+            try
+            {
+                this._accountAccess.SelectAccount(accountId);
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("Account ID not found");
+            }
+
+            try
+            {
+                this._accountAccess.Withdraw(amount);
+            }
+            catch (Exception)
+            {
+                throw new BankDbInvalidException("Invalid funds to withdraw");
+            }
         }
 
         public uint GetAccountBalance(uint accountId)
         {
-            this._accountAccess.SelectAccount(accountId);
-            return this._accountAccess.GetBalance();
+            try
+            {
+                this._accountAccess.SelectAccount(accountId);
+                return this._accountAccess.GetBalance();
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("Account ID not found");
+            }
+
         }
 
         public uint GetAccountOwner(uint accountId)
         {
-            this._accountAccess.SelectAccount(accountId);
-            return this._accountAccess.GetOwner();
+            try
+            {
+                this._accountAccess.SelectAccount(accountId);
+                return this._accountAccess.GetOwner();
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("Account ID not found");
+            }
         }
 
         public List<uint> GetAccountIdsByUser(uint userId)
         {
-            return this._accountAccess.GetAccountIDsByUser(userId);
+            try
+            {
+                return this._accountAccess.GetAccountIDsByUser(userId);
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("User ID not found");
+            }
         }
 
         // TRANSACTION MANAGEMENT
@@ -101,19 +161,40 @@ namespace DataTier.Models
 
         public uint GetTransactionSender(uint transactionId)
         {
-            this._transactionAccess.SelectTransaction(transactionId);
+            try
+            {
+                this._transactionAccess.SelectTransaction(transactionId);
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("Transaction ID not found");
+            }
             return this._transactionAccess.GetSendrAcct();
         }
 
         public uint GetTransactionReceiver(uint transactionId)
         {
-            this._transactionAccess.SelectTransaction(transactionId);
+            try
+            {
+                this._transactionAccess.SelectTransaction(transactionId);
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("Transaction ID not found");
+            }
             return this._transactionAccess.GetRecvrAcct();
         }
 
         public uint GetTransactionAmount(uint transactionId)
         {
-            this._transactionAccess.SelectTransaction(transactionId);
+            try
+            {
+                this._transactionAccess.SelectTransaction(transactionId);
+            }
+            catch (Exception)
+            {
+                throw new BankDbNotFoundException("Transaction ID not found");
+            }
             return this._transactionAccess.GetAmount();
         }
 
@@ -124,7 +205,7 @@ namespace DataTier.Models
 
         public void ProcessAllTransactions()
         {
-            //Try to complete the transaction (FIXME - how does error handling work)
+            //TODO handle whatever this throws
             this._bankDb.ProcessAllTransactions();
         }
 
