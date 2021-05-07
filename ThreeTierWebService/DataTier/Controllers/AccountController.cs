@@ -24,7 +24,7 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
-                    ReasonPhrase = "User with ID not found"
+                    Content = new StringContent($"User with ID {userId} not found")
                 });
             }
 
@@ -62,7 +62,7 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
-                    ReasonPhrase = "Account with ID not found"
+                    Content = new StringContent($"Account with ID {data.Id} not found")
                 });
             }
 
@@ -77,7 +77,7 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Create account data required"
+                    Content = new StringContent("Create account data required")
                 });
             }
 
@@ -96,14 +96,14 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
-                    ReasonPhrase = "Account with ID not found"
+                    Content = new StringContent("Account with ID not found")
                 });
             }
             catch (BankDbInvalidException)
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Could not deposit to account"
+                    Content = new StringContent("Could not deposit to account")
                 });
             }
 
@@ -123,14 +123,14 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
-                    ReasonPhrase = "Account with ID not found"
+                    Content = new StringContent($"Account with ID not {accountId} found")
                 });
             }
             catch (BankDbInvalidException)
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Could not withdraw - insufficient funds"
+                    Content = new StringContent("Could not withdraw - insufficient funds")
                 });
             }
 

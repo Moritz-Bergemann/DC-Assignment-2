@@ -21,21 +21,21 @@ namespace DataTier.Models
 
         private DataModel()
         {
-            this._bankDb = new BankDB.BankDB();
-            this._userAccess = _bankDb.GetUserAccess();
-            this._accountAccess = _bankDb.GetAccountInterface();
-            this._transactionAccess = _bankDb.GetTransactionInterface();
+            _bankDb = new BankDB.BankDB();
+            _userAccess = _bankDb.GetUserAccess();
+            _accountAccess = _bankDb.GetAccountInterface();
+            _transactionAccess = _bankDb.GetTransactionInterface();
         }
 
         // USER MANAGEMENT
         public uint CreateUser(string fName, string lName)
         {
             //Create new user
-            uint newUserId = this._userAccess.CreateUser();
+            uint newUserId = _userAccess.CreateUser();
 
             //Set new user details
-            this._userAccess.SelectUser(newUserId);
-            this._userAccess.SetUserName(fName, lName);
+            _userAccess.SelectUser(newUserId);
+            _userAccess.SetUserName(fName, lName);
 
             return newUserId;
         }
@@ -44,8 +44,8 @@ namespace DataTier.Models
         {
             try
             {
-                this._userAccess.SelectUser(userId);
-                this._userAccess.GetUserName(out fName, out lName);
+                _userAccess.SelectUser(userId);
+                _userAccess.GetUserName(out fName, out lName);
             }
             catch (Exception e)
             {
@@ -55,20 +55,20 @@ namespace DataTier.Models
 
         public List<uint> GetUserIds()
         {
-            return this._userAccess.GetUsers();
+            return _userAccess.GetUsers();
         }
 
         // ACCOUNT MANAGEMENT
         public uint CreateAccount(uint userId)
         {
-            return this._accountAccess.CreateAccount(userId);
+            return _accountAccess.CreateAccount(userId);
         }
 
         public void DepositToAccount(uint accountId, uint amount)
         {
             try
             {
-                this._accountAccess.SelectAccount(accountId);
+                _accountAccess.SelectAccount(accountId);
             }
             catch (Exception)
             {
@@ -77,7 +77,7 @@ namespace DataTier.Models
 
             try
             {
-                this._accountAccess.Deposit(amount);
+                _accountAccess.Deposit(amount);
             }
             catch (Exception)
             {
@@ -88,7 +88,7 @@ namespace DataTier.Models
         {
             try
             {
-                this._accountAccess.SelectAccount(accountId);
+                _accountAccess.SelectAccount(accountId);
             }
             catch (Exception)
             {
@@ -97,7 +97,7 @@ namespace DataTier.Models
 
             try
             {
-                this._accountAccess.Withdraw(amount);
+                _accountAccess.Withdraw(amount);
             }
             catch (Exception)
             {
@@ -109,22 +109,21 @@ namespace DataTier.Models
         {
             try
             {
-                this._accountAccess.SelectAccount(accountId);
-                return this._accountAccess.GetBalance();
+                _accountAccess.SelectAccount(accountId);
+                return _accountAccess.GetBalance();
             }
             catch (Exception)
             {
                 throw new BankDbNotFoundException("Account ID not found");
             }
-
         }
 
         public uint GetAccountOwner(uint accountId)
         {
             try
             {
-                this._accountAccess.SelectAccount(accountId);
-                return this._accountAccess.GetOwner();
+                _accountAccess.SelectAccount(accountId);
+                return _accountAccess.GetOwner();
             }
             catch (Exception)
             {
@@ -136,7 +135,7 @@ namespace DataTier.Models
         {
             try
             {
-                return this._accountAccess.GetAccountIDsByUser(userId);
+                return _accountAccess.GetAccountIDsByUser(userId);
             }
             catch (Exception)
             {
@@ -148,13 +147,13 @@ namespace DataTier.Models
         public uint MakeTransaction(uint senderAccountID, uint recvrAccountId, uint amount)
         {
             //Create the transaction
-            uint newTransactionId = this._transactionAccess.CreateTransaction();
+            uint newTransactionId = _transactionAccess.CreateTransaction();
 
             //Set transaction details
-            this._transactionAccess.SelectTransaction(newTransactionId);
-            this._transactionAccess.SetSendr(senderAccountID);
-            this._transactionAccess.SetRecvr(recvrAccountId);
-            this._transactionAccess.SetAmount(amount);
+            _transactionAccess.SelectTransaction(newTransactionId);
+            _transactionAccess.SetSendr(senderAccountID);
+            _transactionAccess.SetRecvr(recvrAccountId);
+            _transactionAccess.SetAmount(amount);
 
             return newTransactionId;
         }
@@ -163,55 +162,63 @@ namespace DataTier.Models
         {
             try
             {
-                this._transactionAccess.SelectTransaction(transactionId);
+                _transactionAccess.SelectTransaction(transactionId);
             }
             catch (Exception)
             {
                 throw new BankDbNotFoundException("Transaction ID not found");
             }
-            return this._transactionAccess.GetSendrAcct();
+            return _transactionAccess.GetSendrAcct();
         }
 
         public uint GetTransactionReceiver(uint transactionId)
         {
             try
             {
-                this._transactionAccess.SelectTransaction(transactionId);
+                _transactionAccess.SelectTransaction(transactionId);
             }
             catch (Exception)
             {
                 throw new BankDbNotFoundException("Transaction ID not found");
             }
-            return this._transactionAccess.GetRecvrAcct();
+            return _transactionAccess.GetRecvrAcct();
         }
 
         public uint GetTransactionAmount(uint transactionId)
         {
             try
             {
-                this._transactionAccess.SelectTransaction(transactionId);
+                _transactionAccess.SelectTransaction(transactionId);
             }
             catch (Exception)
             {
                 throw new BankDbNotFoundException("Transaction ID not found");
             }
-            return this._transactionAccess.GetAmount();
+            return _transactionAccess.GetAmount();
         }
 
         public List<uint> GetTransactions()
         {
-            return this._transactionAccess.GetTransactions();
+            return _transactionAccess.GetTransactions();
         }
 
         public void ProcessAllTransactions()
         {
             //TODO handle whatever this throws
-            this._bankDb.ProcessAllTransactions();
+            try
+            {
+                _bankDb.ProcessAllTransactions();
+            }
+            catch (Exception e)
+            {
+                throw new BankDbInvalidException($"Transaction failed - {e.Message}");
+            }
         }
 
         public void Save()
         {
-            this._bankDb.SaveToDisk();
+            //Exception NOT caught - error here should crash service
+            _bankDb.SaveToDisk(); 
         }
     }
 }

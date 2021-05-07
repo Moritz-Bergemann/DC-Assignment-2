@@ -54,7 +54,7 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
-                    ReasonPhrase = "Transaction with ID not found"
+                    Content = new StringContent($"Transaction with ID {transactionId} not found")
                 });
             }
 
@@ -69,7 +69,7 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Create transaction data required"
+                    Content = new StringContent("Create transaction data required")
                 });
             }
 

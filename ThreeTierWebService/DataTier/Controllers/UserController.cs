@@ -27,7 +27,7 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
                 {
-                    ReasonPhrase = "User with ID not found"
+                    Content = new StringContent($"User with ID {userId} not found")
                 });
             }
 
@@ -62,7 +62,7 @@ namespace DataTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Create user data required"
+                    Content = new StringContent("Create user data required")
                 });
             }
 

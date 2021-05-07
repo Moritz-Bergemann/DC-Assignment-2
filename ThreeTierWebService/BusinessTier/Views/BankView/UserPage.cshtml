@@ -22,7 +22,7 @@
     <form id="createUserForm">
         <input name="DName" type="text" placeholder="First Name" />
         <input name="LName" type="text" placeholder="Last Name" /> <br />
-        <button type="submit">Create Account</button>
+        <button type="submit">Create User</button>
     </form>
     <div id="userCreatedDiv" hidden="true">
         <p>User created successfully! ID is <text id="userCreatedId">NULL</text></p>
@@ -79,8 +79,8 @@
                     userInfoContent.appendChild(clone);
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
-                    alert("Error! " + errorThrown);
-                    console.log(errorThrown);
+                    alert("Error! " + jqXhr.responseText);
+                    console.warn(jqXhr);
                 }
             });
         });
@@ -123,8 +123,8 @@
                     }
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
-                    alert("Error! " + errorThrown);
-                    console.log(errorThrown);
+                    alert("Error! " + jqXhr.responseText);
+                    console.warn(jqXhr);
                 }
             });
         });
@@ -155,8 +155,8 @@
                     $("#userCreatedId").text(data.Id);
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
-                    alert("Error! " + errorThrown);
-                    console.log(errorThrown);
+                    alert("Error! " + jqXhr.responseText);
+                    console.warn(jqXhr);
                 }
             });
         });</script>

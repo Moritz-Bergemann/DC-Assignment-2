@@ -24,8 +24,7 @@
         Transaction completed successfully! Account balances have been updated.
     </div>
     <div id="transactionFailDiv" hidden="true">
-        Error: Could not complete transaction <br/>
-        Reason: <text id="transactionFailReason">NULL</text>
+        Error: Could not complete transaction! Account balances have <b>NOT</b> been updated.
     </div>
 </div>
 
@@ -52,10 +51,8 @@
                     $("#transactionFailDiv").hide();
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
-                    //TODO show error dialog
                     $("#transactionSucceedDiv").hide();
                     $("#transactionFailDiv").show();
-                    $("#transactionFailReason").text('Unknown');
                 }
             });
         });

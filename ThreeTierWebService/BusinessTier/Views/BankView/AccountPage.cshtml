@@ -9,8 +9,8 @@
 <div>
     <h3>Get Information for Existing Accounts</h3>
 
-    <label for="infoAccountId">Account ID:</label>
-    <input id="infoAccountId" name="accountId" type="number" placeholder="Account Id" /> <br/>
+    <label for="infoAccountId">Account ID:</label> <br />
+    <input id="infoAccountId" name="accountId" type="number" placeholder="Account Id" /> <br />
 
     <button id="getDetailsButton">Get Details</button>
     <button id="getTransactionsButton">Get Sent Transactions</button>
@@ -19,10 +19,10 @@
 
 <div>
     <h3>Withdraw and Deposit</h3>
-    <label for="withdrawDepositAccountId">Account ID:</label>
+    <label for="withdrawDepositAccountId">Account ID:</label> <br />
     <input id="withdrawDepositAccountId" name="accountId" type="number" placeholder="Account Id" />
     <br />
-    <label for="withdrawDepositAmount">Amount:</label>
+    <label for="withdrawDepositAmount">Amount:</label> <br />
     <input id="withdrawDepositAmount" name="amount" type="number" placeholder="Amount" /> <br />
     <br />
     <button id="withdrawButton">Withdraw</button>
@@ -38,7 +38,9 @@
 <div>
     <h3>Create a New Account</h3>
     <form id="createAccountForm">
-        <input id="createAccountUserId" name="userId" type="number" />
+        <label for="createAccountUserId">Owning User ID:</label>
+        <input id="createAccountUserId" name="userId" type="number"/> 
+        <br/>
         <button type="submit">Create Account</button>
     </form>
     <div id="accountCreatedDiv" hidden="true">
@@ -96,8 +98,8 @@
                     accountInfoContent.appendChild(clone);
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
-                    alert("Error! " + errorThrown);
-                    console.log(errorThrown);
+                    alert("Error! " + jqXhr.responseText);
+                    console.warn(jqXhr);
                 }
             });
         });
@@ -131,8 +133,8 @@
                 $("#withDrawDepositSuccessNewBalance").text(data.Balance);
             },
             error: (jqXhr, textStatus, errorThrown) => {
-                alert("Error! " + errorThrown);
-                console.log(errorThrown);
+                alert("Error! " + jqXhr.responseText);
+                console.warn(jqXhr);
             }
         });
     }
@@ -166,8 +168,8 @@
 
                 },
                 error: (jqXhr, textStatus, errorThrown) => {
-                    alert("Error! " + errorThrown);
-                    console.log(errorThrown);
+                    alert("Error! " + jqXhr.responseText);
+                    console.warn(jqXhr);
                 }
             });
         });

@@ -23,21 +23,51 @@ namespace BusinessTier.Controllers
                 });
             }
 
-            return BusinessModel.Instance.CreateAccount(createData);
+            try
+            {
+                return BankModel.Instance.CreateAccount(createData);
+            } catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not create account - {b.Message}")
+                });
+            }
         }
 
         [Route("api/account/{accountId}")]
         [HttpGet]
         public AccountData GetAccount(uint accountId)
         {
-            return BusinessModel.Instance.GetAccount(accountId);
+            try
+            {
+                return BankModel.Instance.GetAccount(accountId);
+            }
+            catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not get account - {b.Message}")
+                });
+            }
         }
 
         [Route("api/user/{userId}")]
         [HttpGet]
         public UserData GetUser(uint userId)
         {
-            return BusinessModel.Instance.GetUser(userId);
+            try
+            {
+                return BankModel.Instance.GetUser(userId);
+
+            }
+            catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not get user - {b.Message}")
+                });
+            }
         }
 
         [Route("api/user")]
@@ -52,7 +82,17 @@ namespace BusinessTier.Controllers
                 });
             }
 
-            return BusinessModel.Instance.CreateUser(createData);
+            try
+            {
+                return BankModel.Instance.CreateUser(createData);
+            }
+            catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not create user - {b.Message}")
+                });
+            }
         }
 
         [Route("api/transaction")]
@@ -67,14 +107,34 @@ namespace BusinessTier.Controllers
                 });
             }
 
-            return BusinessModel.Instance.MakeTransaction(createData);
+            try
+            {
+                return BankModel.Instance.MakeTransaction(createData);
+            }
+            catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not make transaction - {b.Message}")
+                });
+            }
         }
 
         [Route("api/user/{userId}/accounts")]
         [HttpGet]
         public List<AccountData> GetAccountsForUser(uint userId)
         {
-            return BusinessModel.Instance.GetAccountsByUser(userId);
+            try
+            {
+                return BankModel.Instance.GetAccountsByUser(userId);
+            }
+            catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not get accounts for user - {b.Message}")
+                });
+            }
         }
 
         [Route("api/account/{accountId}/deposit")]
@@ -89,8 +149,19 @@ namespace BusinessTier.Controllers
                 });
             }
 
-            BusinessModel.Instance.Deposit(accountId, moneyData);
-            return BusinessModel.Instance.GetAccount(accountId);
+            try
+            {
+                BankModel.Instance.Deposit(accountId, moneyData);
+                return BankModel.Instance.GetAccount(accountId);
+
+            }
+            catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not make deposit - {b.Message}")
+                });
+            }
         }
 
         [Route("api/account/{accountId}/withdraw")]
@@ -105,8 +176,18 @@ namespace BusinessTier.Controllers
                 });
             }
 
-            BusinessModel.Instance.Withdraw(accountId, moneyData);
-            return BusinessModel.Instance.GetAccount(accountId);
+            try
+            {
+                BankModel.Instance.Withdraw(accountId, moneyData);
+                return BankModel.Instance.GetAccount(accountId);
+            }
+            catch (BankException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not make withdrawal - {b.Message}")
+                });
+            }
         }
     }
 }

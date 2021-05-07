@@ -12,16 +12,30 @@ namespace DataTier.Controllers
     {
         [Route("api/Admin/process-all")]
         [HttpPost]
-        public void ProcessAllTransactions()
+        public string ProcessAllTransactions()
         {
-            DataModel.Instance.ProcessAllTransactions();
+            try
+            {
+                DataModel.Instance.ProcessAllTransactions();
+            }
+            catch (BankDbInvalidException b)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    Content = new StringContent("Failed to process transaction. Some or all transactions have not been processed.")
+                });
+            }
+
+            return "OK";
         }
 
         [Route("api/Admin/save")]
         [HttpPost]
-        public void Save()
+        public string Save()
         {
             DataModel.Instance.Save();
+
+            return "OK";
         }
     }
 }
