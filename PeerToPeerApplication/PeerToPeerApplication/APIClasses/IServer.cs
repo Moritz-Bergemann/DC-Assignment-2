@@ -17,6 +17,9 @@ namespace APIClasses
         TransmitJobData DownloadJob(uint id);
 
         [OperationContract]
+        TransmitJobData DownloadFirstJob();
+
+        [OperationContract]
         bool PostCompletedJob(uint id, string result);
     }
 }

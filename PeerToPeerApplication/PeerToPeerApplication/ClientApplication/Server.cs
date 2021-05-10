@@ -98,6 +98,26 @@ namespace ClientApplication
             return transmitJob;
         }
 
+        public TransmitJobData DownloadFirstJob()
+        {
+
+            if (!_jobs.Any())
+            {
+                return null;
+            }
+
+            JobData job = _jobs[0];
+            
+            //Create data for submission
+            TransmitJobData transmitJob = null;
+            transmitJob = new TransmitJobData(job.Id);
+
+            //Set encoded python and hash
+            transmitJob.SetEncodedPython(job.Python);
+
+            return transmitJob;
+        }
+
         public bool PostCompletedJob(uint id, string result)
         {
             //NOTE: Not B64-encoding result string as out of scope of requirements
