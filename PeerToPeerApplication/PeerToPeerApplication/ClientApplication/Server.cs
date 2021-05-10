@@ -18,12 +18,14 @@ namespace ClientApplication
         private ServiceHost _host;
 
         private List<JobData> _jobs;
+        private List<JobData> _doneJobs;
         private uint _jobCounter;
 
         private Server()
         {
             _host = null;
             _jobs = new List<JobData>();
+            _doneJobs = new List<JobData>();
             _jobCounter = 0;
         }
 
@@ -72,33 +74,57 @@ namespace ClientApplication
         }
 
         // SERVER FUNCTIONALITY
-        public List<TransmitJobData> GetAvailableJobs()
+        public List<uint> GetAvailableJobs()
         {
-            List<TransmitJobData> transmitJobs = new List<TransmitJobData>();
-
-            foreach (JobData job in _jobs)
-            {
-                TransmitJobData transmitJob = new TransmitJobData(job.Id);
-
-                //Set encoded python and hash
-                transmitJob.SetEncodedPython(job.Python);
-
-                transmitJobs.Add(transmitJob);
-            }
-
-            return transmitJobs;
+            return _jobs.Select(job => job.Id).ToList();
         }
 
-        public bool PostCompletedJob(int id, string result)
+        public TransmitJobData DownloadJob(uint id)
         {
-            //NOTE: Not B64-encoding result string as out of scope of requirements
-            //If given ID not in list of job IDs
-            if (_jobs.All(job => job.Id != id))
+            TransmitJobData transmitJob = null;
+            foreach (JobData job in _jobs)
             {
-                throw new ArgumentException("Job ID does not exist!");
+                if (job.Id == id)
+                {
+                    transmitJob = new TransmitJobData(id);
+
+                    //Set encoded python and hash
+                    transmitJob.SetEncodedPython(job.Python);
+
+                    break;
+                }
             }
 
+            return transmitJob;
+        }
 
+        public bool PostCompletedJob(uint id, string result)
+        {
+            //NOTE: Not B64-encoding result string as out of scope of requirements
+
+            bool found = false;
+            int ii = 0;
+            foreach (JobData job in _jobs)
+            {
+                //Find job that was completed
+                if (job.Id == id)
+                {
+                    found = true;
+
+                    //Remove job from pending jobs list
+                    _jobs.RemoveAt(ii);
+
+                    //Set job result
+                    job.Result = result;
+
+                    //Add job to completed jobs list
+                    _doneJobs.Add(job);
+                }
+
+                ii++;
+            }
+
+            return found;
         }
     }
 }

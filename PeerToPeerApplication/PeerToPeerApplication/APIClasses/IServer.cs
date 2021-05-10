@@ -11,9 +11,12 @@ namespace APIClasses
     public interface IServer
     {
         [OperationContract]
-        List<TransmitJobData> GetAvailableJobs();
+        List<uint> GetAvailableJobs();
 
         [OperationContract]
-        bool PostCompletedJob(int id, string result);
+        TransmitJobData DownloadJob(uint id);
+
+        [OperationContract]
+        bool PostCompletedJob(uint id, string result);
     }
 }

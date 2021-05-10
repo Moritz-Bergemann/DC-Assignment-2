@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IServer.cs" />
+    <Compile Include="JobData.cs" />
     <Compile Include="TransmitJobData.cs" />
     <Compile Include="Registration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

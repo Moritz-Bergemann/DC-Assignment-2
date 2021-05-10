@@ -5,18 +5,6 @@ using System.Text;
 
 namespace APIClasses
 {
-    public class JobData
-    {
-        public uint Id;
-        public string Python;
-
-        public JobData(uint id, string python)
-        {
-            Id = id;
-            Python = python;
-        }
-    }
-
     public class TransmitJobData
     {
         public uint Id;
