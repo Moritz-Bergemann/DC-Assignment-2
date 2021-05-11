@@ -7,6 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        
+        <TextBlock HorizontalAlignment="Left" Margin="257,72,0,0" TextWrapping="Wrap" Text="Post New Job" VerticalAlignment="Top"/>
+        <TextBox Name="JobPostBox" HorizontalAlignment="Left" Height="266" Margin="257,93,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301"/>
+        <Button Name="JobPostButton" Content="Post" HorizontalAlignment="Left" Height="26" Margin="484,364,0,0" VerticalAlignment="Top" Width="74"/>
+        <TextBlock HorizontalAlignment="Left" Height="24" Margin="10,64,0,0" TextWrapping="Wrap" Text="Server Status:" VerticalAlignment="Top" Width="78"/>
+        <TextBlock Name="ServerStatus"  HorizontalAlignment="Left" Height="24" Margin="88,64,0,0" TextWrapping="Wrap" Text="STATUS" VerticalAlignment="Top" Width="78"/>
+
+        <TextBlock HorizontalAlignment="Left" Height="24" Margin="10,93,0,0" TextWrapping="Wrap" Text="Completed Jobs:" VerticalAlignment="Top" Width="91"/>
+        <TextBlock Name="CompletedJobs"  HorizontalAlignment="Left" Height="24" Margin="106,93,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="60"/>
+
+
     </Grid>
 </Window>

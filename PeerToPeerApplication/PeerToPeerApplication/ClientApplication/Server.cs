@@ -63,7 +63,7 @@ namespace ClientApplication
         /// Add a new job to the list of pending jobs
         /// </summary>
         /// <param name="python">Python code for the job</param>
-        public void PostNewJob(string python)
+        public void AddNewJob(string python)
         {
             JobData job = new JobData(_jobCounter, python);
             
@@ -100,19 +100,14 @@ namespace ClientApplication
 
         public TransmitJobData DownloadFirstJob()
         {
-
             if (!_jobs.Any())
             {
                 return null;
             }
 
             JobData job = _jobs[0];
-            
             //Create data for submission
-            TransmitJobData transmitJob = null;
-            transmitJob = new TransmitJobData(job.Id);
-
-            //Set encoded python and hash
+            TransmitJobData transmitJob = new TransmitJobData(job.Id);
             transmitJob.SetEncodedPython(job.Python);
 
             return transmitJob;
