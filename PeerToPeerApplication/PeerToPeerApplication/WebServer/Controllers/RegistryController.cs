@@ -36,7 +36,7 @@ namespace WebServer.Controllers
                 });
             }
 
-            return "Added";
+            return "OK";
         }
 
         [System.Web.Http.Route("api/get-registered")]

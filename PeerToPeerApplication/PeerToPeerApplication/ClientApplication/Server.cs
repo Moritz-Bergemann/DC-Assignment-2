@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
 using APIClasses;
+using RestSharp;
 
 namespace ClientApplication
 {
@@ -21,20 +23,26 @@ namespace ClientApplication
         private List<JobData> _doneJobs;
         private uint _jobCounter;
 
+        private RestClient _registryServer;
+
         private Server()
         {
             _host = null;
             _jobs = new List<JobData>();
             _doneJobs = new List<JobData>();
             _jobCounter = 0;
+
+            _registryServer = new RestClient("https://localhost:44392/");
         }
 
-        public void OpenServer(string url)
+        public void Open(string address, uint port)
         {
             if (_host != null)
             {
                 throw new ArgumentException("Server already running");
             }
+
+            string url = $"net.tcp://{address}:{port}/PeerServer";
 
             //Create host service
             NetTcpBinding tcp = new NetTcpBinding();
@@ -42,6 +50,15 @@ namespace ClientApplication
             //Bind service & add endpoint
             _host = new ServiceHost(typeof(Server));
             _host.AddServiceEndpoint(typeof(IServer), tcp, url);
+
+            //Post self to registry server
+            RestRequest request = new RestRequest("api/register");
+            request.AddJsonBody(new RegistryData(address, port));
+            IRestResponse response = _registryServer.Post(request);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                throw new ArgumentException($"Server failed to open - '{response.Content}'");
+            }
 
             //Open to receive communications
             _host.Open();

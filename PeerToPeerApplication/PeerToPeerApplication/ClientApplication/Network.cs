@@ -18,7 +18,7 @@ namespace ClientApplication
         //TODO better commenting
         private List<RegistryData> _clients;
 
-        private RestClient _webServerClient;
+        private RestClient _registryServer;
 
         public static Network Instance
         {
@@ -28,7 +28,9 @@ namespace ClientApplication
         private Network()
         {
             _clients = null;
-            //TODO instantiate REST client
+
+            //Instantiate REST client
+            _registryServer = new RestClient("https://localhost:44392/");
         }
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace ClientApplication
         {
             RestRequest request = new RestRequest("api/get-registered");
 
-            IRestResponse response = _webServerClient.Get(request);
+            IRestResponse response = _registryServer.Get(request);
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
