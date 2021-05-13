@@ -75,7 +75,7 @@ namespace ClientApplication
         /// </summary>
         private async Task UpdateClients()
         {
-            _statusString = "Getting Clients";
+            _statusString = "Looking for Jobs to Do";
 
             RestRequest request = new RestRequest("api/get-registered");
 
@@ -101,8 +101,6 @@ namespace ClientApplication
 
         private async Task ProvideService()
         {
-            _statusString = "Looking for Jobs to Do";
-
             //Find the a random job that needs completing (iterate randomly through each client until a valid job is found)
             foreach (RegistryData client in _clients.OrderBy(a => Guid.NewGuid()).ToList())
             {
