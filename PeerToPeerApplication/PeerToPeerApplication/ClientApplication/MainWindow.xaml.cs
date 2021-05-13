@@ -16,7 +16,7 @@ namespace ClientApplication
 
             //Generate remoting address
             Random random = new Random();
-            uint port = Convert.ToUInt32(random.Next(50000, 60000)); //TODO potential double-up
+            uint port = Convert.ToUInt32(random.Next(50000, 60000)); //TODO potential double-up and picking of bad ports
 
             //Start server
             try

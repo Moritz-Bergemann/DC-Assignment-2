@@ -111,11 +111,9 @@ namespace ClientApplication
                 IServer clientServer = serverChannelFactory.CreateChannel();
 
                 JobData job = null;
-                try
-                {
-                    job = await GetFirstJob(clientServer);
-                }
-                catch (ArgumentException)
+                job = await GetFirstJob(clientServer);
+
+                if (job == null)
                 {
                     //If you couldn't get a job, try the next client
                     continue;
@@ -128,6 +126,11 @@ namespace ClientApplication
             }
         }
 
+        /// <summary>
+        /// Gets the first available job on the given server, returns null if none available.
+        /// </summary>
+        /// <param name="clientServer">The first available job, or null if there are none</param>
+        /// <returns></returns>
         private static async Task<JobData> GetFirstJob(IServer clientServer)
         {
             //Get the first available job
@@ -141,7 +144,7 @@ namespace ClientApplication
 
                 if (transmitJob == null)
                 {
-                    throw new ArgumentException("No jobs available");
+                    return null;
                 }
 
                 //Check the hash
