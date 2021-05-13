@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.ServiceModel;
@@ -45,9 +46,9 @@ namespace ClientApplication
             get => _jobs.Count;
         }
 
-        public int CompletedJobs
+        public ReadOnlyCollection<JobData> CompletedJobs
         {
-            get => _doneJobs.Count;
+            get => _doneJobs.AsReadOnly();
         }
 
         public string Status

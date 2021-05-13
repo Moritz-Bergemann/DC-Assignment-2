@@ -34,3 +34,5 @@ C:\Users\morit\_MyCode\DC\PeerToPeerApplication\PeerToPeerApplication\ClientAppl
 C:\Users\morit\_MyCode\DC\PeerToPeerApplication\PeerToPeerApplication\ClientApplication\obj\Debug\ClientApplication.csproj.CopyComplete
 C:\Users\morit\_MyCode\DC\PeerToPeerApplication\PeerToPeerApplication\ClientApplication\obj\Debug\ClientApplication.exe
 C:\Users\morit\_MyCode\DC\PeerToPeerApplication\PeerToPeerApplication\ClientApplication\obj\Debug\ClientApplication.pdb
+C:\Users\morit\_MyCode\DC\PeerToPeerApplication\PeerToPeerApplication\ClientApplication\obj\Debug\JobResultsUserControl.g.cs
+C:\Users\morit\_MyCode\DC\PeerToPeerApplication\PeerToPeerApplication\ClientApplication\obj\Debug\JobResultsUserControl.baml

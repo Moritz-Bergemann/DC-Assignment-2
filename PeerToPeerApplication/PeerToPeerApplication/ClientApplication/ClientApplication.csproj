@@ -85,7 +85,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DebugMan.cs" />
+    <Compile Include="JobResultsUserControl.xaml.cs">
+      <DependentUpon>JobResultsUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Server.cs" />
+    <Page Include="JobResultsUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -100,7 +107,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Network.cs" />
+    <Compile Include="Worker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

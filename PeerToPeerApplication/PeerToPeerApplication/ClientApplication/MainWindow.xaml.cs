@@ -30,7 +30,7 @@ namespace ClientApplication
             }
 
             //Start client looking for jobs in background
-            Task.Run(Network.Instance.Run);
+            Task.Run(Worker.Instance.Run);
 
             //Set up timer for updating UI every 0.5 seconds
             DispatcherTimer dTimer = new DispatcherTimer();
@@ -54,11 +54,23 @@ namespace ClientApplication
             //Server Stuff
             ServerStatus.Text = Server.Instance.Status;
             PostedJobs.Text = Server.Instance.NumJobs.ToString();
-            PostedJobsCompleted.Text = Server.Instance.CompletedJobs.ToString();
+            PostedJobsCompleted.Text = Server.Instance.CompletedJobs.Count.ToString();
 
             //Client Stuff
-            WorkerStatus.Text = Network.Instance.Status;
-            CompletedJobs.Text = Network.Instance.NumJobsDone.ToString();
+            WorkerStatus.Text = Worker.Instance.Status;
+            CompletedJobs.Text = Worker.Instance.NumJobsDone.ToString();
+        }
+
+        private void SeeResultsButton_Click(object sender, RoutedEventArgs e)
+        {
+            Window resultsWindow = new Window
+            {
+                Title = "Job Results",
+                Content = new JobResultsUserControl(Server.Instance.CompletedJobs),
+                SizeToContent = SizeToContent.WidthAndHeight
+            };
+
+            resultsWindow.Show();
         }
     }
 }

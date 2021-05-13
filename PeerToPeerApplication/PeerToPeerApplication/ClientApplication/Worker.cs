@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
-using APIClasses;
+﻿using APIClasses;
 using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 using Newtonsoft.Json;
 using RestSharp;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.ServiceModel;
+using System.Threading.Tasks;
 
 namespace ClientApplication
 {
-    class Network
+    class Worker
     {
         private List<RegistryData> _clients;
         private string _statusString;
@@ -21,12 +20,12 @@ namespace ClientApplication
         private RestClient _registryServer;
         private int _numJobsDone;
 
-        public static Network Instance
+        public static Worker Instance
         {
             get;
-        } = new Network();
+        } = new Worker();
 
-        private Network()
+        private Worker()
         {
             _clients = null;
 
@@ -73,7 +72,7 @@ namespace ClientApplication
         /// <summary>
         /// Get list of available clients from web server and update the local list
         /// </summary>
-        private async Task UpdateClients()
+        private async Task UpdateClients() //TODO implement async
         {
             _statusString = "Looking for Jobs to Do";
 
