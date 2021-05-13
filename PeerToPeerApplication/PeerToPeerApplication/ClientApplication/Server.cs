@@ -23,6 +23,8 @@ namespace ClientApplication
         private List<JobData> _doneJobs;
         private uint _jobCounter;
 
+        private string _statusString;
+
         private RestClient _registryServer;
 
         private Server()
@@ -32,11 +34,30 @@ namespace ClientApplication
             _doneJobs = new List<JobData>();
             _jobCounter = 0;
 
+            _statusString = "Not Started";
+
             _registryServer = new RestClient("https://localhost:44392/");
+        }
+
+        public int NumJobs
+        {
+            get => _jobs.Count;
+        }
+
+        public int CompletedJobs
+        {
+            get => _doneJobs.Count;
+        }
+
+        public string Status
+        {
+            get => _statusString;
         }
 
         public void Open(string address, uint port)
         {
+            _statusString = "Starting";
+
             if (_host != null)
             {
                 throw new ArgumentException("Server already running");
@@ -62,6 +83,9 @@ namespace ClientApplication
 
             //Open to receive communications
             _host.Open();
+
+            //Set status to open
+            _statusString = "Open";
         }
 
         public void CloseServer()
@@ -74,6 +98,8 @@ namespace ClientApplication
             //Close host and reset to null
             _host.Close();
             _host = null;
+
+            _statusString = "Closed";
         }
 
         /// <summary>

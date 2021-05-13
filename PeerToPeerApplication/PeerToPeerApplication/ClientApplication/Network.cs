@@ -15,10 +15,11 @@ namespace ClientApplication
 {
     class Network
     {
-        //TODO better commenting
         private List<RegistryData> _clients;
+        private string _statusString;
 
         private RestClient _registryServer;
+        private int _numJobsDone;
 
         public static Network Instance
         {
@@ -29,8 +30,21 @@ namespace ClientApplication
         {
             _clients = null;
 
+            _statusString = "Starting";
+            _numJobsDone = 0;
+
             //Instantiate REST client
             _registryServer = new RestClient("https://localhost:44392/");
+        }
+
+        public string Status
+        {
+            get => _statusString;
+        }
+
+        public int NumJobsDone
+        {
+            get => _numJobsDone;
         }
 
         /// <summary>
@@ -61,6 +75,8 @@ namespace ClientApplication
         /// </summary>
         private async Task UpdateClients()
         {
+            _statusString = "Getting Clients";
+
             RestRequest request = new RestRequest("api/get-registered");
 
             IRestResponse response = _registryServer.Get(request);
@@ -85,11 +101,13 @@ namespace ClientApplication
 
         private async Task ProvideService()
         {
+            _statusString = "Looking for Jobs to Do";
+
             //Find the a random job that needs completing (iterate randomly through each client until a valid job is found)
             foreach (RegistryData client in _clients.OrderBy(a => Guid.NewGuid()).ToList())
             {
                 //Connect to client's server
-                string url = $"{client.Address}:{client.Port}";
+                string url = $"net.tcp://{client.Address}:{client.Port}/PeerServer";
                 
                 NetTcpBinding tcp = new NetTcpBinding();
                 ChannelFactory<IServer> serverChannelFactory = new ChannelFactory<IServer>(tcp, url);
@@ -144,6 +162,8 @@ namespace ClientApplication
         /// <param name="job">Job to perform</param>
         private async Task DoJob(IServer clientServer, JobData job)
         {
+            _statusString = "Doing Job";
+
             //Do job via Iron Python //TODO make this async?
             ScriptEngine engine = Python.CreateEngine();
 
@@ -157,7 +177,15 @@ namespace ClientApplication
             }
 
             //Post result back to client
-            clientServer.PostCompletedJob(job.Id, result);
+            bool accepted = clientServer.PostCompletedJob(job.Id, result);
+
+            if (accepted) //If server accepted job as completed
+            {
+                //Update the "finished jobs" count
+                _numJobsDone++;
+
+                //TODO update scoreboard probably
+            }
         }
     }
 }

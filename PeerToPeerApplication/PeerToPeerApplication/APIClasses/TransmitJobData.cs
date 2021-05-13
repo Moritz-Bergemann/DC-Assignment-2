@@ -1,19 +1,29 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace APIClasses
 {
+    [DataContract]
     public class TransmitJobData
     {
-        public uint Id;
+        [DataMember]
+        public uint Id
+        {
+            get;
+            set;
+        }
 
+        [DataMember]
         public string PythonEncoded
         {
             get;
             private set; //Read-only for outside world
         }
+
+        [DataMember]
         public byte[] Hash
         {
             get;
