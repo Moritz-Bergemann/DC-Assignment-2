@@ -101,7 +101,7 @@ namespace ClientApplication
         private async Task ProvideService()
         {
             //Find the a random job that needs completing (iterate randomly through each client until a valid job is found)
-            foreach (RegistryData client in _clients.OrderBy(a => Guid.NewGuid()).ToList())
+            foreach (RegistryData client in _clients)
             {
                 //Connect to client's server
                 string url = $"net.tcp://{client.Address}:{client.Port}/PeerServer";

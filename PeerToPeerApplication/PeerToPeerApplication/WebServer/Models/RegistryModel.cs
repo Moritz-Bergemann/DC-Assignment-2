@@ -44,7 +44,8 @@ namespace WebServer.Models
 
         public List<RegistryData> GetRegistered()
         {
-            return _registry;
+            //Randomise registry elements so no one client is unfairly advantaged
+            return _registry.OrderBy(a => Guid.NewGuid()).ToList();
         }
     }
 }
