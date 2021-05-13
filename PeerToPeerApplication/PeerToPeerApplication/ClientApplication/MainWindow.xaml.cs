@@ -16,7 +16,7 @@ namespace ClientApplication
 
             //Generate remoting address
             Random random = new Random();
-            uint port = Convert.ToUInt32(random.Next(49152, 65534)); //TODO potential double-up
+            uint port = Convert.ToUInt32(random.Next(50000, 60000)); //TODO potential double-up
 
             //Start server
             try
@@ -35,7 +35,8 @@ namespace ClientApplication
             //Set up timer for updating UI every 0.5 seconds
             DispatcherTimer dTimer = new DispatcherTimer();
             dTimer.Tick += new EventHandler(UpdateGui);
-            dTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
+            dTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
+            dTimer.Start();
         }
 
         private void JobPostButton_Click(object sender, RoutedEventArgs e)

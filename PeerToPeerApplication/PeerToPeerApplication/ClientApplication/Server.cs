@@ -10,6 +10,7 @@ using RestSharp;
 
 namespace ClientApplication
 {
+    [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     class Server : IServer
     {
         public static Server Instance
@@ -21,7 +22,7 @@ namespace ClientApplication
 
         private List<JobData> _jobs;
         private List<JobData> _doneJobs;
-        private uint _jobCounter;
+        private uint _jobIdCounter;
 
         private string _statusString;
 
@@ -32,7 +33,7 @@ namespace ClientApplication
             _host = null;
             _jobs = new List<JobData>();
             _doneJobs = new List<JobData>();
-            _jobCounter = 0;
+            _jobIdCounter = 0;
 
             _statusString = "Not Started";
 
@@ -68,8 +69,8 @@ namespace ClientApplication
             //Create host service
             NetTcpBinding tcp = new NetTcpBinding();
 
-            //Bind service & add endpoint
-            _host = new ServiceHost(typeof(Server));
+            //Bind service to this singleton & add endpoint
+            _host = new ServiceHost(this);
             _host.AddServiceEndpoint(typeof(IServer), tcp, url);
 
             //Post self to registry server
@@ -108,10 +109,10 @@ namespace ClientApplication
         /// <param name="python">Python code for the job</param>
         public void AddNewJob(string python)
         {
-            JobData job = new JobData(_jobCounter, python);
+            JobData job = new JobData(_jobIdCounter, python);
             
             //Increase job counter for next job
-            _jobCounter++;
+            _jobIdCounter++;
 
             _jobs.Add(job);
         }
