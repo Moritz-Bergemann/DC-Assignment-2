@@ -86,7 +86,7 @@ namespace ClientApplication
 
             //Post self to registry server
             RestRequest request = new RestRequest("api/register");
-            request.AddJsonBody(new RegistryData(address, port));
+            request.AddJsonBody(new ClientData(address, port));
             IRestResponse response = _registryServer.Post(request);
             if (response.StatusCode != HttpStatusCode.OK)
             {

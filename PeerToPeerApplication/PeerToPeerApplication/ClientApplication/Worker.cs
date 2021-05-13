@@ -14,7 +14,7 @@ namespace ClientApplication
 {
     class Worker
     {
-        private List<RegistryData> _clients;
+        private List<ClientData> _clients;
         private string _statusString;
 
         private RestClient _registryServer;
@@ -62,6 +62,8 @@ namespace ClientApplication
         /// </summary>
         private async Task Iteration()
         {
+            _statusString = "Looking for Jobs to Do";
+
             //Refresh data on existing clients
             await UpdateClients();
 
@@ -74,8 +76,6 @@ namespace ClientApplication
         /// </summary>
         private async Task UpdateClients() //TODO implement async
         {
-            _statusString = "Looking for Jobs to Do";
-
             RestRequest request = new RestRequest("api/get-registered");
 
             IRestResponse response = _registryServer.Get(request);
@@ -83,12 +83,12 @@ namespace ClientApplication
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 //Make clients empty list to maintain validity //TODO is this the right approach
-                _clients = new List<RegistryData>();
+                _clients = new List<ClientData>();
 
                 throw new Exception(response.Content); //TODO proper error handling
             }
 
-            List<RegistryData> clientData = JsonConvert.DeserializeObject<List<RegistryData>>(response.Content);
+            List<ClientData> clientData = JsonConvert.DeserializeObject<List<ClientData>>(response.Content);
 
             if (clientData == null)
             {
@@ -100,8 +100,8 @@ namespace ClientApplication
 
         private async Task ProvideService()
         {
-            //Find the a random job that needs completing (iterate randomly through each client until a valid job is found)
-            foreach (RegistryData client in _clients)
+            //Find the a random job that needs completing (iterate through each client until a valid job is found)
+            foreach (ClientData client in _clients)
             {
                 //Connect to client's server
                 string url = $"net.tcp://{client.Address}:{client.Port}/PeerServer";
@@ -111,7 +111,15 @@ namespace ClientApplication
                 IServer clientServer = serverChannelFactory.CreateChannel();
 
                 JobData job = null;
-                job = await GetFirstJob(clientServer);
+
+                try
+                {
+                    job = await GetFirstJob(clientServer);
+                }
+                catch (CommunicationException) //In case connection with the client failed
+                {
+                    ReportDowned(client);
+                }
 
                 if (job == null)
                 {
@@ -120,7 +128,14 @@ namespace ClientApplication
                 }
 
                 //Do the job, then exit
-                await DoJob(clientServer, job);
+                try
+                {
+                    await DoJob(clientServer, job);
+                }
+                catch (CommunicationException) //In case connection with the client failed
+                {
+                    ReportDowned(client);
+                }
 
                 break;
             }
@@ -167,7 +182,6 @@ namespace ClientApplication
             //Do job via Iron Python //TODO make this async?
             ScriptEngine engine = Python.CreateEngine();
 
-
             dynamic result;
 
             try
@@ -195,6 +209,20 @@ namespace ClientApplication
 
                 //TODO update scoreboard probably
             }
+        }
+
+        /// <summary>
+        /// Report the given client to the central registry as downed.
+        /// </summary>
+        /// <param name="client">Client to report as downed</param>
+        private bool ReportDowned(ClientData client)
+        {
+            RestRequest request = new RestRequest("api/report-downed");
+            request.AddJsonBody(client);
+
+            IRestResponse response = _registryServer.Post(request);
+
+            return response.Content.Equals("OK");
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Mvc;
 using APIClasses;
 using WebServer.Models;
 
@@ -11,9 +11,9 @@ namespace WebServer.Controllers
 {
     public class RegistryController : ApiController
     {
-        [System.Web.Http.Route("api/register")]
-        [System.Web.Http.HttpPost]
-        public string Register(RegistryData data)
+        [Route("api/register")]
+        [HttpPost]
+        public string Register(ClientData data)
         {
             try
             {
@@ -39,11 +39,44 @@ namespace WebServer.Controllers
             return "OK";
         }
 
-        [System.Web.Http.Route("api/get-registered")]
-        [System.Web.Http.HttpGet]
-        public List<RegistryData> getRegistered()
+        [Route("api/get-registered")]
+        [HttpGet]
+        public List<ClientData> GetRegistered()
         {
             return RegistryModel.Instance.GetRegistered();
+        }
+
+        [Route("api/report-downed")]
+        [HttpPost]
+        public string ReportDowned(ClientData downClient)
+        {
+            bool anyRemoved = RegistryModel.Instance.ReportDowned(downClient);
+
+            return anyRemoved ? "OK" : "None removed";
+        }
+
+        [Route("api/add-to-score")]
+        [HttpPost]
+        public string AddToScore(ClientData client)
+        {
+            bool anyRemoved = RegistryModel.Instance.AddToScore(client);
+
+            if (!anyRemoved)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("Could not find client in registry")
+                });
+            }
+
+            return "OK";
+        }
+
+        [Route("api/scoreboard")]
+        [HttpGet]
+        public List<ClientScoreData> GetScoreBoard()
+        {
+            return RegistryModel.Instance.GetScoreBoard().ToList();
         }
     }
 }
