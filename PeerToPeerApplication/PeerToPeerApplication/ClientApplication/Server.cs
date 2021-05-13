@@ -6,6 +6,7 @@ using System.Net;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Markup;
 using APIClasses;
 using RestSharp;
 
@@ -72,7 +73,16 @@ namespace ClientApplication
 
             //Bind service to this singleton & add endpoint
             _host = new ServiceHost(this);
-            _host.AddServiceEndpoint(typeof(IServer), tcp, url);
+
+            try
+            {
+                _host.AddServiceEndpoint(typeof(IServer), tcp, url);
+            }
+            catch (UriFormatException)
+            {
+                _statusString = "Error";
+                throw new ArgumentException($"Invalid server URL '{url}'");
+            }
 
             //Post self to registry server
             RestRequest request = new RestRequest("api/register");
@@ -80,6 +90,7 @@ namespace ClientApplication
             IRestResponse response = _registryServer.Post(request);
             if (response.StatusCode != HttpStatusCode.OK)
             {
+                _statusString = "Error";
                 throw new ArgumentException($"Server failed to open - '{response.Content}'");
             }
 

@@ -25,8 +25,7 @@ namespace ClientApplication
             }
             catch (ArgumentException a)
             {
-                //TODO
-                throw new Exception("L");
+                MessageBoxResult result = MessageBox.Show($"Failed to open this client's server. Reason: '{a.Message}'", "Failed to open server", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             //Start client looking for jobs in background
