@@ -178,6 +178,8 @@ namespace ClientApplication
 
                     //Add job to completed jobs list
                     _doneJobs.Add(job);
+
+                    break;
                 }
 
                 ii++;

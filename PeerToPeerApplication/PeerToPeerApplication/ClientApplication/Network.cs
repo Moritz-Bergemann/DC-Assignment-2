@@ -168,7 +168,16 @@ namespace ClientApplication
             ScriptEngine engine = Python.CreateEngine();
 
 
-            dynamic result = await Task.Run(() => engine.Execute(job.Python, engine.CreateScope()));
+            dynamic result;
+
+            try
+            {
+                result = await Task.Run(() => engine.Execute(job.Python, engine.CreateScope()));
+            }
+            catch (Exception e) //Must catch base Exception as IronPython may throw any exception
+            {
+                result = $"EXCEPTION THROWN - {e.Message}";
+            }
 
             //Change result to string in case it isn't
             if (result != null)
