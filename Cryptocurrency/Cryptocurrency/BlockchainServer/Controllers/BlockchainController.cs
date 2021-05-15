@@ -1,18 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
+using BlockchainServer.Models;
+using APIClasses;
 
 namespace BlockchainServer.Controllers
 {
-    public class BlockchainController : Controller
+    public class BlockchainController : ApiController
     {
         [Route("api/blockchain")]
         [HttpGet]
-        public dynamic /*TODO what return type??*/ GetBlockchain()
+        public IList<Block> GetBlockchain()
         {
             return BlockchainModel.Instance.GetBlockchain();
+        }
+
+        [Route("api/add-block")]
+        [HttpPost]
+        public string AddBlock(Block block)
+        {
+            try
+            {
+                BlockchainModel.Instance.AddBlock(block);
+            }
+            catch (ArgumentException a)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(a.Message)
+                });
+            }
+
+            return "OK";
+        }
+
+        [Route("api/wallet/{walletId}")]
+        [HttpGet]
+        public Wallet GetWallet(uint walletId)
+        {
+            return BlockchainModel.Instance.GetWallet(walletId);
         }
     }
 }

@@ -29,17 +29,7 @@ namespace APIClasses
             {
                 BlockOffset += 5;
 
-                //Brute-forcing time
-                string concatString = "";
-                concatString += Id.ToString();
-                concatString += FromWallet.ToString();
-                concatString += ToWallet.ToString();
-                concatString += Amount.ToString(CultureInfo.InvariantCulture);
-                concatString += BlockOffset.ToString();
-                concatString += PrevHash.ToString();
-
-                SHA256 sha256 = SHA256.Create();
-                hash = sha256.ComputeHash(Encoding.UTF8.GetBytes(concatString));
+                hash = CalculateHash(this);
 
                 //Validate computed hash
                 validHash = ValidateHash(hash);
@@ -48,15 +38,30 @@ namespace APIClasses
             return hash;
         }
 
-        private static bool ValidateHash(byte[] hash)
+        public static byte[] CalculateHash(Block block)
+        {
+            //Brute-forcing time
+            string concatString = "";
+            concatString += block.Id.ToString();
+            concatString += block.FromWallet.ToString();
+            concatString += block.ToWallet.ToString();
+            concatString += block.Amount.ToString(CultureInfo.InvariantCulture);
+            concatString += block.BlockOffset.ToString();
+            concatString += block.PrevHash.ToString();
+
+            SHA256 sha256 = SHA256.Create();
+            return sha256.ComputeHash(Encoding.UTF8.GetBytes(concatString));
+        }
+
+        public static bool ValidateHash(byte[] hash)
         {
             if (hash.Length < 5)
             {
                 throw new ArgumentException("Hash too short to be valid");
             }
 
-            int[] validator1 = new int[] { 1, 2, 3, 4, 5 };
-            int[] validator2 = new int[] { 5, 4, 3, 2, 1 };
+            int[] validator1 = { 1, 2, 3, 4, 5 };
+            int[] validator2 = { 5, 4, 3, 2, 1 };
 
             bool validHash = true;
             for (int ii = 0; ii < 5; ii++)
