@@ -2,6 +2,8 @@
 using APIClasses;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RestSharp;
 
@@ -17,10 +19,12 @@ namespace Miner.Models
         } = new MinerModel();
 
         private List<Transaction> _transactions;
+        private  bool _mining;
 
         private MinerModel()
         {
             _transactions = new List<Transaction>();
+            _mining = false;
         }
 
         public void AddTransaction(Transaction transaction)
@@ -40,6 +44,20 @@ namespace Miner.Models
 
             //Add transaction to pending transactions list
             _transactions.Add(transaction);
+            
+            //Try starting mining process (if it hasn't already)
+            Task.Run(Mine);
+        }
+
+        private void Mine()
+        {
+            //Abort if already running
+            if (_mining)
+            {
+                return;
+            }
+
+            //TODO
         }
 
         private Wallet GetWalletFromServer(uint walletId)
