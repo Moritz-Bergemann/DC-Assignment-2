@@ -52,9 +52,9 @@ namespace TransactionGenerator
             //Update wallet balance
             try
             {
-                int walletId = int.Parse(AccountIdBox.Text);
+                uint walletId = uint.Parse(AccountIdBox.Text);
 
-                RestRequest walletRequest = new RestRequest("api/get-wallet");
+                RestRequest walletRequest = new RestRequest($"api/wallet/{walletId}");
                 IRestResponse walletResponse = _blockchainServer.Get(walletRequest);
 
                 if (!walletResponse.IsSuccessful)

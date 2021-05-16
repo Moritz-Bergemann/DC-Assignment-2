@@ -1,6 +1,7 @@
 ﻿using System;
 using APIClasses;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using Block = APIClasses.Block;
 
@@ -32,8 +33,9 @@ namespace BlockchainServer.Models
                 ToWallet = 0,
                 PrevHash = null
             };
-            //Make hash for first block
-            firstBlock.Hash = firstBlock.CalculateHash();
+            //Make hash for first block (pre-calculated for server responsiveness)
+            firstBlock.Hash = Convert.FromBase64String("ey2/qy8RjUTjebZ8P26S1INJ6r/89qvtjDpoBNs5wIU="); //NOTE: CHANGE THIS IF YOU CHANGE THE INITIAL BLOCK
+
             _blockchain.Add(firstBlock);
 
             _lastBlock = firstBlock;
@@ -78,7 +80,7 @@ namespace BlockchainServer.Models
             }
 
             //From wallet ID must have enough coins
-            if (GetWallet(block.Id).Balance < block.Amount)
+            if (GetWallet(block.FromWallet).Balance < block.Amount)
             {
                 reason = "From wallet has insufficient coins";
                 return false;
@@ -99,7 +101,7 @@ namespace BlockchainServer.Models
             }
 
             //Previous block hash must match previous block's hash
-            if (!block.PrevHash.Equals(_lastBlock.Hash))
+            if (!block.PrevHash.SequenceEqual(_lastBlock.Hash))
             {
                 reason = "Previous hash does not match actual previous hash";
                 return false;
@@ -108,7 +110,7 @@ namespace BlockchainServer.Models
             //Hash must start with '12345' & end with '54321'
             if (!Block.CheckHashRule(block.Hash))
             {
-                reason = "Hash does not start with '12345' & end with '54321'";
+                reason = "Hash does not start with '12345'";
                 return false;
             }
 
@@ -131,7 +133,8 @@ namespace BlockchainServer.Models
             //If wallet wasn't found, create it
             if (!found)
             {
-                _wallets[id] = new Wallet(id);
+                wallet = new Wallet(id);
+                _wallets[id] = wallet;
             }
 
             return wallet;

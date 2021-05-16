@@ -75,6 +75,14 @@ namespace APIClasses
 
             Debug.WriteLine($"Attempt {count++}: comparing '{first5Digits}' to '12345'"); //TODO remove
 
+            bool valid = first5Digits.Equals(validator);
+
+            if (valid)
+            {
+                string bytesString = Convert.ToBase64String(hash);
+                Debug.WriteLine(bytesString);
+            }
+
             return first5Digits.Equals(validator);
         }
     }

@@ -22,6 +22,8 @@ namespace Miner.Models
 
         private MinerModel()
         {
+            _blockchainClient = new RestClient("https://localhost:44367/");
+
             _transactions = new Queue<Transaction>();
             _mining = false;
         }
@@ -129,7 +131,7 @@ namespace Miner.Models
 
         private Wallet GetWalletFromServer(uint walletId)
         {
-            RestRequest request = new RestRequest("api/get-wallet");
+            RestRequest request = new RestRequest($"api/wallet/{walletId}");
 
             IRestResponse response = _blockchainClient.Get(request);
 
@@ -143,7 +145,7 @@ namespace Miner.Models
 
         private Block GetLastBlockFromServer()
         {
-            RestRequest request = new RestRequest("api/");
+            RestRequest request = new RestRequest("api/last-block");
 
             IRestResponse response = _blockchainClient.Get(request);
             if (response.StatusCode != HttpStatusCode.OK)
