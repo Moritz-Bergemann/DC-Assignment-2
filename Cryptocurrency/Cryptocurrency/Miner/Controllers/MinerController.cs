@@ -9,7 +9,7 @@ namespace Miner.Controllers
 {
     public class MinerController : ApiController
     { 
-        [Route("api/make-transaction")]
+        [Route("api/add-transaction")]
         [HttpPost]
         public void AddTransaction(Transaction transaction)
         {
@@ -26,11 +26,11 @@ namespace Miner.Controllers
             }
         }
 
-        [Route("api/mining")]
+        [Route("api/status")]
         [HttpGet]
-        public bool CheckMining()
+        public string GetStatus()
         {
-            return MinerModel.Instance.Mining;
+            return MinerModel.Instance.Mining ? "Mining" : "Idle";
         }
     }
 }
