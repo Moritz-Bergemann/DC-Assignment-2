@@ -10,8 +10,8 @@ namespace APIClasses
     public class Block
     {
         public uint Id;
-        public uint FromWallet;
-        public uint ToWallet;
+        public uint WalletFrom;
+        public uint WalletTo;
         public float Amount;
         public uint BlockOffset;
         public byte[] PrevHash;
@@ -25,7 +25,7 @@ namespace APIClasses
         /// </summary>
         /// <returns>The hash for this block if it could be created</returns>
         /// <exception cref="ArgumentException">If block details are invalid</exception>
-        public byte[] CalculateHash()
+        public byte[] FindHash()
         {
             bool validHash = false;
             byte[] hash = null;
@@ -34,7 +34,7 @@ namespace APIClasses
             {
                 BlockOffset += 5;
 
-                hash = CalculateHash(this);
+                hash = HashValues(this);
 
                 //Validate computed hash
                 validHash = CheckHashRule(hash);
@@ -43,13 +43,18 @@ namespace APIClasses
             return hash;
         }
 
-        public static byte[] CalculateHash(Block block)
+        /// <summary>
+        /// Returns a SHA-256 hash for the given block based on its current values. It does NOT modify the block offset, and this hash is NOT guaranteed to be valid.
+        /// </summary>
+        /// <param name="block">Block to hash the values of</param>
+        /// <returns></returns>
+        public static byte[] HashValues(Block block)
         {
             //Brute-forcing time
             string concatString = "";
             concatString += block.Id.ToString();
-            concatString += block.FromWallet.ToString();
-            concatString += block.ToWallet.ToString();
+            concatString += block.WalletFrom.ToString();
+            concatString += block.WalletTo.ToString();
             concatString += block.Amount.ToString(CultureInfo.InvariantCulture);
             concatString += block.BlockOffset.ToString();
             if (block.PrevHash != null)

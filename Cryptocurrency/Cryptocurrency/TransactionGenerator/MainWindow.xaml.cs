@@ -78,8 +78,8 @@ namespace TransactionGenerator
                 TextBlock textBlock = new TextBlock();
                 textBlock.Text = $"ID: {block.Id}\n" +
                               $"Amount: {block.Amount}\n" +
-                              $"From Wallet: {block.FromWallet}\n" +
-                              $"To Wallet: {block.ToWallet}\n" +
+                              $"From Wallet: {block.WalletFrom}\n" +
+                              $"To Wallet: {block.WalletTo}\n" +
                               $"Block Offset: {block.BlockOffset}";
                 
                 blockchainBlockTexts.Add(textBlock);
@@ -125,7 +125,7 @@ namespace TransactionGenerator
 
             if (!response.IsSuccessful)
             {
-                MessageBox.Show($"Error submitting transaction - {response.ErrorMessage}.", "Submission error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error submitting transaction - {response.Content}.", "Submission error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 

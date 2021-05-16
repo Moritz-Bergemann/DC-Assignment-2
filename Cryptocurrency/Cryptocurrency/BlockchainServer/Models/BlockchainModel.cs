@@ -29,8 +29,8 @@ namespace BlockchainServer.Models
                 Id = 0,
                 Amount = 0,
                 BlockOffset = 0,
-                FromWallet = 0,
-                ToWallet = 0,
+                WalletFrom = 0,
+                WalletTo = 0,
                 PrevHash = null
             };
             //Make hash for first block (pre-calculated for server responsiveness)
@@ -59,12 +59,18 @@ namespace BlockchainServer.Models
 
         public void AddBlock(Block block)
         {
+            //Validate block
             if (!ValidateBlock(block, out string reason))
             {
                 throw new ArgumentException($"Invalid block - {reason}");
             }
 
+            //Add block to blockchain
             _blockchain.Add(block);
+
+            //Update wallets
+            GetWallet(block.WalletFrom).Balance -= block.Amount;
+            GetWallet(block.WalletTo).Balance += block.Amount;
         }
 
         private bool ValidateBlock(Block block, out string reason)
@@ -80,7 +86,7 @@ namespace BlockchainServer.Models
             }
 
             //From wallet ID must have enough coins
-            if (GetWallet(block.FromWallet).Balance < block.Amount)
+            if (GetWallet(block.WalletFrom).Balance < block.Amount)
             {
                 reason = "From wallet has insufficient coins";
                 return false;
@@ -115,7 +121,7 @@ namespace BlockchainServer.Models
             }
 
             //Calculated hash must be the same
-            if (Block.CalculateHash(block).Equals(block.Hash))
+            if (Block.HashValues(block).Equals(block.Hash))
             {
                 reason = "Calculated hash gave different result";
                 return false;

@@ -90,13 +90,13 @@ namespace Miner.Models
                         Id = lastBlock.Id + 1,
                         Amount = transaction.Amount,
                         BlockOffset = 0,
-                        FromWallet = transaction.WalletFrom,
-                        ToWallet = transaction.WalletTo,
+                        WalletFrom = transaction.WalletFrom,
+                        WalletTo = transaction.WalletTo,
                         PrevHash = lastBlock.Hash
                     };
 
                     //Calculate hash for block (this will take a long time)
-                    block.Hash = Block.CalculateHash(block);
+                    block.Hash = block.FindHash();
 
                     //Try posting block to blockchain
                     RestRequest addBlockRequest = new RestRequest("api/add-block");
