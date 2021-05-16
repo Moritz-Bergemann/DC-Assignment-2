@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -32,7 +33,7 @@ namespace APIClasses
                 hash = CalculateHash(this);
 
                 //Validate computed hash
-                validHash = ValidateHash(hash);
+                validHash = CheckHashRule(hash);
             }
 
             return hash;
@@ -53,41 +54,17 @@ namespace APIClasses
             return sha256.ComputeHash(Encoding.UTF8.GetBytes(concatString));
         }
 
-        public static bool ValidateHash(byte[] hash)
+        public static bool CheckHashRule(byte[] hash)
         {
             if (hash.Length < 5)
             {
                 throw new ArgumentException("Hash too short to be valid");
             }
 
-            int[] validator1 = { 1, 2, 3, 4, 5 };
-            int[] validator2 = { 5, 4, 3, 2, 1 };
+            int[] validator = { 1, 2, 3, 4, 5 };
+            int[] first5Ints = (from hashByte in hash.Take(5) select Convert.ToInt32(hashByte)).ToArray();
 
-            bool validHash = true;
-            for (int ii = 0; ii < 5; ii++)
-            {
-                if (validator1[ii] != Convert.ToInt32(hash[ii]))
-                {
-                    validHash = false;
-                    break;
-                }
-            }
-
-            if (validHash) //Only do second hash if string is still valid
-            {
-                int jj = 0;
-                for (int ii = hash.Length - 1; ii >= hash.Length - 5; ii--)
-                {
-                    if (validator2[jj] != Convert.ToInt32(hash[ii]))
-                    {
-                        validHash = false;
-                        break;
-                    }
-                    jj++;
-                }
-            }
-
-            return validHash;
+            return first5Ints.Equals(validator);
         }
     }
 }

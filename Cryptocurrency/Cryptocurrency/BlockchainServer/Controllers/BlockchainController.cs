@@ -14,7 +14,14 @@ namespace BlockchainServer.Controllers
         [HttpGet]
         public IList<Block> GetBlockchain()
         {
-            return BlockchainModel.Instance.GetBlockchain();
+            return BlockchainModel.Instance.Blockchain;
+        }
+
+        [Route("api/last-block")]
+        [HttpGet]
+        public Block GetLastBlock()
+        {
+            return BlockchainModel.Instance.LastBlock;
         }
 
         [Route("api/add-block")]

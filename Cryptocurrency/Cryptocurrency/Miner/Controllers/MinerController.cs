@@ -1,5 +1,9 @@
-﻿using System.Web.Http;
+﻿using System;
+using System.Net;
+using System.Net.Http;
+using System.Web.Http;
 using APIClasses;
+using Miner.Models;
 
 namespace Miner.Controllers
 {
@@ -9,7 +13,17 @@ namespace Miner.Controllers
         [HttpPost]
         public void AddTransaction(Transaction transaction)
         {
-            MinerModel.Instance.AddTransaction();
+            try
+            {
+                MinerModel.Instance.AddTransaction(transaction);
+            }
+            catch (ArgumentException a)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent($"Could not add transaction - {a.Message}")
+                });
+            }
         }
     }
 }

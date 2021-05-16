@@ -1,6 +1,7 @@
 ﻿using System;
 using APIClasses;
 using System.Collections.Generic;
+using System.Runtime.Remoting.Messaging;
 using Block = APIClasses.Block;
 
 namespace BlockchainServer.Models
@@ -40,9 +41,14 @@ namespace BlockchainServer.Models
             _wallets = new Dictionary<uint, Wallet>();
         }
 
-        public IList<Block> GetBlockchain()
+        public IList<Block> Blockchain
         {
-            return _blockchain;
+            get => _blockchain;
+        }
+
+        public Block LastBlock
+        {
+            get => _lastBlock;
         }
 
         public void AddBlock(Block block)
@@ -96,7 +102,7 @@ namespace BlockchainServer.Models
             }
 
             //Hash must start with '12345' & end with '54321'
-            if (!Block.ValidateHash(block.Hash))
+            if (!Block.CheckHashRule(block.Hash))
             {
                 reason = "Hash does not start with '12345' & end with '54321'";
                 return false;

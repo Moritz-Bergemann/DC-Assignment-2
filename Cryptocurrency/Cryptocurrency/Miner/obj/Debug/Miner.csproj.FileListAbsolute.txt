@@ -1,0 +1,2 @@
+C:\Users\morit\_MyCode\DC\Cryptocurrency\Cryptocurrency\Miner\obj\Debug\Miner.csprojAssemblyReference.cache
+C:\Users\morit\_MyCode\DC\Cryptocurrency\Cryptocurrency\Miner\obj\Debug\Miner.csproj.CoreCompileInputs.cache
