@@ -26,6 +26,11 @@ namespace Miner.Models
             _mining = false;
         }
 
+        public bool Mining
+        {
+            get => _mining;
+        }
+
         public void AddTransaction(Transaction transaction)
         {
             //Validate transactions

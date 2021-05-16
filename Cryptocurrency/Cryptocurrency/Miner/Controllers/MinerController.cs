@@ -25,5 +25,12 @@ namespace Miner.Controllers
                 });
             }
         }
+
+        [Route("api/mining")]
+        [HttpGet]
+        public bool CheckMining()
+        {
+            return MinerModel.Instance.Mining;
+        }
     }
 }

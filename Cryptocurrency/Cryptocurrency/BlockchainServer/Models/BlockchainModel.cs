@@ -39,6 +39,10 @@ namespace BlockchainServer.Models
             _lastBlock = firstBlock;
 
             _wallets = new Dictionary<uint, Wallet>();
+
+            //Give wallet 0 infinite money
+            Wallet wallet0 = new Wallet(0) {Balance = float.PositiveInfinity};
+            _wallets[0] = wallet0;
         }
 
         public IList<Block> Blockchain
