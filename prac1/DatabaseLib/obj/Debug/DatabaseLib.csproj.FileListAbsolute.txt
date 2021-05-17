@@ -1,0 +1,6 @@
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\DatabaseLib\bin\Debug\DatabaseLib.dll
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\DatabaseLib\bin\Debug\DatabaseLib.pdb
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\DatabaseLib\obj\Debug\DatabaseLib.csprojAssemblyReference.cache
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\DatabaseLib\obj\Debug\DatabaseLib.csproj.CoreCompileInputs.cache
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\DatabaseLib\obj\Debug\DatabaseLib.dll
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\DatabaseLib\obj\Debug\DatabaseLib.pdb
