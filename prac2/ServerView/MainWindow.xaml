@@ -19,5 +19,7 @@
         <Button Content="Go!" HorizontalAlignment="Left" Height="31" Margin="409,301,0,0" VerticalAlignment="Top" Width="60" Click="Button_Click"/>
         <Image Name="ImageBox" HorizontalAlignment="Left" Height="100" Margin="209,87,0,0" VerticalAlignment="Top" Width="100"/>
         <TextBlock HorizontalAlignment="Left" Margin="131,309,0,0" TextWrapping="Wrap" VerticalAlignment="Top">Search by Last Name:</TextBlock>
+        <ProgressBar Name="SearchingProgressBar" HorizontalAlignment="Left" Height="32" Margin="524,309,0,0" VerticalAlignment="Top" Width="226"/>
+        <TextBlock Name="SearchingLabel" HorizontalAlignment="Left" Height="26" Margin="578,364,0,0" TextWrapping="Wrap" Text="Searching..." VerticalAlignment="Top" Width="72"/>
     </Grid>
 </Window>

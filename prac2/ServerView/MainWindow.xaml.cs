@@ -8,6 +8,7 @@ using System.Drawing;
 using System.Windows.Media.Imaging;
 using System.IO;
 using System.Runtime.Remoting.Messaging;
+using System.Threading.Tasks;
 
 namespace ServerView
 {
@@ -16,7 +17,7 @@ namespace ServerView
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ServerInterfaceLib.BusinessServerInterface m_server;
+        private BusinessServerInterface m_server;
 
         public MainWindow()
         {
@@ -38,7 +39,7 @@ namespace ServerView
             TotalEntriesBox.Text = m_server.GetNumEntries().ToString();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click(object sender, RoutedEventArgs e)
         {
             string query;
             try
@@ -87,14 +88,17 @@ namespace ServerView
             {
                 MessageBox.Show("An unknown error has occured.", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
             } 
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Beans.", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Unknown Error - {ex.Message}", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void WaitCallback(IAsyncResult ar)
+        private async Task<Tuple<uint, uint, int, string, string> GetUser()
         {
+
         }
+
+        private async Task<Stream> GetImageAsync(int index)
     }
 }
