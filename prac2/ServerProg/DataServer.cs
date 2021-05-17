@@ -18,7 +18,7 @@ namespace ServerProg
         public DataServer()
         {
             Console.WriteLine("Constructing new server...");
-            database = new DatabaseClass(1000000);
+            database = new DatabaseClass(100000);
         }
 
         public int GetNumEntries()

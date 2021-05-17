@@ -14,7 +14,7 @@ namespace BusinessTier
     class BusinessServer : BusinessServerInterface
     {
         //private static string LOGS_PATH = @"C:\Users\morit\Source\Repos\DC-Workshops\BusinessTier\business-server.log";
-        private static string LOGS_PATH = @"..\..\business-server.log";
+        private static string LOGS_PATH = "../../../business-server.log";
 
         private DataServerInterface m_dataServer;
 
