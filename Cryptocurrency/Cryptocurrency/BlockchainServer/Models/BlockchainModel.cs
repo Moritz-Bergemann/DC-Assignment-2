@@ -2,7 +2,6 @@
 using APIClasses;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using Block = APIClasses.Block;
 
 namespace BlockchainServer.Models

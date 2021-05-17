@@ -17,9 +17,6 @@ namespace APIClasses
         public byte[] PrevHash;
         public byte[] Hash;
 
-        private static int count = 0; //TODO remove
-        private static bool beans = false;
-
         /// <summary>
         /// Calculates the hash for this block based on all of its other fields.
         /// </summary>
@@ -66,6 +63,11 @@ namespace APIClasses
             return sha256.ComputeHash(Encoding.UTF8.GetBytes(concatString));
         }
 
+        /// <summary>
+        /// Verifies the imported hash follows the hashing rule (the first 5 digits of the hash converted to int32 are '12345')
+        /// </summary>
+        /// <param name="hash"></param>
+        /// <returns></returns>
         public static bool CheckHashRule(byte[] hash)
         {
             if (hash.Length < 5)
@@ -78,8 +80,6 @@ namespace APIClasses
             int[] first5Bytes = (from hashByte in hash.Take(5) select Convert.ToInt32(hashByte)).ToArray();
             string first5Digits = string.Join("", first5Bytes).Substring(0, 5);
 
-            Debug.WriteLine($"Attempt {count++}: comparing '{first5Digits}' to '12345'"); //TODO remove
-
             bool valid = first5Digits.Equals(validator);
 
             if (valid)
@@ -89,6 +89,22 @@ namespace APIClasses
             }
 
             return first5Digits.Equals(validator);
+        }
+
+        public override bool Equals(object o)
+        {
+            if (o is Block oBlock)
+            {
+                return (Id == oBlock.Id &&
+                        WalletFrom == oBlock.WalletFrom) &&
+                       WalletTo == oBlock.WalletTo &&
+                       Amount.Equals(oBlock.Amount) &&
+                       BlockOffset == oBlock.BlockOffset &&
+                       PrevHash.SequenceEqual(oBlock.PrevHash) &&
+                       Hash.SequenceEqual(oBlock.Hash);
+            }
+
+            return false;
         }
     }
 }
