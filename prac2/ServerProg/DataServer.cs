@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using DatabaseLib;
+using ServerInterfaceLib;
+using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
-using DatabaseLib;
-using ServerInterfaceLib;
 
 namespace ServerProg
 {
+    /// <summary>
+    /// Implementation of data tier server for profiles application. Supplies callers with profiles based on index.
+    /// </summary>
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     internal class DataServer : ServerInterfaceLib.DataServerInterface
     {
@@ -19,19 +17,25 @@ namespace ServerProg
 
         public DataServer()
         {
-            database = new DatabaseClass(100000);
+            Console.WriteLine("Constructing new server...");
+            database = new DatabaseClass(1000);
         }
+
         public int GetNumEntries()
         {
             return database.GetNumRecords();
         }
 
+        /// <summary>
+        /// Returns all values (excluding image) for the given profile index.
+        /// </summary>
+        /// <exception cref="FaultException">If index is not valid for database</exception>
         public void GetValuesForEntry(int index, out uint acctNo, out uint pin, out int bal, out string fName, out string lName)
         {
             try
             {
                 acctNo = database.GetAcctNoByIndex(index);
-                pin = database.GetPINByIndex(index);
+                pin = database.GetPinByIndex(index);
                 bal = database.GetBalanceByIndex(index);
                 fName = database.GetFirstNameByIndex(index);
                 lName = database.GetLastNameByIndex(index);
@@ -41,22 +45,36 @@ namespace ServerProg
                 throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Profile access failed: " + a.Message));
             }
         }
+
+        /// <summary>
+        /// Returns the profile image for a given user in the form of a data stream.
+        /// </summary>
+        /// <param name="index">Index of profile</param>
+        /// <returns>Stream representing user's profile</returns>
+        /// <exception cref="FaultException">If index is not valid for database</exception>
         public Stream GetImageForEntry(int index)
         {
+            //Get image from database
             Bitmap image;
             try
             {
-                string path = database.GetImagePathByIndex(index);
-                image = new Bitmap(path, false);
-            } catch (ArgumentOutOfRangeException a)
+                image = database.GetImageByIndex(index);
+            }
+            catch (ArgumentOutOfRangeException a)
             {
                 throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Profile access failed: " + a.Message));
             }
+
+            //Create memory stream for givne bitmap image
             MemoryStream ms = new MemoryStream();
             image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-            ms.Position = 0; //Figure out why this is so important - https://stackoverflow.com/questions/10584260/
+            ms.Position = 0;
             return ms;
         }
+
+        /// <summary>
+        /// Initiates server.
+        /// </summary>
         static void Main(string[] args)
         {
             //This should *definitely* be more descriptive.
