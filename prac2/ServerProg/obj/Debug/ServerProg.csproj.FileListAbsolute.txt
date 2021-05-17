@@ -1,0 +1,12 @@
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\bin\Debug\ServerProg.exe.config
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\bin\Debug\ServerProg.exe
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\bin\Debug\ServerProg.pdb
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\bin\Debug\DatabaseLib.dll
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\bin\Debug\ServerInterfaceLib.dll
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\bin\Debug\DatabaseLib.pdb
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\bin\Debug\ServerInterfaceLib.pdb
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\obj\Debug\ServerProg.csprojAssemblyReference.cache
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\obj\Debug\ServerProg.csproj.CoreCompileInputs.cache
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\obj\Debug\ServerProg.csproj.CopyComplete
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\obj\Debug\ServerProg.exe
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerProg\obj\Debug\ServerProg.pdb
