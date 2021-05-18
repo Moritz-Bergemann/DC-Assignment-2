@@ -1,0 +1,6 @@
+C:\Users\morit\_MyCode\DC\Assignment-2\prac3\DatabaseLib\bin\Debug\DatabaseLib.dll
+C:\Users\morit\_MyCode\DC\Assignment-2\prac3\DatabaseLib\bin\Debug\DatabaseLib.pdb
+C:\Users\morit\_MyCode\DC\Assignment-2\prac3\DatabaseLib\obj\Debug\DatabaseLib.csprojAssemblyReference.cache
+C:\Users\morit\_MyCode\DC\Assignment-2\prac3\DatabaseLib\obj\Debug\DatabaseLib.csproj.CoreCompileInputs.cache
+C:\Users\morit\_MyCode\DC\Assignment-2\prac3\DatabaseLib\obj\Debug\DatabaseLib.dll
+C:\Users\morit\_MyCode\DC\Assignment-2\prac3\DatabaseLib\obj\Debug\DatabaseLib.pdb
