@@ -92,7 +92,7 @@ namespace BusinessTier
         public ProfileData GetProfileByIndex(int index)
         {
             ProfileData profileData = new ProfileData();
-            int profileImageId = -1;
+            int profileImageId;
 
             try
             {

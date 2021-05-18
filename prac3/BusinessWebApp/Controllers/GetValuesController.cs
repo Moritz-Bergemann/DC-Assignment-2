@@ -1,8 +1,6 @@
 ﻿using APIClasses;
-using BusinessWebApp.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -12,12 +10,12 @@ namespace BusinessWebApp.Controllers
 {
     public class GetValuesController : ApiController
     {
-        // GET api/<controller>/5
-        public ProfileData Get(int index)
+        // GET api/values/5
+        public ProfileData Get(int id)
         {
             try
             {
-                return BusinessModel.Instance.GetProfileByIndex(index);
+                return BusinessModel.Instance.GetProfileByIndex(id);
             }
             catch (ArgumentException a)
             {
@@ -27,5 +25,4 @@ namespace BusinessWebApp.Controllers
                 });
             }
         }
-    }
 }

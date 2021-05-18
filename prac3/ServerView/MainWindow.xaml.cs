@@ -32,7 +32,7 @@ namespace ServerView
             TotalEntriesBox.Text = numEntriesResponse.Content;
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void NameSearchButton_Click(object sender, RoutedEventArgs e)
         {
             string query;
             try
@@ -68,35 +68,70 @@ namespace ServerView
                 {
                     ProfileData profileData = JsonConvert.DeserializeObject<ProfileData>(searchResponse.Content);
 
-                    //And now, set the values in the GUI!
-                    FirstNameBox.Text = profileData.FName;
-                    LastNameBox.Text = profileData.LName;
-                    BalanceBox.Text = profileData.Bal.ToString();
-                    AccountNumBox.Text = profileData.Acct.ToString();
-                    PinBox.Text = profileData.Pin.ToString();
-
-                    //Decode image Base64 data and display it
-                    byte[] profileBinary = Convert.FromBase64String(profileData.ProfileImage);
-                    BitmapImage image = new BitmapImage();
-                    image.BeginInit();
-                    image.StreamSource = new MemoryStream(profileBinary);
-                    image.EndInit();
-
-                    ImageBox.Source = image;
+                    FillGui(profileData);
                 }
                 else
                 {
                     MessageBox.Show($"Could not find given profile with last name query \'{query}\'", "Not found", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
-            catch (FormatException)
-            {
-                MessageBox.Show("Please insert only numbers into the index box", "Bad Input", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
             catch (Exception ex)
             {
                 MessageBox.Show($"An unknown error has occurred - {ex.Message}.", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        public async void IndexSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //Get the index query
+                int index = int.Parse(IndexEditBox.Text);
+
+                //Make request on web service for search
+                RestRequest searchRequest = new RestRequest($"api/GetValues/{index}");
+                IRestResponse searchResponse = _businessServer.Get(searchRequest);
+
+                if (!searchResponse.IsSuccessful)
+                {
+                    if (searchResponse.StatusCode == HttpStatusCode.BadGateway)
+                    {
+                        MessageBox.Show($"Bad request - {searchResponse.Content}", "Bad Request", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Unexpected error - {searchResponse.Content}", "Unexpected Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    return;
+                }
+
+                //Fill GUI given search was successful
+                ProfileData profileData = JsonConvert.DeserializeObject<ProfileData>(searchResponse.Content);
+                FillGui(profileData);
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Please insert only numbers into the index box", "Bad Input", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void FillGui(ProfileData profileData)
+        {
+            //Set values in GUI
+            FirstNameBox.Text = profileData.FName;
+            LastNameBox.Text = profileData.LName;
+            BalanceBox.Text = profileData.Bal.ToString();
+            AccountNumBox.Text = profileData.Acct.ToString();
+            PinBox.Text = profileData.Pin.ToString();
+
+            //Decode image Base64 data and display it
+            byte[] profileBinary = Convert.FromBase64String(profileData.ProfileImage);
+            BitmapImage image = new BitmapImage();
+            image.BeginInit();
+            image.StreamSource = new MemoryStream(profileBinary);
+            image.EndInit();
+
+            ImageBox.Source = image;
         }
     }
 }
