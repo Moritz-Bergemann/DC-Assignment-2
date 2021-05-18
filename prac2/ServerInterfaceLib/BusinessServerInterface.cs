@@ -13,14 +13,12 @@ namespace ServerInterfaceLib
     public interface BusinessServerInterface
     {
         [OperationContract]
-        bool SearchByLastName(string query);
-
-        [OperationContract]
-        void GetSearchedProfileDetails(out uint acctNo, out uint pin, out int bal, out string fName, out string lName);
+        [FaultContract(typeof(DatabaseAccessFault))]
+        void SearchByLastName(string query, out uint acctNo, out uint pin, out int bal, out string fName, out string lName, out int profileImageId);
 
         [OperationContract]
         [FaultContract(typeof(DatabaseAccessFault))]
-        Stream GetSearchedProfileImage();
+        Stream GetProfileImageById(int id);
 
         [OperationContract]
         [FaultContract(typeof(DatabaseAccessFault))]

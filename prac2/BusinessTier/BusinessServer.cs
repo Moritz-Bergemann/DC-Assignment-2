@@ -1,13 +1,8 @@
 ﻿using ServerInterfaceLib;
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.ServiceModel;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessTier
 {
@@ -18,15 +13,13 @@ namespace BusinessTier
 
         private DataServerInterface m_dataServer;
 
-        private int m_foundIndex;
         private int m_logNum = 0;
         public BusinessServer()
         {
             //Get the data server
             string url = "net.tcp://localhost:8100/DataService";
             NetTcpBinding tcp = new NetTcpBinding();
-            //tcp.TransferMode = TransferMode.StreamedResponse; //FIXME for some reason this causes the constructor to be reloaded each time AND also causes fault contracts to not work jesus christ 🤔
-            tcp.MaxReceivedMessageSize = 1024 * 1024 * 2; //NOTE: Why 2?
+            tcp.MaxReceivedMessageSize = 1024 * 1024 * 2;
 
             //Create connection factory for connection to server
             ChannelFactory<ServerInterfaceLib.DataServerInterface> serverChannelFactory = new ChannelFactory<DataServerInterface>(tcp, url);
@@ -53,69 +46,73 @@ namespace BusinessTier
         /// </summary>
         /// <param name="query"></param> True if matching profile was found, false if not
         /// <returns></returns>
-        public bool SearchByLastName(string query)
+        public void SearchByLastName(string query, out uint acctNo, out uint pin, out int bal, out string fName, out string lName, out int profileImageId)
         {
-            m_foundIndex = -1;
+            int foundIndex = -1;
+
+            //Assign default values to search results (in case value not found)
+            acctNo = pin = 0;
+            bal = profileImageId = -1;
+            fName = lName = null;
+
 
             //Find the first profile matching the query
             for (int ii = 0; ii < m_dataServer.GetNumEntries(); ii++)
             {
-                string curLName = null;
-                m_dataServer.GetValuesForEntry(ii, out _, out _, out _, out _, out curLName);
+                lName = null;
+                m_dataServer.GetValuesForEntry(ii, out acctNo, out pin, out bal, out fName, out lName, out profileImageId);
 
                 //If query contained in lastname, the match has been found
-                if (curLName.ToLower().Contains(query.ToLower()))
+                if (lName.ToLower().Contains(query.ToLower()))
                 {
-                    m_foundIndex = ii;
+                    foundIndex = ii;
                     break;
                 }
             }
 
             //Do Logging
             string logMessage = $"Profile Search - query \'{query}\' - ";
-            logMessage += (m_foundIndex == -1 ? "No Results" : $"First Match Index {m_foundIndex}");
+            logMessage += (foundIndex == -1 ? "No Results" : $"Match - index {foundIndex}: \'#{acctNo}\', \'PIN {pin}\', \'${bal}\', \'{fName} {lName}\', \'IMG{profileImageId}\'");
             Log(logMessage);
 
-            return (m_foundIndex != -1);
-        }
-
-        /// <summary>
-        /// Get the profile details of the current found profile.
-        /// </summary>
-        public void GetSearchedProfileDetails(out uint acctNo, out uint pin, out int bal, out string fName, out string lName)
-        {
-            string logMessage = "Retrieve Searched Profile Details - ";
-
-            if (m_foundIndex != -1)
+            if (foundIndex == -1)
             {
-                m_dataServer.GetValuesForEntry(m_foundIndex, out acctNo, out pin, out bal, out fName, out lName);
-                Log(logMessage + $"Matched Index {m_foundIndex}: \'{acctNo}\', \'{pin}\', \'{bal}\', \'{fName} {lName}\'");
-            } else
-            {
-                Log(logMessage + "No latest profile");
-                throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Last searched profile was not found"));
+                throw new FaultException<DatabaseAccessFault>(
+                    new DatabaseAccessFault($"Profile matching last name query \'{query}\' could not be found"));
             }
         }
 
         /// <summary>
-        /// Get the profile image for the current found profile
+        /// Finds a given profile image by ID integer, retrieved by searching for a given profile.
         /// </summary>
-        /// <returns></returns> stream containing the image of the current found profile.
-        public Stream GetSearchedProfileImage()
+        /// <param name="id">ID integer of image to return</param>
+        /// <returns></returns>
+        public Stream GetProfileImageById(int id)
         {
-            string logMessage = "Retrieve Searched Profile Details - ";
+            string logString = $"Image search By ID \'{id}\' - ";
 
-            if (m_foundIndex != -1)
+            Stream stream = null;
+            try
             {
-                Log(logMessage + $"Matched Index {m_foundIndex}");
-                return m_dataServer.GetImageForEntry(m_foundIndex);
+                stream = m_dataServer.GetImageById(id);
+                logString += "found";
             }
-            else
+            catch (FaultException<DatabaseAccessFault> d)
             {
-                Log(logMessage + "No latest profile");
-                throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Last searched profile was not found"));
+                logString += $"not found (\'{d.Message}\')";
             }
+            
+            Log(logString);
+
+            //Throw exception if profile image was not found
+            if (stream == null)
+            {
+                throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault($"Image with ID \'{id}\' could not be found"));
+            }
+
+            return stream;
         }
+
         public static void Main(string[] args)
         {
             Console.WriteLine("Starting business server...");
@@ -148,7 +145,7 @@ namespace BusinessTier
         private void Log(string message)
         {
             //Add log number and increment log number
-            message = m_logNum.ToString() + ": " + message;
+            message = m_logNum + ": " + message;
             m_logNum++;
 
             StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);

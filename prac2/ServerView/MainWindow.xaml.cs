@@ -50,38 +50,29 @@ namespace ServerView
                 var query = QueryEditBox.Text;
 
                 //Then, run our RPC function, using the out mode parameters
-                Task<bool> searchTask = SearchByLastNameAsync(query);
+                Task<Tuple<uint, uint, int, string, string, int>> searchTask = SearchProfileAsync(query);
 
                 //Show loading bar
                 SearchingProgressBar.Visibility = Visibility.Visible;
                 SearchingLabel.Visibility = Visibility.Visible;
 
-                bool found = await searchTask;
+                Tuple<uint, uint, int, string, string, int> searchResult = await searchTask;
 
-                if (found)
-                {
-                    Task<Tuple<uint, uint, int, string, string>> getProfileTask = GetProfileDetailsAsync();
-                    Task<Stream> getProfileImageTask = GetProfileImageAsync();
+                //Start profile image retrieval
+                Task<Stream> getProfileImageTask = GetProfileImageAsync(searchResult.Item6);
 
-                    //await search complete
-                    Tuple<uint, uint, int, string, string> profileResult = await getProfileTask;
-                    Stream profileStream = await getProfileImageTask;
+                //Set values in GUI
+                FirstNameBox.Text = searchResult.Item4;
+                LastNameBox.Text = searchResult.Item5;
+                BalanceBox.Text = searchResult.Item3.ToString();
+                AccountNumBox.Text = searchResult.Item1.ToString();
+                PinBox.Text = searchResult.Item2.ToString();
 
-                    //Set values in GUI
-                    FirstNameBox.Text = profileResult.Item4;
-                    LastNameBox.Text = profileResult.Item5;
-                    BalanceBox.Text = profileResult.Item3.ToString();
-                    AccountNumBox.Text = profileResult.Item1.ToString();
-                    PinBox.Text = profileResult.Item2.ToString();
+                //await getting profile image complete
+                Stream profileStream = await getProfileImageTask;
 
-                    //Display the profile image, getting it from the image stream
-                    ImageBox.Source = BitmapFrame.Create(profileStream);
-                }
-                else
-                {
-                    MessageBox.Show("No profiles containing the specified query were found.", "No results",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                //Display the profile image, getting it from the image stream
+                ImageBox.Source = BitmapFrame.Create(profileStream);
             }
             catch (FormatException)
             {
@@ -94,10 +85,10 @@ namespace ServerView
             }
             catch (FaultException)
             {
-                MessageBox.Show("An unknown error has occured.", "Unknown Error", MessageBoxButton.OK,
+                MessageBox.Show("An unknown server error has occurred.", "Unknown Server Error", MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
-            catch (TimeoutException t)
+            catch (TimeoutException)
             {
                 MessageBox.Show("The requested operation has timed out. This may be due to an internal server error or as the request is taking too long to process.", "Timeout Error", MessageBoxButton.OK,
                     MessageBoxImage.Error);
@@ -124,25 +115,20 @@ namespace ServerView
         /// <summary>
         /// </summary>
         /// <returns>Tuple of elements (in order) account number, PIN, balance, first name, last name</returns>
-        private async Task<Tuple<uint, uint, int, string, string>> GetProfileDetailsAsync()
+        private async Task<Tuple<uint, uint, int, string, string, int>> SearchProfileAsync(string query)
         {
             return await Task.Run(() =>
             {
-                m_server.GetSearchedProfileDetails(out uint acct, out uint pin, out int bal, out string fName,
-                        out string lName);
+                m_server.SearchByLastName(query, out uint acct, out uint pin, out int bal, out string fName,
+                        out string lName, out int profileImageId);
 
-                return new Tuple<uint, uint, int, string, string>(acct, pin, bal, fName, lName);
+                return new Tuple<uint, uint, int, string, string, int>(acct, pin, bal, fName, lName, profileImageId);
             });
         }
 
-        private async Task<Stream> GetProfileImageAsync()
+        private async Task<Stream> GetProfileImageAsync(int id)
         {
-            return await Task.Run(() => m_server.GetSearchedProfileImage());
-        }
-
-        private async Task<bool> SearchByLastNameAsync(string query)
-        {
-            return await Task.Run(() => m_server.SearchByLastName(query));
+            return await Task.Run(() => m_server.GetProfileImageById(id));
         }
     }
 }

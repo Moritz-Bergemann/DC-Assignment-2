@@ -11,14 +11,14 @@ namespace ServerProg
     /// Implementation of data tier server for profiles application. Supplies callers with profiles based on index.
     /// </summary>
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
-    internal class DataServer : ServerInterfaceLib.DataServerInterface
+    internal class DataServer : DataServerInterface
     {
-        private DatabaseLib.DatabaseClass database;
+        private DatabaseClass database;
 
         public DataServer()
         {
             Console.WriteLine("Constructing new server...");
-            database = new DatabaseClass(100000);
+            database = new DatabaseClass(1000);
         }
 
         public int GetNumEntries()
@@ -30,7 +30,7 @@ namespace ServerProg
         /// Returns all values (excluding image) for the given profile index.
         /// </summary>
         /// <exception cref="FaultException">If index is not valid for database</exception>
-        public void GetValuesForEntry(int index, out uint acctNo, out uint pin, out int bal, out string fName, out string lName)
+        public void GetValuesForEntry(int index, out uint acctNo, out uint pin, out int bal, out string fName, out string lName, out int profileImageId)
         {
             try
             {
@@ -39,6 +39,7 @@ namespace ServerProg
                 bal = database.GetBalanceByIndex(index);
                 fName = database.GetFirstNameByIndex(index);
                 lName = database.GetLastNameByIndex(index);
+                profileImageId = database.GetImageIdByIndex(index);
             }
             catch (ArgumentOutOfRangeException a)
             {
@@ -47,22 +48,22 @@ namespace ServerProg
         }
 
         /// <summary>
-        /// Returns the profile image for a given user in the form of a data stream.
+        /// Returns the profile image with a given ID.
         /// </summary>
-        /// <param name="index">Index of profile</param>
+        /// <param name="id">ID of profile image</param>
         /// <returns>Stream representing user's profile</returns>
-        /// <exception cref="FaultException">If index is not valid for database</exception>
-        public Stream GetImageForEntry(int index)
+        /// <exception cref="FaultException">If ID is not valid for database</exception>
+        public Stream GetImageById(int id)
         {
             //Get image from database
             Bitmap image;
             try
             {
-                image = database.GetImageByIndex(index);
+                image = database.GetImageById(id);
             }
             catch (ArgumentOutOfRangeException a)
             {
-                throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Profile access failed: " + a.Message));
+                throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Image access failed: " + a.Message));
             }
 
             //Create memory stream for givne bitmap image

@@ -20,10 +20,10 @@ namespace ServerInterfaceLib
     
         [OperationContract]
         [FaultContract(typeof(DatabaseAccessFault))]
-        void GetValuesForEntry(int index, out uint acctNo, out uint pin, out int bal, out string fName, out string lName);
+        void GetValuesForEntry(int index, out uint acctNo, out uint pin, out int bal, out string fName, out string lName, out int profileImageId);
 
         [OperationContract]
         [FaultContract(typeof(DatabaseAccessFault))]
-        Stream GetImageForEntry(int index);
+        Stream GetImageById(int id);
     }
 }

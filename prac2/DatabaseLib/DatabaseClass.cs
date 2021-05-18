@@ -52,9 +52,20 @@ namespace DatabaseLib
         {
             return dataStructs.Count;
         }
-        public Bitmap GetImageByIndex(int index)
+
+        public int GetImageIdByIndex(int index)
         {
-            return _generator.GetImageByNum(dataStructs[index].ImageNum);
+            return dataStructs[index].ImageNum;
+        }
+
+        /// <summary>
+        /// Retrieves image based on image ID (as a profile image is too large to be sent alongside other data in the request)
+        /// </summary>
+        /// <param name="id">Image identifier (attached to each profile)</param>
+        /// <returns></returns>
+        public Bitmap GetImageById(int id)
+        {
+            return _generator.GetImageByNum(id);
         }
     }
 }
