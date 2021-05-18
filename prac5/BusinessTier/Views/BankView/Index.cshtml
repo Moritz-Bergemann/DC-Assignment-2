@@ -19,6 +19,13 @@
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 
 <script>
+    function loadPage(data) {
+        $("#mainBody").fadeOut(10, () => {
+            $("#mainBody").html(data);
+            $("#mainBody").fadeIn();
+        });
+    }
+
     //Load main pages
     $("#usersPageButton").on('click',
         () => {
@@ -27,7 +34,7 @@
                 type: 'get',
                 processData: false,
                 success: (data, textStatus, jQxhr) => {
-                    $("#mainBody").html(data);
+                    loadPage(data);
                 },
                 error: (j,t,e) => {
                     alert(e);
@@ -41,7 +48,7 @@
                 type: 'get',
                 processData: false,
                 success: (data, textStatus, jQxhr) => {
-                    $("#mainBody").html(data);
+                    loadPage(data);
                 },
                 error: (j,t,e) => {
                     alert(e);
@@ -55,7 +62,7 @@
                 type: 'get',
                 processData: false,
                 success: (data, textStatus, jQxhr) => {
-                    $("#mainBody").html(data);
+                    loadPage(data);
                 },
                 error: (j,t,e) => {
                     alert(e);
