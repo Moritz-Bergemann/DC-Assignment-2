@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.ServiceModel;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -34,11 +35,10 @@ namespace ServerView
 
         private async void NameSearchButton_Click(object sender, RoutedEventArgs e)
         {
-            string query;
             try
             {
                 //Get the user query
-                query = QueryEditBox.Text;
+                var query = QueryEditBox.Text;
 
                 //Build search data struct for query
                 SearchData searchData = new SearchData();
@@ -48,10 +48,15 @@ namespace ServerView
                 RestRequest searchRequest = new RestRequest("api/search");
                 searchRequest.AddJsonBody(searchData);
 
-                IRestResponse searchResponse = _businessServer.Post(searchRequest);
+                Task<IRestResponse> searchTask = SearchByLastNameAsync(searchRequest);
+
+                //Show the loading bar
+                LoadingBar.Visibility = Visibility.Visible;
+                LoadingLabel.Visibility = Visibility.Visible;
+
+                IRestResponse searchResponse = await searchTask;
 
                 bool found = true;
-
                 if (!searchResponse.IsSuccessful)
                 {
                     if (searchResponse.StatusCode == HttpStatusCode.NotFound) //If profile was not found
@@ -72,12 +77,20 @@ namespace ServerView
                 }
                 else
                 {
-                    MessageBox.Show($"Could not find given profile with last name query \'{query}\'", "Not found", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show($"Could not find given profile with last name query \'{query}\'", "Not found",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"An unknown error has occurred - {ex.Message}.", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"An unknown error has occurred - {ex.Message}.", "Unknown Error", MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                //Hide loading bar
+                LoadingBar.Visibility = Visibility.Hidden;
+                LoadingLabel.Visibility = Visibility.Hidden;
             }
         }
 
@@ -90,7 +103,14 @@ namespace ServerView
 
                 //Make request on web service for search
                 RestRequest searchRequest = new RestRequest($"api/GetValues/{index}");
-                IRestResponse searchResponse = _businessServer.Get(searchRequest);
+                
+                Task<IRestResponse> searchTask = GetByIndexAsync(searchRequest);
+
+                //Show the loading bar
+                LoadingBar.Visibility = Visibility.Visible;
+                LoadingLabel.Visibility = Visibility.Visible;
+
+                IRestResponse searchResponse = await searchTask;
 
                 if (!searchResponse.IsSuccessful)
                 {
@@ -113,6 +133,12 @@ namespace ServerView
             {
                 MessageBox.Show("Please insert only numbers into the index box", "Bad Input", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+            finally
+            {
+                //Hide loading bar
+                LoadingBar.Visibility = Visibility.Hidden;
+                LoadingLabel.Visibility = Visibility.Hidden;
+            }
         }
 
         private void FillGui(ProfileData profileData)
@@ -132,6 +158,16 @@ namespace ServerView
             image.EndInit();
 
             ImageBox.Source = image;
+        }
+
+        private async Task<IRestResponse> SearchByLastNameAsync(RestRequest request)
+        {
+            return await Task.Run(() => _businessServer.Post(request));
+        }
+
+        private async Task<IRestResponse> GetByIndexAsync(RestRequest request)
+        {
+            return await Task.Run(() => _businessServer.Get(request));
         }
     }
 }

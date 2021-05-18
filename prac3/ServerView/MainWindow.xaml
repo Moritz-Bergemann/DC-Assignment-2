@@ -13,14 +13,16 @@
         <TextBox Name="PinBox" IsReadOnly="True" HorizontalAlignment="Center" Height="22" Margin="0,150,0,0" TextWrapping="Wrap" Text="PIN" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.5,0.5"/>
         <TextBox Name="BalanceBox" IsReadOnly="True" HorizontalAlignment="Center" Height="22" Margin="0,178,0,0" TextWrapping="Wrap" Text="Balance" VerticalAlignment="Top" Width="114"/>
         <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="1" Margin="0,267,0,0" VerticalAlignment="Top" Width="792"/>
-        <TextBox Name="QueryEditBox" HorizontalAlignment="Left" Height="23" Margin="145,306,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <TextBlock HorizontalAlignment="Left" Margin="274,389,0,0" TextWrapping="Wrap" VerticalAlignment="Top">Total Entries:</TextBlock>
-        <TextBox Name="TotalEntriesBox" IsReadOnly="True" HorizontalAlignment="Left" Height="21" Margin="351,388,0,0" TextWrapping="Wrap" Text="Total" VerticalAlignment="Top" Width="68"/>
-        <Button Content="Go!" HorizontalAlignment="Left" Height="31" Margin="205,334,0,0" VerticalAlignment="Top" Width="60" Click="NameSearchButton_Click"/>
+        <TextBox Name="QueryEditBox" HorizontalAlignment="Left" Height="23" Margin="114,303,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBlock HorizontalAlignment="Left" Margin="322,389,0,0" TextWrapping="Wrap" VerticalAlignment="Top">Total Entries:</TextBlock>
+        <TextBox Name="TotalEntriesBox" IsReadOnly="True" HorizontalAlignment="Left" Height="21" Margin="399,388,0,0" TextWrapping="Wrap" Text="Total" VerticalAlignment="Top" Width="68"/>
+        <Button Content="Go!" HorizontalAlignment="Left" Height="31" Margin="174,331,0,0" VerticalAlignment="Top" Width="60" Click="NameSearchButton_Click"/>
         <Image Name="ImageBox" HorizontalAlignment="Left" Height="100" Margin="209,87,0,0" VerticalAlignment="Top" Width="100"/>
-        <TextBlock HorizontalAlignment="Left" Margin="145,285,0,0" TextWrapping="Wrap" VerticalAlignment="Top">Search by Last Name:</TextBlock>
-        <TextBox x:Name="IndexEditBox" InputScope="Number" HorizontalAlignment="Left" Height="23" Margin="375,306,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
-        <Button Content="Go!" HorizontalAlignment="Left" Height="31" Margin="435,334,0,0" VerticalAlignment="Top" Width="60" Click="IndexSearchButton_Click"/>
-        <TextBlock HorizontalAlignment="Left" Margin="375,285,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Search by "/><Run Text="Index"/><Run Text=":"/></TextBlock>
+        <TextBlock HorizontalAlignment="Left" Margin="114,282,0,0" TextWrapping="Wrap" VerticalAlignment="Top">Search by Last Name:</TextBlock>
+        <TextBox x:Name="IndexEditBox" InputScope="Number" HorizontalAlignment="Left" Height="23" Margin="546,303,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Go!" HorizontalAlignment="Left" Height="31" Margin="606,331,0,0" VerticalAlignment="Top" Width="60" Click="IndexSearchButton_Click"/>
+        <TextBlock HorizontalAlignment="Left" Margin="546,282,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Search by "/><Run Text="Index"/><Run Text=":"/></TextBlock>
+        <ProgressBar Name="LoadingBar" Visibility="Hidden" IsIndeterminate="True" HorizontalAlignment="Left" Height="23" Margin="298,303,0,0" VerticalAlignment="Top" Width="196"/>
+        <TextBlock Name="LoadingLabel" Visibility="Hidden" HorizontalAlignment="Left" Margin="369,331,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Top"/>
     </Grid>
 </Window>
