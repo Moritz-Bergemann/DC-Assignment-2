@@ -217,9 +217,6 @@
     <Content Include="Views\BankView\Index.cshtml" />
     <Content Include="Views\Bank\Error.cshtml" />
     <Content Include="Views\Bank\_Layout.cshtml" />
-    <Content Include="Views\BankView\UserPage.cshtml" />
-    <Content Include="Views\BankView\AccountPage.cshtml" />
-    <Content Include="Views\BankView\TransactionPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

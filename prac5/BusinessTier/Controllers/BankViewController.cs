@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -11,6 +12,8 @@ namespace BusinessTier.Controllers
 {
     public class BankViewController : Controller
     {
+        public static string ResPath = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).FullName, "_resources");
+
         [Route("")]
         public ActionResult Index()
         {
@@ -18,21 +21,34 @@ namespace BusinessTier.Controllers
         }
 
         [Route("user")]
-        public ActionResult UserPage()
+        public ContentResult UserPage()
         {
-            return View();
+            return GetPage("UserPage.html");
         }
 
         [Route("account")]
-        public ActionResult AccountPage()
+        public ContentResult AccountPage()
         {
-            return View();
+            return GetPage("AccountPage.html");
         }
 
         [Route("transaction")]
-        public ActionResult TransactionPage()
+        public ContentResult TransactionPage()
         {
-            return View();
+            return GetPage("TransactionPage.html");
+        }
+
+        private ContentResult GetPage(string filename)
+        {
+            //Read HTML data in from file
+            string pagePath = Path.Combine(ResPath, filename);
+            string pageContent = System.IO.File.ReadAllText(pagePath);
+
+            return new ContentResult()
+            {
+                ContentType = "text/html",
+                Content = pageContent
+            };
         }
     }
 }
