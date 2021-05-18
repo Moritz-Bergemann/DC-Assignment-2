@@ -1,0 +1,176 @@
+﻿@using APIClasses
+
+@{
+    ViewBag.Title = "AccountPage";
+}
+
+<h2>Account Management</h2>
+
+<div>
+    <h3>Get Information for Existing Accounts</h3>
+
+    <label for="infoAccountId">Account ID:</label> <br />
+    <input id="infoAccountId" name="accountId" type="number" placeholder="Account Id" /> <br />
+
+    <button id="getDetailsButton">Get Details</button>
+    <button id="getTransactionsButton">Get Sent Transactions</button>
+</div>
+<div id="accountInfoContent"></div>
+
+<div>
+    <h3>Withdraw and Deposit</h3>
+    <label for="withdrawDepositAccountId">Account ID:</label> <br />
+    <input id="withdrawDepositAccountId" name="accountId" type="number" placeholder="Account Id" />
+    <br />
+    <label for="withdrawDepositAmount">Amount:</label> <br />
+    <input id="withdrawDepositAmount" name="amount" type="number" placeholder="Amount" /> <br />
+    <br />
+    <button id="withdrawButton">Withdraw</button>
+    <button id="depositButton">Deposit</button>
+    <div id="withDrawDepositSuccessDiv" hidden="true">
+        <p>
+            Transaction succeeded!
+            New balance for account '<text id="withDrawDepositSuccessAccount">NULL</text>' is $<text id="withDrawDepositSuccessNewBalance">NULL</text>
+        </p>
+    </div>
+</div>
+
+<div>
+    <h3>Create a New Account</h3>
+    <form id="createAccountForm">
+        <label for="createAccountUserId">Owning User ID:</label>
+        <input id="createAccountUserId" name="userId" type="number"/> 
+        <br/>
+        <button type="submit">Create Account</button>
+    </form>
+    <div id="accountCreatedDiv" hidden="true">
+        <p>Account created successfully! ID is <text id="accountCreatedId">NULL</text></p>
+    </div>
+</div>
+
+<!--Templates for displaying dynamic data-->
+<template style="border-style: solid; margin: 8px" id="accountTemplate" href="#">
+    <div>
+        <p>Account ID: <text>NULL</text></p>
+        <p>Owning User ID: <text>NULL</text></p>
+        <p>Balance: $<text>NULL</text></p>
+    </div>
+</template>
+
+<template style="border-style: solid; margin: 8px" id="transactionTemplate" href="#">
+    <div>
+        <p>Sender Account ID: <text>NULL</text></p>
+        <p>Receiving Account ID: <text>NULL</text></p>
+        <p>Amount: $<text>NULL</text></p>
+    </div>
+</template>
+
+<script>
+    //Get Account Details
+    $("#getDetailsButton").on('click',
+        () => {
+            var accountId = $("#infoAccountId").val();
+
+            $.ajax({
+                url: `api/account/${accountId}`,
+                type: 'GET',
+                contentType: 'application/json; charset=utf-8',
+                success: (data, textStatus, jQxhr) => {
+                    console.log("Returned Account Data:");
+                    console.log(data);
+
+                    //Copy templates
+                    var accountInfoContent = document.querySelector("#accountInfoContent");
+                    accountInfoContent.innerHTML = "";
+
+                    //Set template values
+                    var clone = document.querySelector('#accountTemplate').content.cloneNode(true);
+                    var elements = clone.querySelectorAll('text');
+
+                    elements[0].textContent = data.Id;
+                    elements[1].textContent = data.UserId;
+                    elements[2].textContent = data.Balance;
+
+                    //Set styling
+                    var div = clone.querySelector('div');
+                    div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;");
+
+                    accountInfoContent.appendChild(clone);
+                },
+                error: (jqXhr, textStatus, errorThrown) => {
+                    alert("Error! " + jqXhr.responseText);
+                    console.warn(jqXhr);
+                }
+            });
+        });
+
+    //Withdraw/Deposit
+    function withdrawDeposit(withdrawOrDeposit) {
+        if (withdrawOrDeposit !== 'withdraw' && withdrawOrDeposit !== 'deposit') {
+            throw 'input \'withdrawOrDeposit\' must be either \'withdraw\' or \'deposit\'!';
+        }
+
+        //Make transaction (either withdraw or deposit)
+        var accountId = $("#withdrawDepositAccountId").val();
+        var amount = parseInt($("#withdrawDepositAmount").val());
+
+        var postData = {
+            Amount: amount
+        };
+
+        console.log("Post Data:");
+        console.log(postData);
+
+        $.ajax({
+            url: `api/account/${accountId}/${withdrawOrDeposit}`, //Modify URL based on whether withdraw or deposit
+            type: 'POST',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify(postData),
+            success: (data, textStatus, jQxhr) => {
+                $("#withDrawDepositSuccessDiv").show();
+                $("#withDrawDepositSuccessAccount").text(data.Id);
+                $("#withDrawDepositSuccessNewBalance").text(data.Balance);
+            },
+            error: (jqXhr, textStatus, errorThrown) => {
+                alert("Error! " + jqXhr.responseText);
+                console.warn(jqXhr);
+            }
+        });
+    }
+
+    $("#withdrawButton").on('click', () => { withdrawDeposit('withdraw') });
+    $("#depositButton").on('click', () => { withdrawDeposit('deposit') });
+
+    //Account creation
+    $("#createAccountForm").on('submit',
+        (e) => {
+            e.preventDefault();
+            var formData = $("#createAccountForm").serializeArray();
+
+            var postData = {
+                UserId: formData[0].value
+            };
+
+            //Make API request
+            $.ajax({
+                url: '/api/account',
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify(postData),
+                success: (data, textStatus, jQxhr) => {
+                    console.log("Account Data:");
+                    console.log(data);
+
+                    $("#accountCreatedDiv").show();
+                    $("#accountCreatedId").text(data.Id);
+
+                },
+                error: (jqXhr, textStatus, errorThrown) => {
+                    alert("Error! " + jqXhr.responseText);
+                    console.warn(jqXhr);
+                }
+            });
+        });
+</script>
