@@ -138,7 +138,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\DataModel.cs" />
+    <Compile Include="Models\BusinessModel.cs" />
+    <Compile Include="Models\InternalErrorException.cs" />
+    <Compile Include="Models\NotFoundException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

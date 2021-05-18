@@ -14,16 +14,16 @@ namespace ServerInterfaceLib
     public interface DataServerInterface
     {
         //Each of these are service function contracts. They need to be tagged as OperationContracts.
-        
+
         [OperationContract]
         int GetNumEntries();
-    
-        [OperationContract]
-        [FaultContract(typeof(DatabaseAccessFault))]
-        void GetValuesForEntry(int index, out uint acctNo, out uint pin, out int bal, out string fName, out string lName);
 
         [OperationContract]
         [FaultContract(typeof(DatabaseAccessFault))]
-        Stream GetImageForEntry(int index);
+        void GetValuesForEntry(int index, out uint acctNo, out uint pin, out int bal, out string fName, out string lName, out int profileImageId);
+
+        [OperationContract]
+        [FaultContract(typeof(DatabaseAccessFault))]
+        Stream GetImageById(int id);
     }
 }
