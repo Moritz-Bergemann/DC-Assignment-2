@@ -1,28 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DatabaseLib
 {
+    /// <summary>
+    /// Class representing a database of users. Can be accessed to retrieve individual user details
+    /// </summary>
     public class DatabaseClass
     {
         List<DataStruct> dataStructs;
-        public DatabaseClass(int numEntries)
+        private DatabaseGenerator _generator;
+        public DatabaseClass(int numUsers)
         {
-            Console.WriteLine("Making new database object...");
-
             dataStructs = new List<DatabaseLib.DataStruct>();
 
-            DatabaseLib.DatabaseGenerator generator = new DatabaseGenerator();
+            _generator = new DatabaseGenerator();
 
-            for (int ii = 0; ii < numEntries; ii++)
+            //Generate users using generator
+            for (int ii = 0; ii < numUsers; ii++)
             {
                 DatabaseLib.DataStruct curDataStruct = new DataStruct();
-                generator.GetNextAccount(out curDataStruct.pin, out curDataStruct.acctNo, 
-                    out curDataStruct.firstName, out curDataStruct.lastName, out curDataStruct.balance, out curDataStruct.imagePath);
+                _generator.GetNextAccount(out curDataStruct.Pin, out curDataStruct.AcctNo,
+                    out curDataStruct.FirstName, out curDataStruct.LastName, out curDataStruct.Balance, out curDataStruct.ImageNum);
 
                 dataStructs.Add(curDataStruct);
             }
@@ -30,31 +30,42 @@ namespace DatabaseLib
 
         public uint GetAcctNoByIndex(int index)
         {
-            return dataStructs[index].acctNo;
+            return dataStructs[index].AcctNo;
         }
-        public uint GetPINByIndex(int index)
+        public uint GetPinByIndex(int index)
         {
-            return dataStructs[index].pin;
+            return dataStructs[index].Pin;
         }
         public string GetFirstNameByIndex(int index)
         {
-            return dataStructs[index].firstName;
+            return dataStructs[index].FirstName;
         }
         public string GetLastNameByIndex(int index)
         {
-            return dataStructs[index].lastName;
+            return dataStructs[index].LastName;
         }
         public int GetBalanceByIndex(int index)
         {
-            return dataStructs[index].balance;
-        }
-        public string GetImagePathByIndex(int index)
-        {
-            return dataStructs[index].imagePath;
+            return dataStructs[index].Balance;
         }
         public int GetNumRecords()
         {
             return dataStructs.Count;
+        }
+
+        public int GetImageIdByIndex(int index)
+        {
+            return dataStructs[index].ImageNum;
+        }
+
+        /// <summary>
+        /// Retrieves image based on image ID (as a profile image is too large to be sent alongside other data in the request)
+        /// </summary>
+        /// <param name="id">Image identifier (attached to each profile)</param>
+        /// <returns></returns>
+        public Bitmap GetImageById(int id)
+        {
+            return _generator.GetImageByNum(id);
         }
     }
 }

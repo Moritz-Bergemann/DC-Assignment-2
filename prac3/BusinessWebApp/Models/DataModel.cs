@@ -29,11 +29,10 @@ namespace BusinessWebApp.Models
             //Get the data server
             string url = "net.tcp://localhost:8100/DataService";
             NetTcpBinding tcp = new NetTcpBinding();
-            //tcp.TransferMode = TransferMode.StreamedResponse; //FIXME for some reason this causes the constructor to be reloaded each time AND also causes fault contracts to not work jesus christ 🤔
-            tcp.MaxReceivedMessageSize = 1024 * 1024 * 2; //NOTE: Why 2?
+            tcp.MaxReceivedMessageSize = 1024 * 1024 * 2;
 
             //Create connection factory for connection to server
-            ChannelFactory<ServerInterfaceLib.DataServerInterface> serverChannelFactory = new ChannelFactory<DataServerInterface>(tcp, url);
+            ChannelFactory<DataServerInterface> serverChannelFactory = new ChannelFactory<DataServerInterface>(tcp, url);
             m_dataServer = serverChannelFactory.CreateChannel();
 
             //DEBUG: Test connection actually works
