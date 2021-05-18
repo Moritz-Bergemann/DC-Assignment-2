@@ -24,7 +24,7 @@
 </div>
 
 <!--Templates for displaying dynamic data-->
-<template style="border-style: solid; margin: 8px" id="accountTemplate" href="#">
+<template id="accountTemplate" href="#">
     <div>
         <p>Account ID: <text>NULL</text></p>
         <p>Owning User ID: <text>NULL</text></p>
@@ -32,7 +32,7 @@
     </div>
 </template>
 
-<template style="border-style: solid; margin: 8px" id="userTemplate" href="#">
+<template id="userTemplate" href="#">
     <div>
         <p>User ID: <text>NULL</text></p>
         <p>First Name: <text>NULL</text></p>
@@ -68,7 +68,7 @@
 
                     //Set styling
                     var div = clone.querySelector('div');
-                    div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;");
+                    div.setAttribute('style', "border-style: solid; border-color: black; background-color: #12a4d9; color: white; margin: 8px");
 
                     userInfoContent.appendChild(clone);
                 },
@@ -108,7 +108,7 @@
 
                             //Set styling
                             var div = clone.querySelector('div');
-                            div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;");
+                            div.setAttribute('style', "border-style: solid; border-color: black; background-color: #d9138a; color: white; margin: 8px");
 
                             userInfoContent.appendChild(clone);
                         }

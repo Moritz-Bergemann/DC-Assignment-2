@@ -42,19 +42,11 @@
 </div>
 
 <!--Templates for displaying dynamic data-->
-<template style="border-style: solid; margin: 8px" id="accountTemplate" href="#">
+<template id="accountTemplate" href="#">
     <div>
         <p>Account ID: <text>NULL</text></p>
         <p>Owning User ID: <text>NULL</text></p>
         <p>Balance: $<text>NULL</text></p>
-    </div>
-</template>
-
-<template style="border-style: solid; margin: 8px" id="transactionTemplate" href="#">
-    <div>
-        <p>Sender Account ID: <text>NULL</text></p>
-        <p>Receiving Account ID: <text>NULL</text></p>
-        <p>Amount: $<text>NULL</text></p>
     </div>
 </template>
 
@@ -86,7 +78,7 @@
 
                     //Set styling
                     var div = clone.querySelector('div');
-                    div.setAttribute('style', "border-style:solid; border-color:black; padding:4px; margin:4px;");
+                    div.setAttribute('style', "border-style: solid; border-color: black; background-color: #d9138a; color: white; margin: 8px");
 
                     accountInfoContent.appendChild(clone);
                 },
