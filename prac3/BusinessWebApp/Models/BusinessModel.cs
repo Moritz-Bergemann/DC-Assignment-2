@@ -20,10 +20,7 @@ namespace BusinessTier
             get;
         } = new BusinessModel();
 
-        //private static string LOGS_PATH = @"C:\Users\morit\Source\Repos\DC-Workshops\BusinessTier\business-server.log";
         private DataServerInterface _dataServer;
-        //private static string LOGS_PATH = "../../../business-server.log"; //TODO re-enable logging
-        //private int m_logNum = 0;
 
         private BusinessModel()
         {
@@ -47,7 +44,6 @@ namespace BusinessTier
         public int GetNumEntries()
         {
             int numEntries = _dataServer.GetNumEntries();
-            Log($"Retrieve Number of Entries - Result {numEntries}");
 
             return numEntries;
         }
@@ -74,11 +70,6 @@ namespace BusinessTier
                     break;
                 }
             }
-
-            ////Do Logging
-            //string logMessage = $"Profile Search - query \'{query}\' - ";
-            //logMessage += (foundIndex == -1 ? "No Results" : $"Match - index {foundIndex}: \'#{profileData.Acct}\', \'PIN {profileData.Pin}\', \'${profileData.Bal}\', \'{profileData.FName} {profileData.LName}\', \'IMG{profileImageId}\'");
-            //Log(logMessage);
 
             //Throw exception if profile not found
             if (foundIndex == -1)
@@ -126,22 +117,6 @@ namespace BusinessTier
             }
 
             return profileData;
-        }
-
-        /// <summary>
-        /// Logs a message
-        /// </summary>
-        /// <param name="message"></param>
-        [MethodImpl(MethodImplOptions.Synchronized)]
-        private void Log(string message)
-        {
-            ////Add log number and increment log number
-            //message = m_logNum + ": " + message;
-            //m_logNum++;
-
-            //StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);
-            //logsFileWriter.WriteLine(message);
-            //logsFileWriter.Close();
         }
     }
 }
