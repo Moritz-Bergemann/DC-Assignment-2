@@ -31,6 +31,8 @@ namespace ServerView
             RestRequest numEntriesRequest = new RestRequest("api/values");
             IRestResponse numEntriesResponse = _businessServer.Get(numEntriesRequest);
             TotalEntriesBox.Text = numEntriesResponse.Content;
+
+            BaseUrlEditBox.Text = _businessServer.BaseUrl?.ToString() ?? "None";
         }
 
         private async void NameSearchButton_Click(object sender, RoutedEventArgs e)
@@ -158,6 +160,23 @@ namespace ServerView
             image.EndInit();
 
             ImageBox.Source = image;
+        }
+
+        private void ChangeBaseUrlButton_Click(object sender, RoutedEventArgs e)
+        {
+            string newBaseUrl = BaseUrlEditBox.Text;
+
+            try
+            {
+                _businessServer = new RestClient(newBaseUrl);
+
+                MessageBox.Show("Base URL Changed!");
+            }
+            catch (UriFormatException)
+            {
+                MessageBox.Show("Could not change base URL - input is invalid", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
         }
 
         private async Task<IRestResponse> SearchByLastNameAsync(RestRequest request)

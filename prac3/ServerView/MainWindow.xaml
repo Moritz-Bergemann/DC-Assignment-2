@@ -24,5 +24,8 @@
         <TextBlock HorizontalAlignment="Left" Margin="546,282,0,0" TextWrapping="Wrap" VerticalAlignment="Top"><Run Text="Search by "/><Run Text="Index"/><Run Text=":"/></TextBlock>
         <ProgressBar Name="LoadingBar" Visibility="Hidden" IsIndeterminate="True" HorizontalAlignment="Left" Height="23" Margin="298,303,0,0" VerticalAlignment="Top" Width="196"/>
         <TextBlock Name="LoadingLabel" Visibility="Hidden" HorizontalAlignment="Left" Margin="369,331,0,0" TextWrapping="Wrap" Text="Loading..." VerticalAlignment="Top"/>
+        <Button Content="Change" HorizontalAlignment="Left" Height="25" Margin="674,73,0,0" VerticalAlignment="Top" Width="54" Click="ChangeBaseUrlButton_Click"/>
+        <TextBox Name="BaseUrlEditBox" HorizontalAlignment="Left" Height="26" Margin="564,42,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="164"/>
+        <TextBlock HorizontalAlignment="Left" Height="21" Margin="564,16,0,0" TextWrapping="Wrap" Text="Change Base URL:" VerticalAlignment="Top" Width="164"/>
     </Grid>
 </Window>
