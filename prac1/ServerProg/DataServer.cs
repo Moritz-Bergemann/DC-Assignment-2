@@ -11,7 +11,7 @@ namespace ServerProg
     /// Implementation of data tier server for profiles application. Supplies callers with profiles based on index.
     /// </summary>
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
-    internal class DataServer : ServerInterfaceLib.DataServerInterface
+    internal class DataServer : DataServerInterface
     {
         private DatabaseLib.DatabaseClass database;
 

@@ -68,10 +68,10 @@ namespace ServerView
                 MessageBox.Show(d.Detail.Message, "Database Error", MessageBoxButton.OK, MessageBoxImage.Error);
             } catch (FaultException f)
             {
-                MessageBox.Show("An unknown error has occured.", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            } catch
+                MessageBox.Show("An unknown server error has occured.", "Unknown Server Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            } catch (Exception ex)
             {
-                MessageBox.Show("Beans.", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Unknown Error - {ex.Message}.", "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
