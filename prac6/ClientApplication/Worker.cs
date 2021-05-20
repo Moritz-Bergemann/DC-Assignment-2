@@ -200,14 +200,12 @@ namespace ClientApplication
             }
 
             //Post result back to client
-            bool accepted = clientServer.PostCompletedJob(job.Id, result);
+            bool accepted = clientServer.PostCompletedJob(job.Id, result, Server.Instance.EndpointData);
 
             if (accepted) //If server accepted job as completed
             {
                 //Update the "finished jobs" count
                 _numJobsDone++;
-
-                //TODO update scoreboard probably
             }
         }
 

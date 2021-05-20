@@ -12,6 +12,10 @@ namespace APIClasses
         public uint Port;
         public int Score;
 
+        public ClientScoreData()
+        {
+        }
+
         public ClientScoreData(string address, uint port)
         {
             Address = address;

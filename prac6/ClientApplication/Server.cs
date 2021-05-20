@@ -21,6 +21,8 @@ namespace ClientApplication
         } = new Server();
 
         private ServiceHost _host;
+        private RestClient _registryServer;
+        private ClientData _myClientData; //Stores client data for this client
 
         private List<JobData> _jobs;
         private List<JobData> _doneJobs;
@@ -28,7 +30,6 @@ namespace ClientApplication
 
         private string _statusString;
 
-        private RestClient _registryServer;
 
         private Server()
         {
@@ -36,9 +37,10 @@ namespace ClientApplication
             _jobs = new List<JobData>();
             _doneJobs = new List<JobData>();
             _jobIdCounter = 0;
-
+            
             _statusString = "Not Started";
 
+            _myClientData = null;
             _registryServer = new RestClient("https://localhost:44392/");
         }
 
@@ -55,6 +57,11 @@ namespace ClientApplication
         public string Status
         {
             get => _statusString;
+        }
+
+        public ClientData EndpointData
+        {
+            get => new ClientData(_myClientData.Address, _myClientData.Port);
         }
 
         public void Open(string address, uint port)
@@ -81,6 +88,7 @@ namespace ClientApplication
             catch (UriFormatException)
             {
                 _statusString = "Error";
+                _host = null;
                 throw new ArgumentException($"Invalid server URL '{url}'");
             }
 
@@ -97,6 +105,8 @@ namespace ClientApplication
             //Open to receive communications
             _host.Open();
 
+            _myClientData = new ClientData(address, port);
+
             //Set status to open
             _statusString = "Open";
         }
@@ -111,6 +121,8 @@ namespace ClientApplication
             //Close host and reset to null
             _host.Close();
             _host = null;
+
+            _myClientData = null;
 
             _statusString = "Closed";
         }
@@ -169,7 +181,7 @@ namespace ClientApplication
             return transmitJob;
         }
 
-        public bool PostCompletedJob(uint id, string result)
+        public bool PostCompletedJob(uint id, string result, ClientData sender)
         {
             //NOTE: Not B64-encoding result string as out of scope of requirements
 
@@ -195,6 +207,14 @@ namespace ClientApplication
                 }
 
                 ii++;
+            }
+
+            //Update the sender's score if a job was completed
+            if (found)
+            {
+                RestRequest request = new RestRequest("api/add-to-score");
+                request.AddJsonBody(sender);
+                _registryServer.Post(request);
             }
 
             return found;
