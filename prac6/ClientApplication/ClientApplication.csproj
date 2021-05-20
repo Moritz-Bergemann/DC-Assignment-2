@@ -84,7 +84,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="DebugMan.cs" />
     <Compile Include="JobResultsUserControl.xaml.cs">
       <DependentUpon>JobResultsUserControl.xaml</DependentUpon>
     </Compile>

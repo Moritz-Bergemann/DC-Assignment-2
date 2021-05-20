@@ -76,7 +76,7 @@ namespace WebServer.Controllers
         [HttpGet]
         public List<ClientScoreData> GetScoreBoard()
         {
-            return RegistryModel.Instance.GetScoreBoard().OrderBy(c => c.Score).ToList();
+            return RegistryModel.Instance.GetScoreBoard().OrderBy(c => c.Score * -1).ToList();
         }
     }
 }

@@ -78,22 +78,17 @@ namespace ClientApplication
         {
             RestRequest request = new RestRequest("api/get-registered");
 
-            IRestResponse response = _registryServer.Get(request);
+            IRestResponse response = await Task.Run(() => _registryServer.Get(request));
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                //Make clients empty list to maintain validity //TODO is this the right approach
+                //Make clients empty list to maintain validity
                 _clients = new List<ClientData>();
 
-                throw new Exception(response.Content); //TODO proper error handling
+                throw new ArgumentException(response.Content);
             }
 
             List<ClientData> clientData = JsonConvert.DeserializeObject<List<ClientData>>(response.Content);
-
-            if (clientData == null)
-            {
-                throw new Exception("Why null???"); //TODO fix this
-            }
 
             _clients = clientData;
         }
@@ -155,7 +150,7 @@ namespace ClientApplication
 
             while (!valid)
             {
-                transmitJob = clientServer.DownloadFirstJob();
+                transmitJob = await Task.Run(clientServer.DownloadFirstJob);
 
                 if (transmitJob == null)
                 {
@@ -179,7 +174,7 @@ namespace ClientApplication
         {
             _statusString = "Doing Job";
 
-            //Do job via Iron Python //TODO make this async?
+            //Do job via Iron Python
             ScriptEngine engine = Python.CreateEngine();
 
             dynamic result;

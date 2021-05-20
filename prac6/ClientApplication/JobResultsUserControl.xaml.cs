@@ -32,7 +32,7 @@ namespace ClientApplication
                 TextBlock block = new TextBlock();
                 block.Text = $"Job ID: {job.Id}\n" +
                              $"Python Code:\n" +
-                             $"{job.Python}\n" + //TODO maybe make this whole thing prettier
+                             $"{job.Python}\n" +
                              $"Result:\n" +
                              $"{job.Result}\n" +
                              $"======================================================";

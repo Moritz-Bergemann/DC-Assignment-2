@@ -24,7 +24,7 @@ namespace ClientApplication
 
             //Generate remoting address
             Random random = new Random();
-            uint port = Convert.ToUInt32(random.Next(50000, 60000)); //TODO potential double-up and picking of bad ports
+            uint port = Convert.ToUInt32(random.Next(50000, 60000));
 
             //Start server
             try
@@ -66,7 +66,7 @@ namespace ClientApplication
         private void JobPostButton_Click(object sender, RoutedEventArgs e)
         {
             //Add new job based on job box content
-            Server.Instance.AddNewJob(JobPostBox.Text); //Todo python validation?
+            Server.Instance.AddNewJob(JobPostBox.Text);
 
             JobPostBox.Text = string.Empty;
 
