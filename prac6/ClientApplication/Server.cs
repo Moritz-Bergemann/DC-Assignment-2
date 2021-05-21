@@ -25,6 +25,7 @@ namespace ClientApplication
         private ClientData _myClientData; //Stores client data for this client
 
         private List<JobData> _jobs;
+        private List<JobData> _inProgressJobs;
         private List<JobData> _doneJobs;
         private uint _jobIdCounter;
 
@@ -35,6 +36,7 @@ namespace ClientApplication
         {
             _host = null;
             _jobs = new List<JobData>();
+            _inProgressJobs = new List<JobData>();
             _doneJobs = new List<JobData>();
             _jobIdCounter = 0;
             
@@ -141,6 +143,14 @@ namespace ClientApplication
             _jobs.Add(job);
         }
 
+        private void AddInProgressJob(JobData job)
+        {
+            //Set job to time out in 1 minute
+            job.Timeout = DateTime.Now.AddMinutes(1);
+
+            _inProgressJobs.Add(job);
+        }
+
         // SERVER FUNCTIONALITY
         public List<uint> GetAvailableJobs()
         {
@@ -150,6 +160,7 @@ namespace ClientApplication
         public TransmitJobData DownloadJob(uint id)
         {
             TransmitJobData transmitJob = null;
+            int ii = 0;
             foreach (JobData job in _jobs)
             {
                 if (job.Id == id)
@@ -159,8 +170,14 @@ namespace ClientApplication
                     //Set encoded python and hash
                     transmitJob.SetEncodedPython(job.Python);
 
+                    //Move job to list of in progress jobs
+                    _jobs.RemoveAt(ii);
+                    AddInProgressJob(job);
+
                     break;
                 }
+
+                ii++;
             }
 
             return transmitJob;
@@ -178,6 +195,10 @@ namespace ClientApplication
             TransmitJobData transmitJob = new TransmitJobData(job.Id);
             transmitJob.SetEncodedPython(job.Python);
 
+            //Move job to list of in progress jobs
+            _jobs.RemoveAt(0);
+            AddInProgressJob(job);
+
             return transmitJob;
         }
 
@@ -187,7 +208,7 @@ namespace ClientApplication
 
             bool found = false;
             int ii = 0;
-            foreach (JobData job in _jobs)
+            foreach (JobData job in _inProgressJobs)
             {
                 //Find job that was completed
                 if (job.Id == id)
