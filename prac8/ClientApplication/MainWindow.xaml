@@ -1,0 +1,33 @@
+﻿<Window x:Class="ClientApplication.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientApplication"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <TextBlock HorizontalAlignment="Left" Margin="274,66,0,0" TextWrapping="Wrap" Text="Post New Job" VerticalAlignment="Top"/>
+        <TextBox Name="JobPostBox" AcceptsReturn="True" HorizontalAlignment="Left" Height="266" Margin="274,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="301"/>
+        <Button Name="JobPostButton" Content="Post" HorizontalAlignment="Left" Height="26" Margin="500,358,0,0" VerticalAlignment="Top" Width="74" Click="JobPostButton_Click"/>
+        <TextBlock HorizontalAlignment="Left" Height="24" Margin="10,64,0,0" TextWrapping="Wrap" Text="Server Status:" VerticalAlignment="Top" Width="78"/>
+        <TextBlock Name="ServerStatus"  HorizontalAlignment="Left" Height="43" Margin="88,64,0,0" TextWrapping="Wrap" Text="STATUS" VerticalAlignment="Top" Width="78"/>
+
+        <TextBlock HorizontalAlignment="Left" Height="24" Margin="609,112,0,0" TextWrapping="Wrap" Text="Completed Jobs:" VerticalAlignment="Top" Width="91"/>
+        <TextBlock Name="CompletedJobs"  HorizontalAlignment="Left" Height="24" Margin="705,112,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="60"/>
+        <TextBlock HorizontalAlignment="Left" Height="24" Margin="609,64,0,0" TextWrapping="Wrap" Text="Worker Status:" VerticalAlignment="Top" Width="78"/>
+        <TextBlock x:Name="WorkerStatus"  HorizontalAlignment="Left" Height="43" Margin="692,64,0,0" TextWrapping="Wrap" Text="STATUS" VerticalAlignment="Top" Width="78"/>
+        <TextBlock HorizontalAlignment="Left" Height="24" Margin="10,112,0,0" TextWrapping="Wrap" Text="Posted Jobs:" VerticalAlignment="Top" Width="78"/>
+        <TextBlock x:Name="PostedJobs"  HorizontalAlignment="Left" Height="24" Margin="88,112,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="78"/>
+        <TextBlock HorizontalAlignment="Left" Height="36" Margin="10,141,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="78"><Run Text="Posted Jobs"/><Run Text=" "/><Run Text="Compl"/><Run Text="e"/><Run Text="ted"/><Run Text=":"/></TextBlock>
+        <TextBlock x:Name="PostedJobsCompleted"  HorizontalAlignment="Left" Height="24" Margin="88,153,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" Width="78"/>
+        <Label Content="Server" HorizontalAlignment="Left" Height="27" Margin="10,32,0,0" VerticalAlignment="Top" Width="156" FontWeight="Bold"/>
+        <Label Content="Worker" HorizontalAlignment="Left" Height="27" Margin="609,32,0,0" VerticalAlignment="Top" Width="156" FontWeight="Bold"/>
+        <Button Name="SeeResultsButton" Content="See Results" HorizontalAlignment="Left" Height="26" Margin="122,148,0,0" VerticalAlignment="Top" Width="77" Click="SeeResultsButton_Click"/>
+        <Label Content="Scoreboard" HorizontalAlignment="Left" Height="27" Margin="10,211,0,0" VerticalAlignment="Top" Width="156" FontWeight="Bold"/>
+        <ScrollViewer Margin="10,238,560.6,41">
+            <ListView Name="ScoreboardListView"></ListView>
+        </ScrollViewer>
+        <Button Content="Update" HorizontalAlignment="Left" Height="29" Margin="156,384,0,0" VerticalAlignment="Top" Width="77" Click="UpdateScoreboardButton_Click"/>
+    </Grid>
+</Window>
