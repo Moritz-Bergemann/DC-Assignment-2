@@ -204,7 +204,6 @@ namespace DataTier.Models
 
         public void ProcessAllTransactions()
         {
-            //TODO handle whatever this throws
             try
             {
                 _bankDb.ProcessAllTransactions();

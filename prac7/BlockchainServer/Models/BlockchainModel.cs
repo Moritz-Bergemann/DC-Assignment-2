@@ -2,6 +2,7 @@
 using APIClasses;
 using System.Collections.Generic;
 using System.Linq;
+using RestSharp;
 using Block = APIClasses.Block;
 
 namespace BlockchainServer.Models
@@ -17,6 +18,8 @@ namespace BlockchainServer.Models
         private Block _lastBlock;
 
         private Dictionary<uint, Wallet> _wallets;
+
+        private List<RestClient> _otherBlockchains;
 
         private BlockchainModel()
         {

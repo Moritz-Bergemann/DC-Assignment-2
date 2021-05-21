@@ -103,7 +103,7 @@ namespace BusinessTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Create transaction data required"
+                    Content = new StringContent("Create transaction data required")
                 });
             }
 
@@ -145,7 +145,7 @@ namespace BusinessTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Money data required"
+                    Content = new StringContent("Money data required")
                 });
             }
 
@@ -172,7 +172,7 @@ namespace BusinessTier.Controllers
             {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
-                    ReasonPhrase = "Money data required"
+                    Content = new StringContent("Money data required")
                 });
             }
 
