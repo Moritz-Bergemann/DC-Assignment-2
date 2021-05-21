@@ -6,7 +6,10 @@ using System.Net;
 using System.ServiceModel;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Hosting;
+using System.Windows;
 using System.Windows.Markup;
+using System.Windows.Threading;
 using APIClasses;
 using RestSharp;
 
@@ -44,6 +47,12 @@ namespace ClientApplication
 
             _myClientData = null;
             _registryServer = new RestClient("https://localhost:44392/");
+
+            //Start service to check for timed out in-progress jobs every 5 seconds
+            DispatcherTimer dTimer = new DispatcherTimer();
+            dTimer.Tick += new EventHandler(CheckTimeouts);
+            dTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
+            dTimer.Start();
         }
 
         public int NumJobs
@@ -146,9 +155,31 @@ namespace ClientApplication
         private void AddInProgressJob(JobData job)
         {
             //Set job to time out in 1 minute
-            job.Timeout = DateTime.Now.AddMinutes(1);
+            job.Timeout = DateTime.Now.AddSeconds(10);
 
             _inProgressJobs.Add(job);
+        }
+
+        private void CheckTimeouts(object sender, EventArgs e)
+        {
+            int ii = 0;
+            while (ii < _inProgressJobs.Count)
+            {
+                //If timeout has expired, remove from list of in-progress jobs
+                if (_inProgressJobs[ii].Timeout.CompareTo(DateTime.Now) <= 0)
+                {
+                    //Remove element from list of in progress jobs and add it back to list of available jobs
+                    JobData removeJob = _inProgressJobs[ii];
+                    _inProgressJobs.RemoveAt(ii);
+
+                    //Add job to list of available jobs (with a NEW ID so if the original client eventually does return it won't see the job as still "in progress")
+                    AddNewJob(removeJob.Python);
+                }
+                else
+                {
+                    ii++;
+                }
+            }
         }
 
         // SERVER FUNCTIONALITY
@@ -216,7 +247,7 @@ namespace ClientApplication
                     found = true;
 
                     //Remove job from pending jobs list
-                    _jobs.RemoveAt(ii);
+                    _inProgressJobs.RemoveAt(ii);
 
                     //Set job result
                     job.Result = result;
