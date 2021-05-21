@@ -155,7 +155,7 @@ namespace ClientApplication
         private void AddInProgressJob(JobData job)
         {
             //Set job to time out in 1 minute
-            job.Timeout = DateTime.Now.AddSeconds(10);
+            job.Timeout = DateTime.Now.AddMinutes(1);
 
             _inProgressJobs.Add(job);
         }
