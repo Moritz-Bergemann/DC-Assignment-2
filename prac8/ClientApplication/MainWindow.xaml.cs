@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.ServiceModel;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -124,6 +125,61 @@ namespace ClientApplication
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             Server.Instance.Close();
+        }
+
+        private void SubmitTransactionButton_Click(object sender, RoutedEventArgs e)
+        {
+            //Create transaction from inputs
+            Transaction transaction;
+            try
+            {
+                transaction = new Transaction()
+                {
+                    WalletFrom = uint.Parse(WalletFromBox.Text),
+                    WalletTo = uint.Parse(WalletToBox.Text),
+                    Amount = float.Parse(AmountBox.Text)
+
+                };
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Could not parse input values for transaction.", "Parse error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            //Broadcast transaction
+            try
+            {
+                BroadcastTransaction(transaction);
+            }
+            catch (ArgumentException a)
+            {
+                MessageBox.Show($"Failed to broadcast transaction to other clients. Reason - {a.Message}", "Transaction broadcast failed", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void BroadcastTransaction(Transaction transaction)
+        {
+            RestRequest request = new RestRequest("api/get-registered");
+            IRestResponse response = _registryServer.Get(request);
+
+            List<ClientData> clients = JsonConvert.DeserializeObject<List<ClientData>>(response.Content);
+
+            if (clients.Count == 0)
+            {
+                throw new ArgumentException("No available clients in registry");
+            }
+
+            //Post transaction to each client
+            foreach (ClientData clientData in clients)
+            {
+                string url = $"net.tcp://{clientData.Address}:{clientData.Port}/BlockchainServer";
+                NetTcpBinding tcp = new NetTcpBinding();
+                ChannelFactory<IServer> serverChannelFactory = new ChannelFactory<IServer>(tcp, url);
+                IServer clientBlockchainServer =  serverChannelFactory.CreateChannel();
+
+                clientBlockchainServer.PutTransaction(transaction); //TODO catch client being down
+            }
         }
     }
 }

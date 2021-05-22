@@ -14,11 +14,5 @@
             Address = address;
             Port = port;
         }
-
-        public ClientData(ClientScoreData scoreData)
-        {
-            Address = scoreData.Address;
-            Port = scoreData.Port;
-        }
     }
 }

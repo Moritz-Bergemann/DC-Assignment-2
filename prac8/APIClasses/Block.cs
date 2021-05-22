@@ -90,21 +90,5 @@ namespace APIClasses
 
             return first5Digits.Equals(validator);
         }
-
-        public override bool Equals(object o)
-        {
-            if (o is Block oBlock)
-            {
-                return (Id == oBlock.Id &&
-                        WalletFrom == oBlock.WalletFrom) &&
-                       WalletTo == oBlock.WalletTo &&
-                       Amount.Equals(oBlock.Amount) &&
-                       BlockOffset == oBlock.BlockOffset &&
-                       PrevHash.SequenceEqual(oBlock.PrevHash) &&
-                       Hash.SequenceEqual(oBlock.Hash);
-            }
-
-            return false;
-        }
     }
 }
