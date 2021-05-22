@@ -85,6 +85,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Blockchain.cs" />
+    <Compile Include="BlockchainException.cs" />
     <Compile Include="JobResultsUserControl.xaml.cs">
       <DependentUpon>JobResultsUserControl.xaml</DependentUpon>
     </Compile>
