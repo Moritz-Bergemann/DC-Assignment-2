@@ -16,8 +16,6 @@ namespace ClientApplication
 
         private RestClient _registryServer;
 
-        private string _statusString;
-
         public static Miner Instance
         {
             get;
@@ -25,33 +23,20 @@ namespace ClientApplication
 
         private Miner()
         {
-            _statusString = "Starting";
+            Status = "Starting";
 
             //Instantiate REST client
             _registryServer = new RestClient("https://localhost:44392/");
 
             _mining = false;
             _transactions = new Queue<Transaction>();
+
+            Status = "Waiting for transactions";
         }
 
-        public string Status
-        {
-            get => _statusString;
-        }
+        public string Status { get; private set; }
 
-        /// <summary>
-        /// Report the given client to the central registry as downed.
-        /// </summary>
-        /// <param name="client">Client to report as downed</param>
-        private bool ReportDowned(ClientData client)
-        {
-            RestRequest request = new RestRequest("api/report-downed");
-            request.AddJsonBody(client);
-
-            IRestResponse response = _registryServer.Post(request);
-
-            return response.Content.Equals("OK");
-        }
+        public int MinedBlocks { get; private set; } = 0;
 
         public void VerifyPopularBlockchain()
         {
@@ -123,7 +108,7 @@ namespace ClientApplication
 
         private IServer CreateBlockchainServer(ClientData client)
         {
-            string url = $"net.tcp://{client.Address}:{client.Port}/PeerServer";
+            string url = $"net.tcp://{client.Address}:{client.Port}/BlockchainServer";
             NetTcpBinding tcp = new NetTcpBinding();
             ChannelFactory<IServer> serverChannelFactory = new ChannelFactory<IServer>(tcp, url);
             return serverChannelFactory.CreateChannel();
@@ -156,6 +141,8 @@ namespace ClientApplication
             {
                 while (_transactions.Count > 0)
                 {
+                    Status = "Mining";
+
                     //Get first element
                     Transaction transaction = _transactions.Peek();
 
@@ -197,6 +184,10 @@ namespace ClientApplication
                         continue;
                     }
 
+                    MinedBlocks++;
+
+                    Status = "Validating most popular blockchain";
+
                     //Check to see if we still have the most common blockchain
                     VerifyPopularBlockchain();
 
@@ -207,6 +198,7 @@ namespace ClientApplication
             finally //End mining lock even if error occurs
             {
                 _mining = false;
+                Status = "Waiting for transactions";
             }
         }
     }

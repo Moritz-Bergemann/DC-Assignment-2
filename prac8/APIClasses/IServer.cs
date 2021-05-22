@@ -15,5 +15,8 @@ namespace APIClasses
 
         [OperationContract]
         List<Block> GetBlockchain();
+
+        [OperationContract]
+        void PutTransaction(Transaction transaction);
     }
 }

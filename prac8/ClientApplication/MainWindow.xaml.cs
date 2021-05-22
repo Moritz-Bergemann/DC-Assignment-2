@@ -1,6 +1,8 @@
 ﻿using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,6 +20,8 @@ namespace ClientApplication
     {
         private RestClient _registryServer;
 
+        private Block _latestBlock = null;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,6 +34,7 @@ namespace ClientApplication
             try
             {
                 Server.Instance.Open("localhost", port);
+                ClientEndpointLabel.Content = $"https://localhost:{port}";
             }
             catch (ArgumentException a)
             {
@@ -38,90 +43,87 @@ namespace ClientApplication
 
             _registryServer = new RestClient("https://localhost:44392/");
 
-            //Prepare scoreboard table
-            GridView gridView = new GridView();
-            ScoreboardListView.View = gridView;
-
-            gridView.Columns.Add(new GridViewColumn
-            {
-                Header = "Endpoint",
-                DisplayMemberBinding = new Binding("Endpoint")
-            });
-            gridView.Columns.Add(new GridViewColumn
-            {
-                Header = "Score",
-                DisplayMemberBinding = new Binding("Score")
-            });
-
-            //Start client looking for jobs in background
-            Task.Run(Miner.Instance.Run);
-
-            //Set up timer for updating UI every 0.5 seconds
+            //Set up timer for updating UI every 0.1 seconds
             DispatcherTimer dTimer = new DispatcherTimer();
             dTimer.Tick += new EventHandler(UpdateGui);
             dTimer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             dTimer.Start();
-        }
 
-        private void JobPostButton_Click(object sender, RoutedEventArgs e)
-        {
-            //Add new job based on job box content
-            Server.Instance.AddNewJob(JobPostBox.Text);
+            //Create table for storing transactions
+            //Prepare scoreboard table
+            GridView gridView = new GridView();
+            BlockchainListView.View = gridView;
 
-            JobPostBox.Text = string.Empty;
-
-            MessageBox.Show("Job Posted!", "Posted", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void UpdateGui(object sender, EventArgs e)
-        {
-            //Server Stuff
-            ServerStatus.Text = Server.Instance.Status;
-            PostedJobs.Text = Server.Instance.NumJobs.ToString();
-            PostedJobsCompleted.Text = Server.Instance.CompletedJobs.Count.ToString();
-
-            //Client Stuff
-            WorkerStatus.Text = Miner.Instance.Status;
-            CompletedJobs.Text = Miner.Instance.NumJobsDone.ToString();
-        }
-
-        private void SeeResultsButton_Click(object sender, RoutedEventArgs e)
-        {
-            Window resultsWindow = new Window
+            gridView.Columns.Add(new GridViewColumn
             {
-                Title = "Job Results",
-                Content = new JobResultsUserControl(Server.Instance.CompletedJobs),
-                SizeToContent = SizeToContent.WidthAndHeight
-            };
+                Header = "ID",
+                DisplayMemberBinding = new Binding("Id")
+            });
+            gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "From Wallet",
+                DisplayMemberBinding = new Binding("WalletFrom")
+            });
+            gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "To Wallet",
+                DisplayMemberBinding = new Binding("WalletTo")
+            });
+            gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "Amount",
+                DisplayMemberBinding = new Binding("Amount")
+            });
+            gridView.Columns.Add(new GridViewColumn
+            {
+                Header = "Hash",
+                DisplayMemberBinding = new Binding("Hash")
+            });
 
-            resultsWindow.Show();
+
+        }
+        private void UpdateGui(Object o, EventArgs args)
+        {
+            MinerStatusText.Text = Miner.Instance.Status;
+            MinedBlocksText.Text = Miner.Instance.Status;
+
+            ServerStatusText.Text = Server.Instance.Status;
+
+            NumBlocksText.Text = Blockchain.Instance.Chain.Count.ToString();
+
+            //Update blockchain display
+            //If a new block has been added to the UI since the last update
+            if (_latestBlock != null && !_latestBlock.Hash.SequenceEqual(Blockchain.Instance.LastBlock.Hash))
+            {
+                BlockchainListView.Items.Clear();
+
+                List<Block> blockchain = Blockchain.Instance.Chain;
+
+                foreach (Block block in blockchain)
+                {
+                    BlockchainListView.Items.Add(block);
+                }
+            }
         }
 
-        //private async void UpdateScoreboardButton_Click(object sender, RoutedEventArgs e) //TODO remove
-        //{
-        //    //Run request for scoreboard in different thread
-        //    RestRequest request = new RestRequest("api/scoreboard");
-        //    IRestResponse response = await Task.Run(() => _registryServer.Get(request));
+        private void SearchWalletButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                uint id = UInt32.Parse(WalletIdBox.Text);
 
-        //    if (!response.IsSuccessful)
-        //    {
-        //        MessageBox.Show($"Could not retrieve scoreboard data - {response.Content}");
-        //    }
+                BalanceText.Text = Blockchain.Instance.GetBalance(id).ToString();
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Please input a non-negative integer as the user ID.", "Bad input",
+                    MessageBoxButton.OK);
+            }
+        }
 
-        //    List<ClientScoreData> scores = JsonConvert.DeserializeObject<List<ClientScoreData>>(response.Content);
-
-        //    //Clear current scoreboard
-        //    ScoreboardListView.Items.Clear();
-
-        //    //Display the table
-        //    foreach (ClientScoreData scoreData in scores)
-        //    {
-        //        ScoreboardListView.Items.Add(new
-        //        {
-        //            Endpoint = $"https://{scoreData.Address}:{scoreData.Port}",
-        //            Score = scoreData.Score
-        //        });
-        //    }
-        //}
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            Server.Instance.Close();
+        }
     }
 }

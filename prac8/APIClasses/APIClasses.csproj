@@ -44,7 +44,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Block.cs" />
-    <Compile Include="ClientScoreData.cs" />
     <Compile Include="IServer.cs" />
     <Compile Include="ClientData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

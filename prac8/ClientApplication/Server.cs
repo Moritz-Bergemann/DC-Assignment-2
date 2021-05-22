@@ -21,39 +21,20 @@ namespace ClientApplication
         private RestClient _registryServer;
         private ClientData _myClientData; //Stores client data for this client
 
-        private List<JobData> _jobs;
-        private List<JobData> _doneJobs;
-        private uint _jobIdCounter;
-
-        private string _statusString;
-
-
         private Server()
         {
             _host = null;
-            _jobs = new List<JobData>();
-            _doneJobs = new List<JobData>();
-            _jobIdCounter = 0;
             
-            _statusString = "Not Started";
+            Status = "Not Started";
 
             _myClientData = null;
             _registryServer = new RestClient("https://localhost:44392/");
         }
 
-        public int NumJobs
-        {
-            get => _jobs.Count;
-        }
-
-        public ReadOnlyCollection<JobData> CompletedJobs
-        {
-            get => _doneJobs.AsReadOnly();
-        }
-
         public string Status
         {
-            get => _statusString;
+            get;
+            private set;
         }
 
         public ClientData EndpointData
@@ -63,14 +44,14 @@ namespace ClientApplication
 
         public void Open(string address, uint port)
         {
-            _statusString = "Starting";
+            Status = "Starting";
 
             if (_host != null)
             {
                 throw new ArgumentException("Server already running");
             }
 
-            string url = $"net.tcp://{address}:{port}/PeerServer";
+            string url = $"net.tcp://{address}:{port}/BlockchainServer";
 
             //Create host service
             NetTcpBinding tcp = new NetTcpBinding();
@@ -84,7 +65,7 @@ namespace ClientApplication
             }
             catch (UriFormatException)
             {
-                _statusString = "Error";
+                Status = "Error";
                 _host = null;
                 throw new ArgumentException($"Invalid server URL '{url}'");
             }
@@ -95,7 +76,7 @@ namespace ClientApplication
             IRestResponse response = _registryServer.Post(request);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _statusString = "Error";
+                Status = "Error";
                 throw new ArgumentException($"Server failed to open - '{response.Content}'");
             }
 
@@ -108,10 +89,10 @@ namespace ClientApplication
             _myClientData = new ClientData(address, port);
 
             //Set status to open
-            _statusString = "Open";
+            Status = "Open";
         }
 
-        public void CloseServer()
+        public void Close()
         {
             if (_host == null)
             {
@@ -124,25 +105,11 @@ namespace ClientApplication
 
             _myClientData = null;
 
-            _statusString = "Closed";
+            Status = "Closed";
         }
 
         /// <summary>
-        /// Add a new job to the list of pending jobs
-        /// </summary>
-        /// <param name="python">Python code for the job</param>
-        public void AddNewJob(string python)
-        {
-            JobData job = new JobData(_jobIdCounter, python);
-            
-            //Increase job counter for next job
-            _jobIdCounter++;
-
-            _jobs.Add(job);
-        }
-
-        /// <summary>
-        /// Initialises blockchain for this server, either by retrieving it from another client or by creating the first (dummy) block if no others are available
+        /// Initializes blockchain for this server, either by retrieving it from another client or by creating the first (dummy) block if no others are available
         /// </summary>
         private void InitialiseBlockchain()
         {
@@ -155,7 +122,7 @@ namespace ClientApplication
             if (registered.Count > 0)
             {
                 //Initialise the blockchain to be the most common blockchain
-                Blockchain.Instance.Chain = Miner.Instance.GetMostCommonBlockchain();
+                Blockchain.Instance.SetBlockchain(Miner.Instance.GetMostCommonBlockchain());
             }
             else
             {
@@ -175,12 +142,11 @@ namespace ClientApplication
                 List<Block> blockchain = new List<Block>();
                 blockchain.Add(genesis);
 
-                Blockchain.Instance.Chain = blockchain;
+                Blockchain.Instance.SetBlockchain(blockchain);
             }
         }
 
         //SERVER FUNCTIONALITY
-        //TODO
         public Block GetLastBlock()
         {
             return Blockchain.Instance.LastBlock;
