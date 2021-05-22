@@ -1,12 +1,9 @@
 ﻿using APIClasses;
-using IronPython.Hosting;
-using Microsoft.Scripting.Hosting;
 using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.ServiceModel;
 using System.Threading.Tasks;
 
@@ -14,11 +11,12 @@ namespace ClientApplication
 {
     class Miner
     {
-        private List<ClientData> _clients;
-        private string _statusString;
+        private Queue<Transaction> _transactions;
+        private bool _mining;
 
         private RestClient _registryServer;
-        private int _numJobsDone;
+
+        private string _statusString;
 
         public static Miner Instance
         {
@@ -27,181 +25,18 @@ namespace ClientApplication
 
         private Miner()
         {
-            _clients = null;
-
             _statusString = "Starting";
-            _numJobsDone = 0;
 
             //Instantiate REST client
             _registryServer = new RestClient("https://localhost:44392/");
+
+            _mining = false;
+            _transactions = new Queue<Transaction>();
         }
 
         public string Status
         {
             get => _statusString;
-        }
-
-        public int NumJobsDone
-        {
-            get => _numJobsDone;
-        }
-
-        /// <summary>
-        /// Continually run job performing operations in distributed application.
-        /// </summary>
-        public async void Run()
-        {
-            while (true)
-            {
-                await Iteration();
-            }
-        }
-
-        /// <summary>
-        /// Run one iteration of the network thread (look for existing _clients and make requests to them)
-        /// </summary>
-        private async Task Iteration()
-        {
-            _statusString = "Looking for Jobs to Do";
-
-            //Refresh data on existing clients
-            await UpdateClients();
-
-            //Provide service (look for jobs and complete them) on each client
-            await ProvideService();
-        }
-
-        /// <summary>
-        /// Get list of available clients from web server and update the local list
-        /// </summary>
-        private async Task UpdateClients() //TODO implement async
-        {
-            RestRequest request = new RestRequest("api/get-registered");
-
-            IRestResponse response = await Task.Run(() => _registryServer.Get(request));
-
-            if (response.StatusCode != HttpStatusCode.OK)
-            {
-                //Make clients empty list to maintain validity
-                _clients = new List<ClientData>();
-
-                throw new ArgumentException(response.Content);
-            }
-
-            List<ClientData> clientData = JsonConvert.DeserializeObject<List<ClientData>>(response.Content);
-
-            _clients = clientData;
-        }
-
-        private async Task ProvideService()
-        {
-            //Find the a random job that needs completing (iterate through each client until a valid job is found)
-            foreach (ClientData client in _clients)
-            {
-                //Connect to client's server
-                string url = $"net.tcp://{client.Address}:{client.Port}/PeerServer";
-                
-                NetTcpBinding tcp = new NetTcpBinding();
-                ChannelFactory<IServer> serverChannelFactory = new ChannelFactory<IServer>(tcp, url);
-                IServer clientServer = serverChannelFactory.CreateChannel();
-
-                JobData job = null;
-
-                try
-                {
-                    job = await GetFirstJob(clientServer);
-                }
-                catch (CommunicationException) //In case connection with the client failed
-                {
-                    ReportDowned(client);
-                }
-
-                if (job == null)
-                {
-                    //If you couldn't get a job, try the next client
-                    continue;
-                }
-
-                //Do the job, then exit
-                try
-                {
-                    await DoJob(clientServer, job);
-                }
-                catch (CommunicationException) //In case connection with the client failed
-                {
-                    ReportDowned(client);
-                }
-
-                break;
-            }
-        }
-
-        /// <summary>
-        /// Gets the first available job on the given server, returns null if none available.
-        /// </summary>
-        /// <param name="clientServer">The first available job, or null if there are none</param>
-        /// <returns></returns>
-        private static async Task<JobData> GetFirstJob(IServer clientServer)
-        {
-            //Get the first available job
-
-            TransmitJobData transmitJob = null;
-            bool valid = false;
-
-            while (!valid)
-            {
-                transmitJob = await Task.Run(clientServer.DownloadFirstJob);
-
-                if (transmitJob == null)
-                {
-                    return null;
-                }
-
-                //Check the hash
-                valid = transmitJob.CheckHash();
-            }
-
-            //Construct new job
-            return new JobData(transmitJob.Id, transmitJob.GetDecodedPython());
-        }
-
-        /// <summary>
-        /// Performs a job for a given client, posting the result back to the client.
-        /// </summary>
-        /// <param name="clientServer">Server that had job listed</param>
-        /// <param name="job">Job to perform</param>
-        private async Task DoJob(IServer clientServer, JobData job)
-        {
-            _statusString = "Doing Job";
-
-            //Do job via Iron Python
-            ScriptEngine engine = Python.CreateEngine();
-
-            dynamic result;
-
-            try
-            {
-                result = await Task.Run(() => engine.Execute(job.Python, engine.CreateScope()));
-            }
-            catch (Exception e) //Must catch base Exception as IronPython may throw any exception
-            {
-                result = $"EXCEPTION THROWN - {e.Message}";
-            }
-
-            //Change result to string in case it isn't
-            if (result != null)
-            {
-                result = result.ToString();
-            }
-
-            //Post result back to client
-            bool accepted = clientServer.PostCompletedJob(job.Id, result, Server.Instance.EndpointData);
-
-            if (accepted) //If server accepted job as completed
-            {
-                //Update the "finished jobs" count
-                _numJobsDone++;
-            }
         }
 
         /// <summary>
@@ -216,6 +51,18 @@ namespace ClientApplication
             IRestResponse response = _registryServer.Post(request);
 
             return response.Content.Equals("OK");
+        }
+
+        public void VerifyPopularBlockchain()
+        {
+            //Get the most common blockchain
+            List<Block> commonBlockchain = GetMostCommonBlockchain();
+
+            //Check most common blockchain is the same as this client's one, override it if not
+            if (!Blockchain.Instance.LastBlock.Hash.SequenceEqual(commonBlockchain.Last().Hash))
+            {
+                Blockchain.Instance.SetBlockchain(commonBlockchain);
+            }
         }
 
         public List<Block> GetMostCommonBlockchain()
@@ -239,7 +86,7 @@ namespace ClientApplication
             {
                 //Get the latest block hash for the client
                 //Connect to client's server
-                IServer clientServer = CreateClientServer(client);
+                IServer clientServer = CreateBlockchainServer(client);
 
                 Block lastBlock = clientServer.GetLastBlock();
                 byte[] lastBlockHash = lastBlock.Hash;
@@ -269,17 +116,98 @@ namespace ClientApplication
             ClientData mostCommonClient = blockClients[largestIndex];
 
             //Get that client's version of the blockchain
-            IServer mostCommonClientServer = CreateClientServer(mostCommonClient);
+            IServer mostCommonClientServer = CreateBlockchainServer(mostCommonClient);
 
             return mostCommonClientServer.GetBlockchain();
         }
 
-        private IServer CreateClientServer(ClientData client)
+        private IServer CreateBlockchainServer(ClientData client)
         {
             string url = $"net.tcp://{client.Address}:{client.Port}/PeerServer";
             NetTcpBinding tcp = new NetTcpBinding();
             ChannelFactory<IServer> serverChannelFactory = new ChannelFactory<IServer>(tcp, url);
             return serverChannelFactory.CreateChannel();
+        }
+
+        /// <summary>
+        /// Adds a transaction to the queue of transactions. It will either be mined immediately, or mined as soon as other pending transactions have been mined
+        /// </summary>
+        /// <param name="transaction"></param>
+        public void AddTransaction(Transaction transaction)
+        {
+            //Add transaction to mining queue
+            _transactions.Enqueue(transaction);
+
+            //Try mining (will mine unless already mining)
+            Task.Run(Mine);
+        }
+
+        private void Mine()
+        {
+            //Abort if already running
+            if (_mining)
+            {
+                return;
+            }
+
+            //Set mining lock
+            _mining = true;
+            try
+            {
+                while (_transactions.Count > 0)
+                {
+                    //Get first element
+                    Transaction transaction = _transactions.Peek();
+
+                    //Get latest block from blockchain
+                    Block lastBlock = Blockchain.Instance.LastBlock;
+
+                    //Check transaction is valid with wallet sender
+                    float walletBalance = Blockchain.Instance.GetBalance(transaction.WalletFrom);
+                    if (walletBalance < transaction.Amount) //If the sender can't afford the transaction anymore
+                    {
+                        //The transaction is now invalid. We have no way of contacting the original sender, so the transaction is just discarded
+                        _transactions.Dequeue();
+                        continue;
+                    }
+
+                    //Create block for the transaction
+                    Block block = new Block()
+                    {
+                        Id = lastBlock.Id + 1,
+                        Amount = transaction.Amount,
+                        BlockOffset = 0,
+                        WalletFrom = transaction.WalletFrom,
+                        WalletTo = transaction.WalletTo,
+                        PrevHash = lastBlock.Hash
+                    };
+
+                    //Calculate hash for block (this will take a long time)
+                    block.Hash = block.FindHash();
+
+                    //Try adding block to local blockchain
+                    try
+                    {
+                        Blockchain.Instance.AddBlock(block);
+                    }
+                    catch (BlockchainException b)
+                    {
+                        //TODO log message
+                        _transactions.Dequeue();
+                        continue;
+                    }
+
+                    //Check to see if we still have the most common blockchain
+                    VerifyPopularBlockchain();
+
+                    //If transaction was submitted to blockchain successfully, remove it from the queue so we can work on the next
+                    _transactions.Dequeue();
+                }
+            }
+            finally //End mining lock even if error occurs
+            {
+                _mining = false;
+            }
         }
     }
 }

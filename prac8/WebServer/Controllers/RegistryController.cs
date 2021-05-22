@@ -54,29 +54,5 @@ namespace WebServer.Controllers
 
             return anyRemoved ? "OK" : "None removed";
         }
-
-        //[Route("api/add-to-score")]
-        //[HttpPost]
-        //public string AddToScore(ClientData client)
-        //{
-        //    bool anyRemoved = RegistryModel.Instance.AddToScore(client);
-
-        //    if (!anyRemoved)
-        //    {
-        //        throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.NotFound)
-        //        {
-        //            Content = new StringContent("Could not find client in registry")
-        //        });
-        //    }
-
-        //    return "OK";
-        //}
-
-        //[Route("api/scoreboard")]
-        //[HttpGet]
-        //public List<ClientScoreData> GetScoreBoard()
-        //{
-        //    return RegistryModel.Instance.GetScoreBoard().OrderBy(c => c.Score * -1).ToList();
-        //}
     }
 }

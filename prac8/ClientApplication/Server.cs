@@ -190,5 +190,10 @@ namespace ClientApplication
         {
             return Blockchain.Instance.Chain;
         }
+
+        public void PutTransaction(Transaction transaction)
+        {
+            Miner.Instance.AddTransaction(transaction);
+        }
     }
 }

@@ -46,10 +46,9 @@
     <Compile Include="Block.cs" />
     <Compile Include="ClientScoreData.cs" />
     <Compile Include="IServer.cs" />
-    <Compile Include="JobData.cs" />
-    <Compile Include="TransmitJobData.cs" />
     <Compile Include="ClientData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transaction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
