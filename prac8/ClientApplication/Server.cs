@@ -70,6 +70,15 @@ namespace ClientApplication
                 throw new ArgumentException($"Invalid server URL '{url}'");
             }
 
+            //Initialise the blockchain
+            InitialiseBlockchain();
+
+            //Open to receive communications
+            _host.Open();
+
+            //Store your own data
+            _myClientData = new ClientData(address, port);
+
             //Post self to registry server
             RestRequest request = new RestRequest("api/register");
             request.AddJsonBody(new ClientData(address, port));
@@ -77,16 +86,8 @@ namespace ClientApplication
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 Status = "Error";
-                throw new ArgumentException($"Server failed to open - '{response.Content}'");
+                throw new ArgumentException($"Failed to register server - '{response.Content}'");
             }
-
-            //Initialise the blockchain
-            InitialiseBlockchain();
-
-            //Open to receive communications
-            _host.Open();
-
-            _myClientData = new ClientData(address, port);
 
             //Set status to open
             Status = "Open";

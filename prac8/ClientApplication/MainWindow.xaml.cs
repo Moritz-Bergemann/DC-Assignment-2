@@ -127,7 +127,7 @@ namespace ClientApplication
             Server.Instance.Close();
         }
 
-        private void SubmitTransactionButton_Click(object sender, RoutedEventArgs e)
+        private async void SubmitTransactionButton_Click(object sender, RoutedEventArgs e)
         {
             //Create transaction from inputs
             Transaction transaction;
@@ -150,7 +150,8 @@ namespace ClientApplication
             //Broadcast transaction
             try
             {
-                BroadcastTransaction(transaction);
+                //Run in different thread (as this may take a very long time) //TODO show progress somehow
+                await Task.Run(() => BroadcastTransaction(transaction));
             }
             catch (ArgumentException a)
             {
