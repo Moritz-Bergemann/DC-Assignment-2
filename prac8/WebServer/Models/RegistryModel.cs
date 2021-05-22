@@ -16,11 +16,11 @@ namespace WebServer.Models
             get;
         } = new RegistryModel();
 
-        private List<ClientScoreData> _registry;
+        private List<ClientData> _registry;
 
         private RegistryModel()
         {
-            _registry = new List<ClientScoreData>();
+            _registry = new List<ClientData>();
         }
 
         public void Register(ClientData newData)
@@ -40,15 +40,13 @@ namespace WebServer.Models
                 throw new RegistryException("Cannot add - already in database");
             }
 
-            _registry.Add(new ClientScoreData(newData));
+            _registry.Add(newData);
         }
 
         public List<ClientData> GetRegistered()
         {
-            List<ClientData> registeredNoScores = _registry.Select(clientScore => new ClientData(clientScore)).ToList();
-
             //Randomise registry elements so no one client is unfairly advantaged
-            return registeredNoScores.OrderBy(a => Guid.NewGuid()).ToList();
+            return _registry.OrderBy(a => Guid.NewGuid()).ToList();
         }
 
         public bool ReportDowned(ClientData downClient)
@@ -57,25 +55,5 @@ namespace WebServer.Models
 
             return numRemoved > 1;
         }
-
-        //public IList<ClientScoreData> GetScoreBoard() //TODO remove
-        //{
-        //    return _registry.AsReadOnly();
-        //}
-
-        //public bool AddToScore(ClientData clientWithPoint)
-        //{
-        //    bool found = false;
-        //    foreach (ClientScoreData client in _registry)
-        //    {
-        //        if (client.Address.Equals(clientWithPoint.Address) && (client.Port == clientWithPoint.Port))
-        //        {
-        //            client.Score++;
-        //            found = true;
-        //        }
-        //    }
-
-        //    return found;
-        //}
     }
 }
