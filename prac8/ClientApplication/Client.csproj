@@ -87,6 +87,7 @@
     <Compile Include="Blockchain.cs" />
     <Compile Include="BlockchainException.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="ServerLaunchException.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -32,14 +32,28 @@ namespace ClientApplication
             uint port = Convert.ToUInt32(random.Next(50000, 60000));
 
             //Start server
-            try
+            bool serverSuccess = false;
+
+            while (!serverSuccess)
             {
-                Server.Instance.Open("localhost", port);
-                ClientEndpointLabel.Content = $"https://localhost:{port}";
-            }
-            catch (ArgumentException a)
-            {
-                MessageBoxResult result = MessageBox.Show($"Failed to open this client's server. Reason: '{a.Message}'", "Failed to open server", MessageBoxButton.OK, MessageBoxImage.Error);
+                try
+                {
+                    serverSuccess = true;
+                    Server.Instance.Open("localhost", port);
+                    ClientEndpointLabel.Content = $"https://localhost:{port}";
+                }
+                catch (ArgumentException a)
+                {
+                    MessageBoxResult result =
+                        MessageBox.Show($"Failed to open this client's server. Reason: '{a.Message}'",
+                            "Failed to open server", MessageBoxButton.OK, MessageBoxImage.Error);
+                    //TODO exit app
+                }
+                catch (ServerLaunchException) //If server failed to open (likely due to port mismatch)
+                {
+                    //Try again with a different port
+                    serverSuccess = false;
+                }
             }
 
             _registryServer = new RestClient("https://localhost:44392/");
@@ -86,7 +100,7 @@ namespace ClientApplication
         private void UpdateGui(Object o, EventArgs args)
         {
             MinerStatusText.Text = Miner.Instance.Status;
-            MinedBlocksText.Text = Miner.Instance.Status;
+            MinedBlocksText.Text = Miner.Instance.MinedBlocks.ToString();
 
             ServerStatusText.Text = Server.Instance.Status;
 
@@ -94,7 +108,7 @@ namespace ClientApplication
 
             //Update blockchain display
             //If a new block has been added to the UI since the last update
-            if (_latestBlock != null && !_latestBlock.Hash.SequenceEqual(Blockchain.Instance.LastBlock.Hash))
+            if (_latestBlock == null || !_latestBlock.Hash.SequenceEqual(Blockchain.Instance.LastBlock.Hash))
             {
                 BlockchainListView.Items.Clear();
 
@@ -102,8 +116,17 @@ namespace ClientApplication
 
                 foreach (Block block in blockchain)
                 {
-                    BlockchainListView.Items.Add(block);
+                    BlockchainListView.Items.Add(new
+                    {
+                        Id = block.Id.ToString(),
+                        WalletFrom = block.WalletFrom.ToString(),
+                        WalletTo = block.WalletTo.ToString(),
+                        Amount = block.Amount.ToString(),
+                        Hash = Convert.ToBase64String(block.Hash)
+                    });
                 }
+
+                _latestBlock = Blockchain.Instance.LastBlock;
             }
         }
 
@@ -116,6 +139,11 @@ namespace ClientApplication
                 BalanceText.Text = Blockchain.Instance.GetBalance(id).ToString();
             }
             catch (FormatException)
+            {
+                MessageBox.Show("Please input a non-negative integer as the user ID.", "Bad input",
+                    MessageBoxButton.OK);
+            }
+            catch (OverflowException)
             {
                 MessageBox.Show("Please input a non-negative integer as the user ID.", "Bad input",
                     MessageBoxButton.OK);

@@ -74,7 +74,15 @@ namespace ClientApplication
             InitialiseBlockchain();
 
             //Open to receive communications
-            _host.Open();
+            try
+            {
+                _host.Open();
+            }
+            catch (CommunicationException c)
+            {
+                _host = null;
+                throw new ServerLaunchException(c.Message);
+            }
 
             //Store your own data
             _myClientData = new ClientData(address, port);
