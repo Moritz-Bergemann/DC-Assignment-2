@@ -128,7 +128,7 @@ namespace ClientApplication
 
             List<ClientData> registered = JsonConvert.DeserializeObject<List<ClientData>>(response.Content);
 
-            if (registered.Count > 0)
+            if (!response.IsSuccessful || registered.Count > 0) //If this is the first element or other clients are unreachable
             {
                 //Initialise the blockchain to be the most common blockchain
                 Blockchain.Instance.SetBlockchain(Miner.Instance.GetMostCommonBlockchain());

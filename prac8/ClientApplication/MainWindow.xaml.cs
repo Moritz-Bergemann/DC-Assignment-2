@@ -27,15 +27,15 @@ namespace ClientApplication
         {
             InitializeComponent();
 
-            //Generate remoting address
-            Random random = new Random();
-            uint port = Convert.ToUInt32(random.Next(50000, 60000));
-
             //Start server
             bool serverSuccess = false;
 
             while (!serverSuccess)
             {
+                //Generate remoting address
+                Random random = new Random();
+                uint port = Convert.ToUInt32(random.Next(50000, 60000));
+
                 try
                 {
                     serverSuccess = true;
