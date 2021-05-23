@@ -41,16 +41,21 @@ namespace ClientApplication
                     serverSuccess = true;
                     Server.Instance.Open("localhost", port);
                     ClientEndpointLabel.Content = $"https://localhost:{port}";
+
+                    //Setup logger
+                    Logger.Instance.SetClient(new ClientData("localhost", port));
                 }
                 catch (ArgumentException a)
                 {
                     MessageBoxResult result =
                         MessageBox.Show($"Failed to open this client's server. Reason: '{a.Message}'",
                             "Failed to open server", MessageBoxButton.OK, MessageBoxImage.Error);
-                    //TODO exit app
+                    Application.Current.Shutdown();
                 }
-                catch (ServerLaunchException) //If server failed to open (likely due to port mismatch)
+                catch (ServerLaunchException s) //If server failed to open (likely due to port mismatch)
                 {
+                    Logger.Instance.Log($"Attempted opening client on https://localhost:{port}, but got error - {s}");
+
                     //Try again with a different port
                     serverSuccess = false;
                 }
@@ -94,9 +99,8 @@ namespace ClientApplication
                 Header = "Hash",
                 DisplayMemberBinding = new Binding("Hash")
             });
-
-
         }
+
         private void UpdateGui(Object o, EventArgs args)
         {
             MinerStatusText.Text = Miner.Instance.Status;

@@ -14,5 +14,10 @@
             Address = address;
             Port = port;
         }
+
+        public override string ToString()
+        {
+            return $"{Address}:{Port}";
+        }
     }
 }

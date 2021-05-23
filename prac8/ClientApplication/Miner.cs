@@ -75,6 +75,7 @@ namespace ClientApplication
             //Check most common blockchain is the same as this client's one, override it if not
             if (!Blockchain.Instance.LastBlock.Hash.SequenceEqual(commonBlockchain.Last().Hash))
             {
+                Logger.Instance.Log($"Found did not have most common blockchain (our hash is '{Convert.ToBase64String(Blockchain.Instance.LastBlock.Hash)}', most common is '{Convert.ToBase64String(commonBlockchain.Last().Hash)}'), downloading");
                 Blockchain.Instance.SetBlockchain(commonBlockchain);
             }
         }
@@ -102,7 +103,19 @@ namespace ClientApplication
                 //Connect to client's server
                 IServer clientServer = CreateBlockchainServer(client);
 
-                Block lastBlock = clientServer.GetLastBlock();
+                Block lastBlock;
+                try
+                {
+                    lastBlock = clientServer.GetLastBlock();
+                }
+                catch (EndpointNotFoundException)
+                {
+                    Logger.Instance.Log($"Getting most common blockchain access to client '{client} failed, reporting as downed to registry'");
+
+                    ReportClientDowned(client);
+                    continue;
+                }
+
                 byte[] lastBlockHash = lastBlock.Hash;
 
                 //If this last hash is new
@@ -143,6 +156,13 @@ namespace ClientApplication
             return serverChannelFactory.CreateChannel();
         }
 
+        private void ReportClientDowned(ClientData downedClient)
+        {
+            RestRequest request = new RestRequest("api/report-downed");
+            request.AddJsonBody(downedClient);
+            _registryServer.Post(request);
+        }
+
         /// <summary>
         /// Adds a transaction to the queue of transactions. It will either be mined immediately, or mined as soon as other pending transactions have been mined
         /// </summary>
@@ -173,15 +193,6 @@ namespace ClientApplication
                         //Get latest block from blockchain
                         Block lastBlock = Blockchain.Instance.LastBlock;
 
-                        //Check transaction is valid with wallet sender
-                        float walletBalance = Blockchain.Instance.GetBalance(transaction.WalletFrom);
-                        if (walletBalance < transaction.Amount) //If the sender can't afford the transaction anymore
-                        {
-                            //The transaction is now invalid. We have no way of contacting the original sender, so the transaction is just discarded
-                            _transactions.Dequeue();
-                            continue;
-                        }
-
                         //Create block for the transaction
                         Block block = new Block()
                         {
@@ -203,12 +214,15 @@ namespace ClientApplication
                         }
                         catch (BlockchainException b)
                         {
-                            //TODO log message
-                            _transactions.Dequeue();
+                            Logger.Instance.Log($"Tried to add block '{block}' to blockchain but got error - {b.Message}, discarding");
+
+                                _transactions.Dequeue();
                             continue;
                         }
 
                         MinedBlocks++;
+
+                        Logger.Instance.Log($"Added block '{block}' to local blockchain");
 
                         Status = "Validating most popular blockchain";
 

@@ -86,6 +86,7 @@
     </ApplicationDefinition>
     <Compile Include="Blockchain.cs" />
     <Compile Include="BlockchainException.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerLaunchException.cs" />
     <Page Include="MainWindow.xaml">
