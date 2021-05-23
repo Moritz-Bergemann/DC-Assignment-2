@@ -23,6 +23,8 @@ namespace ClientApplication
 
         private Block _latestBlock = null;
 
+        private uint _clientWallet = 0;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -99,6 +101,37 @@ namespace ClientApplication
                 Header = "Hash",
                 DisplayMemberBinding = new Binding("Hash")
             });
+
+            //Show login prompt
+            Window loginWindow = new Window
+            {
+                Title = "Job Results",
+                Content = new EnterWalletIdUserControl(SetWalletForClient), //Give control callback for setting wallet ID here
+                SizeToContent = SizeToContent.WidthAndHeight
+            };
+
+            bool? accepted = loginWindow.ShowDialog();
+
+            if (accepted == null || (bool) !accepted)
+            {
+                //Close the whole app
+                Miner.Instance.Close();
+                Server.Instance.Close();
+
+                Application.Current.Shutdown();
+            }
+        }
+
+        /// <summary>
+        /// Sets the wallet ID for this client.
+        /// </summary>
+        /// <param name="walletId">Wallet ID for this client</param>
+        private void SetWalletForClient(uint walletId)
+        {
+            _clientWallet = walletId;
+
+            //Show in GUI
+            WalletLabel.Content = walletId.ToString();
         }
 
         private void UpdateGui(Object o, EventArgs args)
@@ -156,7 +189,12 @@ namespace ClientApplication
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            Server.Instance.Close();
+            try
+            {
+                Server.Instance.Close();
+                Miner.Instance.Close();
+            } catch (ArgumentException) { } //Do nothing, only catch to exit gracefully in case either already closed
+            
         }
 
         private async void SubmitTransactionButton_Click(object sender, RoutedEventArgs e)
@@ -167,7 +205,7 @@ namespace ClientApplication
             {
                 transaction = new Transaction()
                 {
-                    WalletFrom = uint.Parse(WalletFromBox.Text),
+                    WalletFrom = _clientWallet,
                     WalletTo = uint.Parse(WalletToBox.Text),
                     Amount = float.Parse(AmountBox.Text)
 

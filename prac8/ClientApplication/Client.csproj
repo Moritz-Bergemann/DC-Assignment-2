@@ -86,9 +86,16 @@
     </ApplicationDefinition>
     <Compile Include="Blockchain.cs" />
     <Compile Include="BlockchainException.cs" />
+    <Compile Include="EnterWalletIdUserControl.xaml.cs">
+      <DependentUpon>EnterWalletIdUserControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Logger.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerLaunchException.cs" />
+    <Page Include="EnterWalletIdUserControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

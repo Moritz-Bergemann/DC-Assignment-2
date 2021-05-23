@@ -56,8 +56,6 @@ namespace ClientApplication
             {
                 _pendingCheck = true;
 
-                Debug.WriteLine("Checking blockchain during downtime...");
-
                 lock (_miningLock)
                 {
                     VerifyPopularBlockchain();
@@ -67,6 +65,19 @@ namespace ClientApplication
             }
         }
 
+        /// <summary>
+        ///Shut down the miner thread.
+        /// </summary>
+        public void Close()
+        {
+            //Close checking timer
+            _blockchainChecker.Dispose();
+        }
+
+
+        /// <summary>
+        /// Verifies this client has the most popular blockchain. Downloads most popular blockchain if it does not.
+        /// </summary>
         public void VerifyPopularBlockchain()
         {
             //Get the most common blockchain
@@ -80,6 +91,9 @@ namespace ClientApplication
             }
         }
 
+        /// <summary>
+        /// Retrieves the most common blockchain from all clients in the registry.
+        /// </summary>
         public List<Block> GetMostCommonBlockchain()
         {
             //Get list of all miners from the registry
@@ -108,12 +122,19 @@ namespace ClientApplication
                 {
                     lastBlock = clientServer.GetLastBlock();
                 }
-                catch (EndpointNotFoundException)
+                catch (Exception e)
                 {
-                    Logger.Instance.Log($"Getting most common blockchain access to client '{client} failed, reporting as downed to registry'");
+                    if (e is EndpointNotFoundException || e is CommunicationException)
+                    {
+                        Logger.Instance.Log($"Getting most common blockchain access to client '{client} failed, reporting as downed to registry'");
 
-                    ReportClientDowned(client);
-                    continue;
+                        ReportClientDowned(client);
+                        continue;
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
 
                 byte[] lastBlockHash = lastBlock.Hash;
