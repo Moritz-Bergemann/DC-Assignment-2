@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -10,6 +11,8 @@ namespace Miner.Models
 {
     public class MinerModel
     {
+        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName, "miner-log.log");
+
         public RestClient _blockchainClient;
 
         public static MinerModel Instance
@@ -35,19 +38,6 @@ namespace Miner.Models
 
         public void AddTransaction(Transaction transaction)
         {
-            //Validate transactions
-            if (transaction.Amount < 0)
-            {
-                throw new ArgumentException("Transaction amount cannot be negative");
-            }
-
-            Wallet senderWallet = GetWalletFromServer(transaction.WalletFrom);
-
-            if (senderWallet.Balance < transaction.Amount)
-            {
-                throw new ArgumentException("Sender cannot afford transaction");
-            }
-
             //Add transaction to pending transactions list
             _transactions.Enqueue(transaction);
             
@@ -154,6 +144,14 @@ namespace Miner.Models
             }
 
             return JsonConvert.DeserializeObject<Block>(response.Content);
+        }
+        
+        private void Log(string message)
+        {
+            //Add log number and increment log number
+            StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);
+            logsFileWriter.WriteLine(message);
+            logsFileWriter.Close();
         }
     }
 }
