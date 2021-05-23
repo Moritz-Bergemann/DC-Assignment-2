@@ -3,10 +3,13 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using Microsoft.Scripting.Debugging;
 
 namespace ClientApplication
 {
@@ -14,7 +17,10 @@ namespace ClientApplication
     {
         private Queue<Transaction> _transactions;
         //private bool _mining;
-        private object _miningLock = new object();
+        private readonly object _miningLock = new object();
+
+        private Timer _blockchainChecker;
+        private bool _pendingCheck = false;
 
         private RestClient _registryServer;
 
@@ -32,11 +38,8 @@ namespace ClientApplication
 
             _transactions = new Queue<Transaction>();
 
-            ////Start task of validating blockchain during downtime
-            //DispatcherTimer dTimer = new DispatcherTimer();
-            //dTimer.Tick += new EventHandler(VerifyBlockchainInDowntime);
-            //dTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
-            //dTimer.Start();
+            //Start task of validating blockchain during downtime
+            _blockchainChecker = new Timer(VerifyBlockchainInDowntime, null, 1000, 1000);
 
             Status = "Waiting for transactions";
         }
@@ -45,17 +48,24 @@ namespace ClientApplication
 
         public int MinedBlocks { get; private set; } = 0;
 
-        //private void VerifyBlockchainInDowntime(Object o, EventArgs args)
-        //{
-        //    //If the local blockchain has been initialized and we aren't mining, verify it the chain
-        //    if (Blockchain.Instance.Chain != null && !_mining)
-        //    {
-        //        lock (_miningLock)
-        //        {
+        private void VerifyBlockchainInDowntime(Object o)
+        {
 
-        //        }
-        //    }
-        //}
+            //If the local blockchain has been initialized, we aren't mining and aren't already doing a check verify the chain
+            if (!_pendingCheck && Blockchain.Instance.Chain != null)
+            {
+                _pendingCheck = true;
+
+                Debug.WriteLine("Checking blockchain during downtime...");
+
+                lock (_miningLock)
+                {
+                    VerifyPopularBlockchain();
+                }
+
+                _pendingCheck = false;
+            }
+        }
 
         public void VerifyPopularBlockchain()
         {
