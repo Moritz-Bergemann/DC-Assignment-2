@@ -10,7 +10,7 @@ namespace DataTier.Models
     /// </summary>
     public class DataModel
     {
-        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName, "blockchain-logs.log");
+        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName, "data-logs.log");
 
         public static DataModel Instance
         {

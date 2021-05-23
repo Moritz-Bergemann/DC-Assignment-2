@@ -3,6 +3,8 @@
     ViewBag.Title = "AccountPage";
 }
 
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
 <h2>Account Management</h2>
 
 <a href="/"><h4>Go back</h4></a>
@@ -63,7 +65,7 @@
             var accountId = $("#infoAccountId").val();
 
             $.ajax({
-                url: `api/account/${accountId}`,
+                url: `/api/account/${accountId}`,
                 type: 'GET',
                 contentType: 'application/json; charset=utf-8',
                 success: (data, textStatus, jQxhr) => {
@@ -113,7 +115,7 @@
         console.log(postData);
 
         $.ajax({
-            url: `api/account/${accountId}/${withdrawOrDeposit}`, //Modify URL based on whether withdraw or deposit
+            url: `/api/account/${accountId}/${withdrawOrDeposit}`, //Modify URL based on whether withdraw or deposit
             type: 'POST',
             contentType: 'application/json; charset=utf-8',
             dataType: 'json',

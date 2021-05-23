@@ -3,6 +3,7 @@
     ViewBag.Title = "TransactionPage";
 }
 
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
 
 <h2>Transaction Management</h2>
 
@@ -43,7 +44,7 @@
             }
 
             $.ajax({
-                url: `api/transaction`,
+                url: `/api/transaction`,
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',

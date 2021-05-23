@@ -3,6 +3,8 @@
     ViewBag.Title = "UserPage";
 }
 
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
 <a href="/"><h4>Go back</h4></a>
 <h2>User Management</h2>
 <div>
@@ -52,7 +54,7 @@
             var userId = $("#infoUserId").val();
 
             $.ajax({
-                url: `api/user/${userId}`,
+                url: `/api/user/${userId}`,
                 type: 'GET',
                 contentType: 'application/json; charset=utf-8',
                 success: (data, textStatus, jQxhr) => {
@@ -141,7 +143,7 @@
 
             //Make API request
             $.ajax({
-                url: 'api/user',
+                url: '/api/user',
                 type: 'POST',
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
