@@ -65,17 +65,6 @@ namespace Miner.Models
                     //Get latest block from blockchain
                     Block lastBlock = GetLastBlockFromServer();
 
-                    ////Check transaction is still valid with wallet sender
-                    //Wallet walletFrom = GetWalletFromServer(transaction.WalletFrom);
-                    //if (walletFrom.Balance < transaction.Amount) //If the sender can't afford the transaction anymore
-                    //{
-                    //    Log($"Before mining block '{block}', rejected by server");
-
-                    //    //The transaction is now invalid. We have no way of contacting the original sender, so the transaction is just discarded
-                    //    _transactions.Dequeue();
-                    //    continue;
-                    //} TODO remove
-
                     //Create block for the transaction
                     Block block = new Block()
                     {

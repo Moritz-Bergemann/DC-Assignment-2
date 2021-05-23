@@ -44,7 +44,7 @@ namespace ClientApplication
                     MessageBoxResult result =
                         MessageBox.Show($"Failed to open this client's server. Reason: '{a.Message}'",
                             "Failed to open server", MessageBoxButton.OK, MessageBoxImage.Error);
-                    //TODO exit app
+                    Application.Current.Shutdown();
                 }
                 catch (ServerLaunchException) //If server failed to open (likely due to port mismatch)
                 {

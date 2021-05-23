@@ -63,7 +63,7 @@ namespace DataTier.Controllers
 
         [Route("api/Transaction/")]
         [HttpPost]
-        public uint MakeTransaction(CreateTransactionData createData) //TODO see what an invalid transaction looks like in BankDB
+        public uint MakeTransaction(CreateTransactionData createData)
         {
             if (createData == null)
             {
