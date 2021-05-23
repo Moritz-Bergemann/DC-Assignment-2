@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using BankDB;
 
 namespace DataTier.Models
@@ -9,6 +10,8 @@ namespace DataTier.Models
     /// </summary>
     public class DataModel
     {
+        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName, "blockchain-logs.log");
+
         public static DataModel Instance
         {
             get;
@@ -49,6 +52,7 @@ namespace DataTier.Models
             }
             catch (Exception e)
             {
+                Log($"Attempted retrieve user '{userId}', not found");
                 throw new BankDbNotFoundException("User ID not found");
             }
         }
@@ -72,6 +76,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted deposit account '{accountId}', not found");
                 throw new BankDbNotFoundException("Account ID not found");
             }
 
@@ -79,8 +84,9 @@ namespace DataTier.Models
             {
                 _accountAccess.Deposit(amount);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log($"Attempted deposit account '{accountId}', error - {e.Message}");
                 throw new BankDbInvalidException("Could not deposit to account");
             }
         }
@@ -92,6 +98,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted withdraw account '{accountId}', not found");
                 throw new BankDbNotFoundException("Account ID not found");
             }
 
@@ -99,8 +106,9 @@ namespace DataTier.Models
             {
                 _accountAccess.Withdraw(amount);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Log($"Attempted withdraw account '{accountId}', error - {e.Message}");
                 throw new BankDbInvalidException("Invalid funds to withdraw");
             }
         }
@@ -114,6 +122,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted get account balance '{accountId}', not found");
                 throw new BankDbNotFoundException("Account ID not found");
             }
         }
@@ -127,6 +136,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted get account owner '{accountId}', not found");
                 throw new BankDbNotFoundException("Account ID not found");
             }
         }
@@ -139,6 +149,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted get account IDs by user '{userId}', not found");
                 throw new BankDbNotFoundException("User ID not found");
             }
         }
@@ -166,6 +177,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted get transaction sender for '{transactionId}', not found");
                 throw new BankDbNotFoundException("Transaction ID not found");
             }
             return _transactionAccess.GetSendrAcct();
@@ -179,6 +191,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted get transaction receiver for '{transactionId}', not found");
                 throw new BankDbNotFoundException("Transaction ID not found");
             }
             return _transactionAccess.GetRecvrAcct();
@@ -192,6 +205,7 @@ namespace DataTier.Models
             }
             catch (Exception)
             {
+                Log($"Attempted get transaction amount for '{transactionId}', not found");
                 throw new BankDbNotFoundException("Transaction ID not found");
             }
             return _transactionAccess.GetAmount();
@@ -204,13 +218,13 @@ namespace DataTier.Models
 
         public void ProcessAllTransactions()
         {
-            //TODO handle whatever this throws
             try
             {
                 _bankDb.ProcessAllTransactions();
             }
             catch (Exception e)
             {
+                Log($"Transaction failed - {e.Message}");
                 throw new BankDbInvalidException($"Transaction failed - {e.Message}");
             }
         }
@@ -218,7 +232,15 @@ namespace DataTier.Models
         public void Save()
         {
             //Exception NOT caught - error here should crash service
-            _bankDb.SaveToDisk(); 
+            _bankDb.SaveToDisk();
+        }
+
+        private void Log(string message)
+        {
+            //Add log number and increment log number
+            StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);
+            logsFileWriter.WriteLine(message);
+            logsFileWriter.Close();
         }
     }
 }
