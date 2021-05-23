@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using System.Threading.Tasks;
@@ -62,19 +61,26 @@ namespace ClientApplication
         /// </summary>
         private async Task Iteration()
         {
-            _statusString = "Looking for Jobs to Do";
+            try
+            {
+                _statusString = "Looking for Jobs to Do";
 
-            //Refresh data on existing clients
-            await UpdateClients();
+                //Refresh data on existing clients
+                await UpdateClients();
 
-            //Provide service (look for jobs and complete them) on each client
-            await ProvideService();
+                //Provide service (look for jobs and complete them) on each client
+                await ProvideService();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Log($"Exception while running iteration - {e.Message}");
+            }
         }
 
         /// <summary>
         /// Get list of available clients from web server and update the local list
         /// </summary>
-        private async Task UpdateClients() //TODO implement async
+        private async Task UpdateClients()
         {
             RestRequest request = new RestRequest("api/get-registered");
 
@@ -111,8 +117,9 @@ namespace ClientApplication
                 {
                     job = await GetFirstJob(clientServer);
                 }
-                catch (CommunicationException) //In case connection with the client failed
+                catch (CommunicationException c) //In case connection with the client failed
                 {
+                    Logger.Instance.Log($"Tried getting job from {client}, but got communication failure - {c.Message}");
                     ReportDowned(client);
                 }
 
@@ -127,8 +134,9 @@ namespace ClientApplication
                 {
                     await DoJob(clientServer, job);
                 }
-                catch (CommunicationException) //In case connection with the client failed
+                catch (CommunicationException c) //In case connection with the client failed
                 {
+                    Logger.Instance.Log($"Tried doing job for {client}, but got communication failure - {c.Message}");
                     ReportDowned(client);
                 }
 
@@ -185,6 +193,7 @@ namespace ClientApplication
             }
             catch (Exception e) //Must catch base Exception as IronPython may throw any exception
             {
+                Logger.Instance.Log($"Running job threw exception - {e.Message}");
                 result = $"EXCEPTION THROWN - {e.Message}";
             }
 

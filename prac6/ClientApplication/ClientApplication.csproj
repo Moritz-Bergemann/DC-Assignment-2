@@ -87,6 +87,7 @@
     <Compile Include="JobResultsUserControl.xaml.cs">
       <DependentUpon>JobResultsUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Logger.cs" />
     <Compile Include="Server.cs" />
     <Page Include="JobResultsUserControl.xaml">
       <SubType>Designer</SubType>

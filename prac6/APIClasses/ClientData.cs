@@ -20,5 +20,10 @@
             Address = scoreData.Address;
             Port = scoreData.Port;
         }
+
+        public override string ToString()
+        {
+            return $"{Address}:{Port}";
+        }
     }
 }

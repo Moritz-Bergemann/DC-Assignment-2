@@ -50,7 +50,6 @@ namespace ClientApplication
                 }
             }
 
-
             _registryServer = new RestClient("https://localhost:44392/");
 
             //Prepare scoreboard table
