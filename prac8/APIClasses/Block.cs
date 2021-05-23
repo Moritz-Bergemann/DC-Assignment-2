@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -13,9 +14,7 @@ namespace APIClasses
     public class Block
     {
         public uint Id;
-        public uint WalletFrom;
-        public uint WalletTo;
-        public float Amount;
+        public List<Transaction> Transactions;
         public uint BlockOffset;
         public byte[] PrevHash;
         public byte[] Hash;
@@ -53,9 +52,10 @@ namespace APIClasses
             //Brute-forcing time
             string concatString = "";
             concatString += block.Id.ToString();
-            concatString += block.WalletFrom.ToString();
-            concatString += block.WalletTo.ToString();
-            concatString += block.Amount.ToString(CultureInfo.InvariantCulture);
+            foreach (Transaction transaction in block.Transactions)
+            {
+                concatString += transaction.ToString();
+            }
             concatString += block.BlockOffset.ToString();
             if (block.PrevHash != null)
             {
@@ -96,8 +96,13 @@ namespace APIClasses
 
         public override string ToString()
         {
-            return
-                $"ID {Id}, Amount {Amount}, From {WalletFrom}, To {WalletTo}, Offset{BlockOffset}, PrevHash {Convert.ToBase64String(Hash)}, Hash {Convert.ToBase64String(PrevHash)}";
+            string transactionString = "";
+            foreach (Transaction transaction in Transactions)
+            {
+                transactionString += transaction.ToString();
+            }
+
+            return $"ID {Id}, Transactions {{{transactionString}}}, Offset{BlockOffset}, PrevHash {Convert.ToBase64String(Hash)}, Hash {Convert.ToBase64String(PrevHash)}";
         }
     }
 }

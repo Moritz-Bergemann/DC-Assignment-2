@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ClientApplication"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800"
+        Title="SCoin Exchange" Height="450" Width="800"
         Closing="MainWindow_Closing"  
         >
     <Grid>
@@ -49,6 +49,9 @@
         <Label Name="ClientEndpointLabel" Content="NOT SET" HorizontalAlignment="Left" Margin="318,10,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="246"/>
         <Label Content="Wallet:" HorizontalAlignment="Left" Margin="257,46,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="62"/>
         <Label x:Name="WalletLabel" Content="NOT SET" HorizontalAlignment="Left" Margin="318,46,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="246"/>
+        <TextBlock HorizontalAlignment="Left" Height="24" Margin="582,131,0,0" TextWrapping="Wrap" Text="Number of transactions per block is 5" VerticalAlignment="Top" Width="200"/>
+        <TextBlock HorizontalAlignment="Left" Height="23" Margin="582,155,0,0" TextWrapping="Wrap" Text="Pending Transactions:" VerticalAlignment="Top" Width="118"/>
+        <TextBlock Name="PendingTransactionsText"  HorizontalAlignment="Left" Height="23" Margin="705,155,0,0" TextWrapping="Wrap" Text="unknown" VerticalAlignment="Top" Width="57" RenderTransformOrigin="2.48,-1.29"/>
 
     </Grid>
 </Window>

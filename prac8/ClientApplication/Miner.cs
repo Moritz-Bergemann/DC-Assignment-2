@@ -3,20 +3,17 @@ using Newtonsoft.Json;
 using RestSharp;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
-using Microsoft.Scripting.Debugging;
 
 namespace ClientApplication
 {
     class Miner
     {
-        private Queue<Transaction> _transactions;
-        //private bool _mining;
+        private List<Transaction> _transactions;
+
         private readonly object _miningLock = new object();
 
         private Timer _blockchainChecker;
@@ -36,7 +33,7 @@ namespace ClientApplication
             //Instantiate REST client
             _registryServer = new RestClient("https://localhost:44392/");
 
-            _transactions = new Queue<Transaction>();
+            _transactions = new List<Transaction>();
 
             //Start task of validating blockchain during downtime
             _blockchainChecker = new Timer(VerifyBlockchainInDowntime, null, 1000, 1000);
@@ -47,6 +44,11 @@ namespace ClientApplication
         public string Status { get; private set; }
 
         public int MinedBlocks { get; private set; } = 0;
+
+        public int PendingTransactions
+        {
+            get => _transactions.Count;
+        }
 
         private void VerifyBlockchainInDowntime(Object o)
         {
@@ -88,6 +90,9 @@ namespace ClientApplication
             {
                 Logger.Instance.Log($"Found did not have most common blockchain (our hash is '{Convert.ToBase64String(Blockchain.Instance.LastBlock.Hash)}', most common is '{Convert.ToBase64String(commonBlockchain.Last().Hash)}'), downloading");
                 Blockchain.Instance.SetBlockchain(commonBlockchain);
+
+                //Clear pending transactions
+                _transactions.Clear();
             }
         }
 
@@ -191,10 +196,13 @@ namespace ClientApplication
         public void AddTransaction(Transaction transaction)
         {
             //Add transaction to mining queue
-            _transactions.Enqueue(transaction);
+            _transactions.Add(transaction);
 
-            //Try mining (will mine unless already mining)
-            Task.Run(Mine);
+            if (_transactions.Count >= 5)
+            {
+                //Try mining (will mine unless already mining)
+                Task.Run(Mine);
+            }
         }
 
         private void Mine()
@@ -202,26 +210,37 @@ namespace ClientApplication
             //Set mining lock
             lock (_miningLock)
             {
+                if (_transactions.Count < 5) //If not enough transactions are ready (another mine was waiting)
+                {
+                    return;
+                }
+
                 try
                 {
                     while (_transactions.Count > 0)
                     {
                         Status = "Mining";
 
-                        //Get first element
-                        Transaction transaction = _transactions.Peek();
-
                         //Get latest block from blockchain
                         Block lastBlock = Blockchain.Instance.LastBlock;
+
+                        List<Transaction> transactionsToAdd = new List<Transaction>();
+
+                        for (int ii = 0; ii < 5; ii++)
+                        {
+                            transactionsToAdd.Add(new Transaction(_transactions[0]));
+                            _transactions.RemoveAt(0);
+                        }
+
+                        //Sort transactions by timestamp
+                        transactionsToAdd = transactionsToAdd.OrderBy(t => t.Timestamp.Ticks).ToList();
 
                         //Create block for the transaction
                         Block block = new Block()
                         {
                             Id = lastBlock.Id + 1,
-                            Amount = transaction.Amount,
+                            Transactions = transactionsToAdd,
                             BlockOffset = 0,
-                            WalletFrom = transaction.WalletFrom,
-                            WalletTo = transaction.WalletTo,
                             PrevHash = lastBlock.Hash
                         };
 
@@ -236,8 +255,6 @@ namespace ClientApplication
                         catch (BlockchainException b)
                         {
                             Logger.Instance.Log($"Tried to add block '{block}' to blockchain but got error - {b.Message}, discarding");
-
-                                _transactions.Dequeue();
                             continue;
                         }
 
@@ -249,9 +266,6 @@ namespace ClientApplication
 
                         //Check to see if we still have the most common blockchain
                         VerifyPopularBlockchain();
-
-                        //If transaction was submitted to blockchain successfully, remove it from the queue so we can work on the next
-                        _transactions.Dequeue();
                     }
                 }
                 finally

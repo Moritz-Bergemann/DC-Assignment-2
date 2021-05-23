@@ -137,14 +137,21 @@ namespace ClientApplication
             {
                 //We are the first blockchain client
                 //Construct genesis block
+                List<Transaction> transactions = new List<Transaction>();
+                transactions.Add(new Transaction()
+                {
+                    Amount = 0,
+                    WalletFrom = 0,
+                    WalletTo = 0,
+                    Timestamp = DateTime.Now
+                });
+
                 Block genesis = new Block()
                 {
                     Id = 0,
-                    Amount = 0,
                     BlockOffset = 0,
-                    WalletFrom = 0,
-                    WalletTo = 0,
-                    PrevHash = null
+                    PrevHash = null,
+                    Transactions = transactions
                 };
                 genesis.Hash = genesis.FindHash();
 

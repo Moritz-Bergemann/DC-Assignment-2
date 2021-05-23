@@ -25,7 +25,6 @@ namespace ClientApplication
             _wallets[0] = float.PositiveInfinity;
         }
 
-
         public Block LastBlock { get; private set; }
 
         public List<Block> Chain
@@ -56,8 +55,11 @@ namespace ClientApplication
             _chain.Add(block);
 
             //Update wallets
-            SetBalance(block.WalletFrom, GetBalance(block.WalletFrom) - block.Amount);
-            SetBalance(block.WalletTo, GetBalance(block.WalletTo) + block.Amount);
+            foreach (Transaction transaction in block.Transactions)
+            {
+                SetBalance(transaction.WalletFrom, GetBalance(transaction.WalletFrom) - transaction.Amount);
+                SetBalance(transaction.WalletTo, GetBalance(transaction.WalletTo) + transaction.Amount);
+            }
         }
 
         private bool ValidateBlock(Block block, out string reason)
@@ -72,18 +74,29 @@ namespace ClientApplication
                 return false;
             }
 
-            //From wallet ID must have enough coins
-            if (GetBalance(block.WalletFrom)< block.Amount)
-            {
-                reason = "From wallet has insufficient coins";
-                return false;
-            }
+            //Clone wallets for testing
+            var tempWallets = _wallets.ToDictionary(entry => entry.Key,
+                entry => entry.Value);
 
-            //All values must be non-negative (implicit)
-            if (block.Amount < 0)
+            foreach (Transaction transaction in block.Transactions)
             {
-                reason = "Negative amounts";
-                return false;
+                //From wallet ID must have enough coins
+                if (GetTempBalance(transaction.WalletFrom, tempWallets) < transaction.Amount)
+                {
+                    reason = "From wallet has insufficient coins";
+                    return false;
+                }
+
+                //All values must be non-negative (implicit)
+                if (transaction.Amount < 0)
+                {
+                    reason = "Negative amounts";
+                    return false;
+                }
+
+                //Update temporary wallets
+                SetTempBalance(transaction.WalletFrom, GetTempBalance(transaction.WalletFrom, tempWallets) - transaction.Amount, tempWallets);
+                SetTempBalance(transaction.WalletTo, GetTempBalance(transaction.WalletTo, tempWallets) + transaction.Amount, tempWallets);
             }
 
             //Block offset must be divisible by 5
@@ -129,9 +142,11 @@ namespace ClientApplication
             //Reconstruct wallets based on blockchain
             foreach (Block block in Chain)
             {
-                SetBalance(block.WalletFrom, GetBalance(block.WalletFrom) - block.Amount);
-
-                SetBalance(block.WalletTo, GetBalance(block.WalletTo) + block.Amount);
+                foreach (Transaction transaction in block.Transactions)
+                {
+                    SetBalance(transaction.WalletFrom, GetBalance(transaction.WalletFrom) - transaction.Amount);
+                    SetBalance(transaction.WalletTo, GetBalance(transaction.WalletTo) + transaction.Amount);
+                }
             }
         }
 
@@ -155,5 +170,27 @@ namespace ClientApplication
         {
             _wallets[id] = balance;
         }
+
+        private float GetTempBalance(uint id, Dictionary<uint, float> tempWallets)
+        {
+            float balance;
+
+            bool found = tempWallets.TryGetValue(id, out balance);
+
+            //If wallet wasn't found, create it
+            if (!found)
+            {
+                balance = 0;
+                tempWallets[id] = 0;
+            }
+
+            return balance;
+        }
+
+        private void SetTempBalance(uint id, float balance, Dictionary<uint, float> tempWallets)
+        {
+            tempWallets[id] = balance;
+        }
+
     }
 }

@@ -83,18 +83,8 @@ namespace ClientApplication
             });
             gridView.Columns.Add(new GridViewColumn
             {
-                Header = "From Wallet",
-                DisplayMemberBinding = new Binding("WalletFrom")
-            });
-            gridView.Columns.Add(new GridViewColumn
-            {
-                Header = "To Wallet",
-                DisplayMemberBinding = new Binding("WalletTo")
-            });
-            gridView.Columns.Add(new GridViewColumn
-            {
-                Header = "Amount",
-                DisplayMemberBinding = new Binding("Amount")
+                Header = "Transactions",
+                DisplayMemberBinding = new Binding("Transactions")
             });
             gridView.Columns.Add(new GridViewColumn
             {
@@ -138,6 +128,7 @@ namespace ClientApplication
         {
             MinerStatusText.Text = Miner.Instance.Status;
             MinedBlocksText.Text = Miner.Instance.MinedBlocks.ToString();
+            PendingTransactionsText.Text = Miner.Instance.PendingTransactions.ToString();
 
             ServerStatusText.Text = Server.Instance.Status;
 
@@ -153,12 +144,16 @@ namespace ClientApplication
 
                 foreach (Block block in blockchain)
                 {
+                    string transactionString = "";
+                    foreach (Transaction transaction in block.Transactions)
+                    {
+                        transactionString += "|" + transaction.ToString();
+                    }
+
                     BlockchainListView.Items.Add(new
                     {
                         Id = block.Id.ToString(),
-                        WalletFrom = block.WalletFrom.ToString(),
-                        WalletTo = block.WalletTo.ToString(),
-                        Amount = block.Amount.ToString(),
+                        Transactions = transactionString,
                         Hash = Convert.ToBase64String(block.Hash)
                     });
                 }
@@ -220,7 +215,7 @@ namespace ClientApplication
             //Broadcast transaction
             try
             {
-                //Run in different thread (as this may take a very long time) //TODO show progress somehow
+                //Run in different thread (as this may take a very long time)
                 await Task.Run(() => BroadcastTransaction(transaction));
             }
             catch (ArgumentException a)
@@ -249,7 +244,7 @@ namespace ClientApplication
                 ChannelFactory<IServer> serverChannelFactory = new ChannelFactory<IServer>(tcp, url);
                 IServer clientBlockchainServer =  serverChannelFactory.CreateChannel();
 
-                clientBlockchainServer.PutTransaction(transaction); //TODO catch client being down
+                clientBlockchainServer.PutTransaction(transaction);
             }
         }
     }
