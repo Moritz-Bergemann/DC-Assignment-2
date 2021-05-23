@@ -49,5 +49,23 @@ namespace BlockchainServer.Controllers
         {
             return BlockchainModel.Instance.GetWallet(walletId);
         }
+
+        [Route("api/add-blockchain-server")]
+        [HttpPost]
+        public string AddBlockchainServer(BlockchainServerData data)
+        {
+            try
+            {
+                BlockchainModel.Instance.AddBlockchainServer(data);
+                return "OK";
+            }
+            catch (ArgumentException a)
+            {
+                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    Content = new StringContent(a.Message)
+                });
+            }
+        }
     }
 }

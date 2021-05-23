@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Block.cs" />
+    <Compile Include="BlockchainServerData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Transaction.cs" />
     <Compile Include="Wallet.cs" />
