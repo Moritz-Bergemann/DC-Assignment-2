@@ -1,0 +1,72 @@
+﻿<h1>
+    BankDB Banking Advanced WebApp
+</h1>
+
+<!--Header-->
+<div>
+    <button id="usersPageButton" style=" border-color: #12a4d9;">Users</button>
+    <button id="accountsPageButton" style=" border-color: #d9138a;">Accounts</button>
+    <button id="transactionsPageButton" style=" border-color: #e2d810;">Transactions</button>
+</div>
+
+<!--Main Content-->
+<div id="mainBody">
+</div>
+
+<br/>
+<a href="/xss/">Hey, wanna learn some XSS?</a>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+<script>
+    function loadPage(data) {
+        $("#mainBody").fadeOut(10, () => {
+            $("#mainBody").html(data);
+            $("#mainBody").fadeIn();
+        });
+    }
+
+    //Load main pages
+    $("#usersPageButton").on('click',
+        () => {
+            $.ajax({
+                url: '/user/',
+                type: 'get',
+                processData: false,
+                success: (data, textStatus, jQxhr) => {
+                    loadPage(data);
+                },
+                error: (j,t,e) => {
+                    alert(e);
+                }
+            });
+        });
+    $("#accountsPageButton").on('click',
+        () => {
+            $.ajax({
+                url: '/account/',
+                type: 'get',
+                processData: false,
+                success: (data, textStatus, jQxhr) => {
+                    loadPage(data);
+                },
+                error: (j,t,e) => {
+                    alert(e);
+                }
+            });
+        });
+    $("#transactionsPageButton").on('click',
+        () => {
+            $.ajax({
+                url: '/transaction/',
+                type: 'get',
+                processData: false,
+                success: (data, textStatus, jQxhr) => {
+                    loadPage(data);
+                },
+                error: (j,t,e) => {
+                    alert(e);
+                }
+            });
+        });
+</script>

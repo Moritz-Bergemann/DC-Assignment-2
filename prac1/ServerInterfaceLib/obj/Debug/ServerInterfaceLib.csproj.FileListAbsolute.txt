@@ -1,0 +1,12 @@
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerInterfaceLib\bin\Debug\ServerInterfaceLib.dll
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerInterfaceLib\bin\Debug\ServerInterfaceLib.pdb
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.csprojAssemblyReference.cache
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.csproj.CoreCompileInputs.cache
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.dll
+C:\Users\morit\Documents\_Uni\DC\Workshops\DC-Workshops\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.pdb
+C:\Users\morit\_MyCode\DC\Assignment-2\prac1\ServerInterfaceLib\bin\Debug\ServerInterfaceLib.dll
+C:\Users\morit\_MyCode\DC\Assignment-2\prac1\ServerInterfaceLib\bin\Debug\ServerInterfaceLib.pdb
+C:\Users\morit\_MyCode\DC\Assignment-2\prac1\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.csprojAssemblyReference.cache
+C:\Users\morit\_MyCode\DC\Assignment-2\prac1\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.csproj.CoreCompileInputs.cache
+C:\Users\morit\_MyCode\DC\Assignment-2\prac1\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.dll
+C:\Users\morit\_MyCode\DC\Assignment-2\prac1\ServerInterfaceLib\obj\Debug\ServerInterfaceLib.pdb
