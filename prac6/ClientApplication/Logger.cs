@@ -6,7 +6,7 @@ namespace ClientApplication
 {
     class Logger
     {
-        private readonly string LOGS_PATH;
+        private readonly string _logs_path;
         private string _clientIdentifier;
 
         public static Logger Instance
@@ -16,7 +16,7 @@ namespace ClientApplication
 
         private Logger()
         {
-            LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName,
+            _logs_path = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.Parent.FullName,
                 "client-logs.log");
             _clientIdentifier = "unknown";
         }
@@ -35,7 +35,7 @@ namespace ClientApplication
         public void Log(string message)
         {
             //Add log number and increment log number
-            StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);
+            StreamWriter logsFileWriter = File.AppendText(_logs_path);
             logsFileWriter.WriteLine($"[{_clientIdentifier}] {message}");
             logsFileWriter.Close();
         }

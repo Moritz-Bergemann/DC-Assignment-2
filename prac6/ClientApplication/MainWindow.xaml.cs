@@ -35,6 +35,9 @@ namespace ClientApplication
                     serverSuccess = true;
                     Server.Instance.Open("localhost", port);
                     ClientEndpointLabel.Content = $"https://localhost:{port}";
+            
+                    //Setup logger
+                    Logger.Instance.SetClient(new ClientData("localhost", port));
                 }
                 catch (ArgumentException a)
                 {
