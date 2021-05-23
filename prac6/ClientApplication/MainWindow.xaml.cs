@@ -22,19 +22,34 @@ namespace ClientApplication
         {
             InitializeComponent();
 
-            //Generate remoting address
-            Random random = new Random();
-            uint port = Convert.ToUInt32(random.Next(50000, 60000));
-
             //Start server
-            try
+            bool serverSuccess = false;
+            while (!serverSuccess)
             {
-                Server.Instance.Open("localhost", port);
+                //Generate remoting address
+                Random random = new Random();
+                uint port = Convert.ToUInt32(random.Next(50000, 60000));
+
+                try
+                {
+                    serverSuccess = true;
+                    Server.Instance.Open("localhost", port);
+                    ClientEndpointLabel.Content = $"https://localhost:{port}";
+                }
+                catch (ArgumentException a)
+                {
+                    MessageBoxResult result =
+                        MessageBox.Show($"Failed to open this client's server. Reason: '{a.Message}'",
+                            "Failed to open server", MessageBoxButton.OK, MessageBoxImage.Error);
+                    //TODO exit app
+                }
+                catch (ServerLaunchException) //If server failed to open (likely due to port mismatch)
+                {
+                    //Try again with a different port
+                    serverSuccess = false;
+                }
             }
-            catch (ArgumentException a)
-            {
-                MessageBoxResult result = MessageBox.Show($"Failed to open this client's server. Reason: '{a.Message}'", "Failed to open server", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+
 
             _registryServer = new RestClient("https://localhost:44392/");
 

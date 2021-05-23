@@ -48,7 +48,7 @@
         <Button Name="SubmitTransactionButton" Content="Submit Transaction" HorizontalAlignment="Left" Margin="645,369,0,0" VerticalAlignment="Top" Width="121" Height="29" Click="SubmitTransactionButton_Click"/>
         <Label Content="Make New Transaction" HorizontalAlignment="Left" Margin="558,249,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="182"/>
         <Label Content="Client:" HorizontalAlignment="Left" Margin="257,10,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="56"/>
-        <Label Name="ClientEndpointLabel" Content="CLIENT-ENDPOINT" HorizontalAlignment="Left" Margin="318,10,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="246"/>
+        <Label Name="ClientEndpointLabel" Content="NOT SET" HorizontalAlignment="Left" Margin="318,10,0,0" VerticalAlignment="Top" FontSize="16" Height="31" Width="246"/>
 
     </Grid>
 </Window>

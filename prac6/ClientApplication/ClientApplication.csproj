@@ -106,6 +106,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ServerLaunchException.cs" />
     <Compile Include="Worker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
