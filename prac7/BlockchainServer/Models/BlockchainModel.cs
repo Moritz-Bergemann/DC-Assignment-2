@@ -12,7 +12,6 @@ namespace BlockchainServer.Models
     {
         private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName, "blockchain-logs.log");
 
-
         public static BlockchainModel Instance
         {
             get;

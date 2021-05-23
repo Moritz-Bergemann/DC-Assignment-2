@@ -46,7 +46,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BankDB">
-      <HintPath>..\..\..\..\..\..\..\..\..\WebStuff\BankDB.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\WebStuff\BankDB.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
