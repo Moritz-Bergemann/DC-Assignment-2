@@ -6,13 +6,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace ClientApplication
 {
     class Miner
     {
         private Queue<Transaction> _transactions;
-        private bool _mining;
+        //private bool _mining;
+        private object _miningLock = new object();
 
         private RestClient _registryServer;
 
@@ -28,8 +30,13 @@ namespace ClientApplication
             //Instantiate REST client
             _registryServer = new RestClient("https://localhost:44392/");
 
-            _mining = false;
             _transactions = new Queue<Transaction>();
+
+            ////Start task of validating blockchain during downtime
+            //DispatcherTimer dTimer = new DispatcherTimer();
+            //dTimer.Tick += new EventHandler(VerifyBlockchainInDowntime);
+            //dTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
+            //dTimer.Start();
 
             Status = "Waiting for transactions";
         }
@@ -37,6 +44,18 @@ namespace ClientApplication
         public string Status { get; private set; }
 
         public int MinedBlocks { get; private set; } = 0;
+
+        //private void VerifyBlockchainInDowntime(Object o, EventArgs args)
+        //{
+        //    //If the local blockchain has been initialized and we aren't mining, verify it the chain
+        //    if (Blockchain.Instance.Chain != null && !_mining)
+        //    {
+        //        lock (_miningLock)
+        //        {
+
+        //        }
+        //    }
+        //}
 
         public void VerifyPopularBlockchain()
         {
@@ -129,76 +148,71 @@ namespace ClientApplication
 
         private void Mine()
         {
-            //Abort if already running
-            if (_mining)
-            {
-                return;
-            }
-
             //Set mining lock
-            _mining = true;
-            try
+            lock (_miningLock)
             {
-                while (_transactions.Count > 0)
+                try
                 {
-                    Status = "Mining";
-
-                    //Get first element
-                    Transaction transaction = _transactions.Peek();
-
-                    //Get latest block from blockchain
-                    Block lastBlock = Blockchain.Instance.LastBlock;
-
-                    //Check transaction is valid with wallet sender
-                    float walletBalance = Blockchain.Instance.GetBalance(transaction.WalletFrom);
-                    if (walletBalance < transaction.Amount) //If the sender can't afford the transaction anymore
+                    while (_transactions.Count > 0)
                     {
-                        //The transaction is now invalid. We have no way of contacting the original sender, so the transaction is just discarded
+                        Status = "Mining";
+
+                        //Get first element
+                        Transaction transaction = _transactions.Peek();
+
+                        //Get latest block from blockchain
+                        Block lastBlock = Blockchain.Instance.LastBlock;
+
+                        //Check transaction is valid with wallet sender
+                        float walletBalance = Blockchain.Instance.GetBalance(transaction.WalletFrom);
+                        if (walletBalance < transaction.Amount) //If the sender can't afford the transaction anymore
+                        {
+                            //The transaction is now invalid. We have no way of contacting the original sender, so the transaction is just discarded
+                            _transactions.Dequeue();
+                            continue;
+                        }
+
+                        //Create block for the transaction
+                        Block block = new Block()
+                        {
+                            Id = lastBlock.Id + 1,
+                            Amount = transaction.Amount,
+                            BlockOffset = 0,
+                            WalletFrom = transaction.WalletFrom,
+                            WalletTo = transaction.WalletTo,
+                            PrevHash = lastBlock.Hash
+                        };
+
+                        //Calculate hash for block (this will take a long time)
+                        block.Hash = block.FindHash();
+
+                        //Try adding block to local blockchain
+                        try
+                        {
+                            Blockchain.Instance.AddBlock(block);
+                        }
+                        catch (BlockchainException b)
+                        {
+                            //TODO log message
+                            _transactions.Dequeue();
+                            continue;
+                        }
+
+                        MinedBlocks++;
+
+                        Status = "Validating most popular blockchain";
+
+                        //Check to see if we still have the most common blockchain
+                        VerifyPopularBlockchain();
+
+                        //If transaction was submitted to blockchain successfully, remove it from the queue so we can work on the next
                         _transactions.Dequeue();
-                        continue;
                     }
-
-                    //Create block for the transaction
-                    Block block = new Block()
-                    {
-                        Id = lastBlock.Id + 1,
-                        Amount = transaction.Amount,
-                        BlockOffset = 0,
-                        WalletFrom = transaction.WalletFrom,
-                        WalletTo = transaction.WalletTo,
-                        PrevHash = lastBlock.Hash
-                    };
-
-                    //Calculate hash for block (this will take a long time)
-                    block.Hash = block.FindHash();
-
-                    //Try adding block to local blockchain
-                    try
-                    {
-                        Blockchain.Instance.AddBlock(block);
-                    }
-                    catch (BlockchainException b)
-                    {
-                        //TODO log message
-                        _transactions.Dequeue();
-                        continue;
-                    }
-
-                    MinedBlocks++;
-
-                    Status = "Validating most popular blockchain";
-
-                    //Check to see if we still have the most common blockchain
-                    VerifyPopularBlockchain();
-
-                    //If transaction was submitted to blockchain successfully, remove it from the queue so we can work on the next
-                    _transactions.Dequeue();
                 }
-            }
-            finally //End mining lock even if error occurs
-            {
-                _mining = false;
-                Status = "Waiting for transactions";
+                finally
+                {
+                    Status = "Waiting for transactions";
+                }
             }
         }
     }
