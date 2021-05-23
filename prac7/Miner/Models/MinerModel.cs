@@ -65,14 +65,16 @@ namespace Miner.Models
                     //Get latest block from blockchain
                     Block lastBlock = GetLastBlockFromServer();
 
-                    //Check transaction is still valid with wallet sender
-                    Wallet walletFrom = GetWalletFromServer(transaction.WalletFrom);
-                    if (walletFrom.Balance < transaction.Amount) //If the sender can't afford the transaction anymore
-                    {
-                        //The transaction is now invalid. We have no way of contacting the original sender, so the transaction is just discarded
-                        _transactions.Dequeue();
-                        continue;
-                    }
+                    ////Check transaction is still valid with wallet sender
+                    //Wallet walletFrom = GetWalletFromServer(transaction.WalletFrom);
+                    //if (walletFrom.Balance < transaction.Amount) //If the sender can't afford the transaction anymore
+                    //{
+                    //    Log($"Before mining block '{block}', rejected by server");
+
+                    //    //The transaction is now invalid. We have no way of contacting the original sender, so the transaction is just discarded
+                    //    _transactions.Dequeue();
+                    //    continue;
+                    //} TODO remove
 
                     //Create block for the transaction
                     Block block = new Block()
@@ -96,18 +98,22 @@ namespace Miner.Models
                     if (addBlockResponse.StatusCode != HttpStatusCode.OK) //If blockchain rejected request
                     {
                         //Check if the last block has changed (i.e. another miner has beat us to submission)
-                        if (!GetLastBlockFromServer().Hash.Equals(block.PrevHash))
+                        if (GetLastBlockFromServer().Hash.Equals(block.PrevHash))
                         {
-                            //Try again (WITHOUT discarding the)
+                            Log($"Attempted to add transaction for block '{block}', but another block has been added since mining start - retrying");
+                            //Another miner beat us to adding a block - try again (WITHOUT discarding the block)
                             continue;
                         }
                         else //If some other error occurs
                         {
                             //Something must have been invalid with this block. Discard it and try again with the next
+                            Log($"Attempted to add transaction for block '{block}', rejected by server");
                             _transactions.Dequeue();
                             continue;
                         }
                     }
+
+                    Log($"Block '{block}' mined successfully");
 
                     //If transaction was submitted to blockchain successfully, remove it from the queue so we can work on the next
                     _transactions.Dequeue();

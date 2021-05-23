@@ -1,6 +1,7 @@
 ﻿using System;
 using APIClasses;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using RestSharp;
 using Block = APIClasses.Block;
@@ -9,6 +10,9 @@ namespace BlockchainServer.Models
 {
     public class BlockchainModel
     {
+        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName, "blockchain-logs.log");
+
+
         public static BlockchainModel Instance
         {
             get;
@@ -64,6 +68,7 @@ namespace BlockchainServer.Models
             //Validate block
             if (!ValidateBlock(block, out string reason))
             {
+                Log($"Requested to add block {block} but could not add - {reason}");
                 throw new ArgumentException($"Invalid block - {reason}");
             }
 
@@ -146,6 +151,14 @@ namespace BlockchainServer.Models
             }
 
             return wallet;
+        }
+
+        private void Log(string message)
+        {
+            //Add log number and increment log number
+            StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);
+            logsFileWriter.WriteLine(message);
+            logsFileWriter.Close();
         }
     }
 }

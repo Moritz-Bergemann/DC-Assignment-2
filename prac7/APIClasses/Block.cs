@@ -106,5 +106,11 @@ namespace APIClasses
 
             return false;
         }
+
+        public override string ToString()
+        {
+            return
+                $"ID {Id}, Amount {Amount}, From {WalletFrom}, To {WalletTo}, Offset{BlockOffset}, PrevHash {Convert.ToBase64String(Hash)}, Hash {Convert.ToBase64String(PrevHash)}";
+        }
     }
 }
