@@ -13,8 +13,10 @@ namespace ServerProg
     [ServiceBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     internal class DataServer : DataServerInterface
     {
-        private DatabaseClass database;
+        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent
+            .Parent.Parent.FullName, "business-server-logs.log");
 
+        private DatabaseClass database;
         public DataServer()
         {
             Console.WriteLine("Constructing new server...");
@@ -43,6 +45,7 @@ namespace ServerProg
             }
             catch (ArgumentOutOfRangeException a)
             {
+                Log($"Attempted profile access by index '{index}', out of range");
                 throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Profile access failed: " + a.Message));
             }
         }
@@ -63,6 +66,7 @@ namespace ServerProg
             }
             catch (ArgumentOutOfRangeException a)
             {
+                Log($"Attempted image access by id '{id}', out of range of possible IDs");
                 throw new FaultException<DatabaseAccessFault>(new DatabaseAccessFault("Image access failed: " + a.Message));
             }
 
@@ -99,6 +103,14 @@ namespace ServerProg
             Console.ReadLine();
             //Don't forget to close the host after you're done!
             host.Close();
+        }
+
+        private void Log(string message)
+        {
+            //Add log number and increment log number
+            StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);
+            logsFileWriter.WriteLine(message);
+            logsFileWriter.Close();
         }
     }
 }

@@ -9,7 +9,8 @@ namespace BusinessTier
     class BusinessServer : BusinessServerInterface
     {
         //private static string LOGS_PATH = @"C:\Users\morit\Source\Repos\DC-Workshops\BusinessTier\business-server.log";
-        private static string LOGS_PATH = "../../../business-server.log";
+        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent
+            .Parent.Parent.FullName, "business-server-logs.log");
 
         private DataServerInterface m_dataServer;
 

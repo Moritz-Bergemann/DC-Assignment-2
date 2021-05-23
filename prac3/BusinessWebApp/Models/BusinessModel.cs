@@ -1,16 +1,15 @@
-﻿using ServerInterfaceLib;
-using System;
-using System.Drawing;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.ServiceModel;
-using APIClasses;
+﻿using APIClasses;
 using BusinessWebApp.Models;
+using ServerInterfaceLib;
+using System;
+using System.IO;
+using System.ServiceModel;
 
 namespace BusinessTier
 {
     class BusinessModel
     {
+        private static readonly string LOGS_PATH = Path.Combine(Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.FullName, "business-tier-logs.log");
 
         private int m_foundIndex;
         //private int m_logNum = 0;
@@ -30,7 +29,7 @@ namespace BusinessTier
             tcp.MaxReceivedMessageSize = 1024 * 1024 * 2;
 
             //Create connection factory for connection to server
-            ChannelFactory<ServerInterfaceLib.DataServerInterface> serverChannelFactory = new ChannelFactory<DataServerInterface>(tcp, url);
+            ChannelFactory<DataServerInterface> serverChannelFactory = new ChannelFactory<DataServerInterface>(tcp, url);
             _dataServer = serverChannelFactory.CreateChannel();
 
             //DEBUG: Test connection actually works
@@ -74,6 +73,7 @@ namespace BusinessTier
             //Throw exception if profile not found
             if (foundIndex == -1)
             {
+                Log($"Searched for profile by last name contents '{query}', not found");
                 throw new NotFoundException("Item with given query not found");
             }
 
@@ -92,6 +92,7 @@ namespace BusinessTier
             }
             catch (FaultException<DatabaseAccessFault>)
             {
+                Log($"Tried to get profile by out-of-range index '{index}'");
                 throw new ArgumentException("Index it out of range for database");
             }
 
@@ -103,6 +104,7 @@ namespace BusinessTier
             }
             catch (FaultException<DatabaseAccessFault> d)
             {
+                Log($"Failed to retrieve image for index {index} from database - '{d.Message}'");
                 throw new InternalErrorException($"Failed to retrieve image - {d.Detail.Message}");
             }
 
@@ -117,6 +119,14 @@ namespace BusinessTier
             }
 
             return profileData;
+        }
+
+        private void Log(string message)
+        {
+            //Add log number and increment log number
+            StreamWriter logsFileWriter = File.AppendText(LOGS_PATH);
+            logsFileWriter.WriteLine(message);
+            logsFileWriter.Close();
         }
     }
 }
