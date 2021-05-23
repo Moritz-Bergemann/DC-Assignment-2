@@ -126,7 +126,7 @@ namespace ClientApplication
                 {
                     if (e is EndpointNotFoundException || e is CommunicationException)
                     {
-                        Logger.Instance.Log($"Getting most common blockchain access to client '{client} failed, reporting as downed to registry'");
+                        Logger.Instance.Log($"Getting most common blockchain access to client '{client}' failed, reporting as downed to registry'");
 
                         ReportClientDowned(client);
                         continue;

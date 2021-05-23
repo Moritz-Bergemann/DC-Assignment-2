@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace APIClasses
 {
+    /// <summary>
+    /// Represents a cryptocurrency transaction
+    /// </summary>
     public class Transaction
     {
         public uint WalletTo;

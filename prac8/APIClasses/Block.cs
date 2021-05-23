@@ -7,6 +7,9 @@ using System.Text;
 
 namespace APIClasses
 {
+    /// <summary>
+    /// Represents a block in the blockchain. Contains all hashing functionality.
+    /// </summary>
     public class Block
     {
         public uint Id;
